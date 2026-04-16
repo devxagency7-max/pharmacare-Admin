@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intern Pharmacists - Pharma Care</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class='bx bx-plus-medical'></i>
+                <span>Pharma Care</span>
+            </div>
+            <i class='bx bx-menu' id="sidebar-toggle"></i>
+        </div>
+
+        <ul class="nav-links">
+            <li><a href="../index.html"><i class='bx bx-grid-alt'></i><span class="link-name">Dashboard</span></a></li>
+            <li><a href="patients.html"><i class='bx bx-user'></i><span class="link-name">Patients</span></a></li>
+            <li><a href="pharmacists.html"><i class='bx bx-plus-medical'></i><span
+                        class="link-name">Pharmacists</span></a></li>
+            <li><a href="intern_pharmacists.html" class="active"><i class='bx bx-book-reader'></i><span
+                        class="link-name">Intern Pharmacists</span></a></li>
+            <li><a href="pharmacies.html"><i class='bx bx-store-alt'></i><span class="link-name">Pharmacies</span></a>
+            </li>
+            <li><a href="medications.html"><i class='bx bx-capsule'></i><span class="link-name">Medications</span></a>
+            </li>
+            <li><a href="prescriptions.html"><i class='bx bx-receipt'></i><span
+                        class="link-name">Prescriptions</span></a></li>
+            <li><a href="orders.html"><i class='bx bx-cart'></i><span class="link-name">Orders</span></a></li>
+            <li><a href="reports.html"><i class='bx bx-pie-chart-alt-2'></i><span class="link-name">Reports</span></a>
+            </li>
+            <li>
+                <a href="audit_logs.html">
+                    <i class='bx bx-file'></i>
+                    <span class="link-name">Audit Logs</span>
+                </a>
+            </li>
+            <li>
+                <a href="notifications.html">
+                    <i class='bx bx-bell'></i>
+                    <span class="link-name">Global Notifications</span>
+                </a>
+            </li>
+            <li><a href="settings.html"><i class='bx bx-cog'></i><span class="link-name">Settings</span></a></li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <a href="../login.html" class="logout-btn">
+                <i class='bx bx-log-out'></i>
+                <span class="link-name">Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content" id="main-content">
+        <!-- Topbar -->
+        <header class="topbar">
+            <div class="search-box">
+                <i class='bx bx-search'></i>
+                <input type="text" placeholder="Search everywhere...">
+            </div>
+
+            <div class="topbar-right">
+                <div class="notification-icon">
+                    <i class='bx bx-bell'></i>
+                    <span class="badge">3</span>
+                </div>
+                <div class="profile">
+                    <img src="https://ui-avatars.com/api/?name=Admin+User&background=0057d1&color=fff"
+                        alt="Admin Profile">
+                    <div class="profile-info">
+                        <span class="name">Admin User</span>
+                        <span class="role">Super Admin</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Page Content -->
+        <div class="page-content">
+            <div class="page-header">
+                <h1>Intern Pharmacists</h1>
+                <p>Manage and track pharmacy students in their training program.</p>
+            </div>
+
+            <div class="action-bar">
+                <div class="search-box" style="width: 320px;">
+                    <i class='bx bx-search'></i>
+                    <input type="text" placeholder="Search by name or Student ID...">
+                </div>
+                <button class="btn btn-primary">
+                    <i class='bx bx-user-plus'></i>
+                    Register Intern
+                </button>
+            </div>
+
+            <!-- Table Card -->
+            <div class="card">
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>University</th>
+                                <th>Student ID</th>
+                                <th>Status</th>
+                                <th>Joined Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="table-person">
+                                        <img src="https://ui-avatars.com/api/?name=Alex+Carter&background=EAF2FE&color=0057d1"
+                                            alt="Alex Carter">
+                                        <div class="info">
+                                            <span class="name">Alex Carter</span>
+                                            <span class="email">Year 4 Student</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Cairo University</td>
+                                <td>STU-83921</td>
+                                <td><span class="status-badge success">Active</span></td>
+                                <td>Sep 01, 2023</td>
+                                <td>
+                                    <div class="table-actions">
+                                        <button class="action-btn edit" title="Review Progress"><i
+                                                class='bx bx-file-find'></i></button>
+                                        <button class="action-btn delete" title="Suspend"><i
+                                                class='bx bx-block'></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="table-person">
+                                        <img src="https://ui-avatars.com/api/?name=Nour+Ahmed&background=EAF2FE&color=0057d1"
+                                            alt="Nour Ahmed">
+                                        <div class="info">
+                                            <span class="name">Nour Ahmed</span>
+                                            <span class="email">Year 5 Student</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Ain Shams University</td>
+                                <td>STU-83922</td>
+                                <td><span class="status-badge success">Active</span></td>
+                                <td>Sep 01, 2023</td>
+                                <td>
+                                    <div class="table-actions">
+                                        <button class="action-btn edit" title="Review Progress"><i
+                                                class='bx bx-file-find'></i></button>
+                                        <button class="action-btn delete" title="Suspend"><i
+                                                class='bx bx-block'></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="table-person">
+                                        <img src="https://ui-avatars.com/api/?name=Omar+Hassan&background=EAF2FE&color=0057d1"
+                                            alt="Omar Hassan">
+                                        <div class="info">
+                                            <span class="name">Omar Hassan</span>
+                                            <span class="email">Year 4 Student</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Alexandria University</td>
+                                <td>STU-83804</td>
+                                <td><span class="status-badge primary">New</span></td>
+                                <td>Oct 15, 2023</td>
+                                <td>
+                                    <div class="table-actions">
+                                        <button class="action-btn edit" title="Review Progress"><i
+                                                class='bx bx-file-find'></i></button>
+                                        <button class="action-btn delete" title="Suspend"><i
+                                                class='bx bx-block'></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="table-person">
+                                        <img src="https://ui-avatars.com/api/?name=Laila+Mahmoud&background=EAF2FE&color=0057d1"
+                                            alt="Laila Mahmoud">
+                                        <div class="info">
+                                            <span class="name">Laila Mahmoud</span>
+                                            <span class="email">Year 5 Student</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Mansoura University</td>
+                                <td>STU-83719</td>
+                                <td><span class="status-badge warning">On Leave</span></td>
+                                <td>Aug 10, 2023</td>
+                                <td>
+                                    <div class="table-actions">
+                                        <button class="action-btn edit" title="Review Progress"><i
+                                                class='bx bx-file-find'></i></button>
+                                        <button class="action-btn delete" title="Suspend"><i
+                                                class='bx bx-block'></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="pagination">
+                    <span class="page-info">Showing 1 to 4 of 42 Interns</span>
+                    <button class="page-btn"><i class='bx bx-chevron-left'></i></button>
+                    <button class="page-btn active">1</button>
+                    <button class="page-btn">2</button>
+                    <button class="page-btn">3</button>
+                    <span>...</span>
+                    <button class="page-btn">5</button>
+                    <button class="page-btn"><i class='bx bx-chevron-right'></i></button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/api/internPharmacistsApi.js"></script>
+    <script src="../js/pages/internPharmacists.js"></script>
+</body>
+
+</html>

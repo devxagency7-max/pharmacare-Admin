@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audit Logs - Admin Dashboard</title>
+    <!-- Google Fonts for modern typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Boxicons for icons -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class='bx bx-plus-medical'></i>
+                <span>Pharma Care</span>
+            </div>
+            <i class='bx bx-menu' id="sidebar-toggle"></i>
+        </div>
+
+        <ul class="nav-links">
+            <li>
+                <a href="../index.html">
+                    <i class='bx bx-grid-alt'></i>
+                    <span class="link-name">Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="patients.html">
+                    <i class='bx bx-user'></i>
+                    <span class="link-name">Patients</span>
+                </a>
+            </li>
+            <li>
+                <a href="pharmacists.html">
+                    <i class='bx bx-plus-medical'></i>
+                    <span class="link-name">Pharmacists</span>
+                </a>
+            </li>
+            <li>
+                <a href="intern_pharmacists.html">
+                    <i class='bx bx-book-reader'></i>
+                    <span class="link-name">Intern Pharmacists</span>
+                </a>
+            </li>
+            <li>
+                <a href="pharmacies.html">
+                    <i class='bx bx-store-alt'></i>
+                    <span class="link-name">Pharmacies</span>
+                </a>
+            </li>
+            <li>
+                <a href="medications.html">
+                    <i class='bx bx-capsule'></i>
+                    <span class="link-name">Medications</span>
+                </a>
+            </li>
+            <li>
+                <a href="prescriptions.html">
+                    <i class='bx bx-receipt'></i>
+                    <span class="link-name">Prescriptions</span>
+                </a>
+            </li>
+            <li>
+                <a href="orders.html">
+                    <i class='bx bx-cart'></i>
+                    <span class="link-name">Orders</span>
+                </a>
+            </li>
+            <li>
+                <a href="reports.html">
+                    <i class='bx bx-pie-chart-alt-2'></i>
+                    <span class="link-name">Reports</span>
+                </a>
+            </li>
+            <li>
+                <a href="audit_logs.html" class="active">
+                    <i class='bx bx-file'></i>
+                    <span class="link-name">Audit Logs</span>
+                </a>
+            </li>
+            <li>
+                <a href="notifications.html">
+                    <i class='bx bx-bell'></i>
+                    <span class="link-name">Global Notifications</span>
+                </a>
+            </li>
+            <li>
+                <a href="settings.html">
+                    <i class='bx bx-cog'></i>
+                    <span class="link-name">Settings</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <a href="login.html" class="logout-btn">
+                <i class='bx bx-log-out'></i>
+                <span class="link-name">Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content" id="main-content">
+        <!-- Topbar -->
+        <header class="topbar">
+            <!-- Search & Profile -->
+            <div class="search-box">
+                <i class='bx bx-search'></i>
+                <input type="text" placeholder="Search everywhere...">
+            </div>
+
+            <div class="topbar-right">
+                <div class="notification-icon">
+                    <i class='bx bx-bell'></i>
+                    <span class="badge">3</span>
+                </div>
+                <div class="profile">
+                    <img src="https://ui-avatars.com/api/?name=Admin+User&background=0D8ABC&color=fff"
+                        alt="Admin Profile">
+                    <div class="profile-info">
+                        <span class="name">Admin User</span>
+                        <span class="role">Super Admin</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Page Content -->
+        <div class="page-content">
+            <div class="page-header">
+                <h1>System Activity Logs</h1>
+                <p>Track all important actions performed in the platform.</p>
+            </div>
+
+            <!-- Stats Grid for Audit Logs -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon primary">
+                        <i class='bx bx-list-ul'></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3>Total Events Today</h3>
+                        <h2>4,820</h2>
+                        <span class="trend neutral"><i class='bx bx-minus'></i> Monitored actions</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon success">
+                        <i class='bx bx-check-shield'></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3>Successful</h3>
+                        <h2>4,795</h2>
+                        <span class="trend positive"><i class='bx bx-up-arrow-alt'></i> 99.4% Rate</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon warning">
+                        <i class='bx bx-error'></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3>Failed</h3>
+                        <h2>23</h2>
+                        <span class="trend warning" style="color:#F59E0B; background:#FEF3C7;"><i
+                                class='bx bx-error-circle'></i> Review required</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon danger">
+                        <i class='bx bx-shield-quarter'></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3>Security Alerts</h3>
+                        <h2>2</h2>
+                        <span class="trend negative"><i class='bx bx-down-arrow-alt'></i> High priority urgency</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Bar -->
+            <div class="action-bar">
+                <div class="search-box" style="width: 320px;">
+                    <i class='bx bx-search'></i>
+                    <input type="text" placeholder="Search by user, action, or resource...">
+                </div>
+                <div style="display: flex; gap: 15px;">
+                    <button class="btn btn-outline">
+                        <i class='bx bx-filter-alt'></i>
+                        Filter: Date/Status/User
+                    </button>
+                    <button class="btn btn-primary" id="export-logs-btn">
+                        <i class='bx bx-export'></i>
+                        Export Logs (CSV)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Table Card -->
+            <div class="card">
+                <div class="table-container">
+                    <table class="data-table" id="audit-logs-table">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>User</th>
+                                <th>Action</th>
+                                <th>Resource</th>
+                                <th>IP Address</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Oct 25, 2023 14:32:01</td>
+                                <td>
+                                    <div class="table-person">
+                                        <div class="info">
+                                            <span class="name">Admin User</span>
+                                            <span class="email">System Admin</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Approved Pharmacy Request</td>
+                                <td>Pharmacy ID: 4901</td>
+                                <td>192.168.1.45</td>
+                                <td><span class="status-badge success">Success</span></td>
+                                <td>
+                                    <div class="table-actions">
+                                        <button class="action-btn view btn-link" title="View Details"
+                                            style="font-size: 14px; width: auto; padding: 4px 10px;">Details</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Oct 25, 2023 14:28:15</td>
+                                <td>
+                                    <div class="table-person">
+                                        <div class="info">
+                                            <span class="name">Unknown User</span>
+                                            <span class="email">Unauthenticated</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Failed Login Attempt</td>
+                                <td>Authentication Service</td>
+                                <td>45.22.19.102</td>
+                                <td><span class="status-badge warning"
+                                        style="color:#F59E0B; background:#FEF3C7;">Failed</span></td>
+                                <td>
+                                    <div class="table-actions">
+                                        <button class="action-btn view btn-link" title="View Details"
+                                            style="font-size: 14px; width: auto; padding: 4px 10px;">Details</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Oct 25, 2023 14:15:22</td>
+                                <td>
+                                    <div class="table-person">
+                                        <div class="info">
+                                            <span class="name">System Auto</span>
+                                            <span class="email">Background Job</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Suspicious Query Execution</td>
+                                <td>Database Cluster B</td>
+                                <td>10.0.1.5</td>
+                                <td><span class="status-badge danger">Security Alert</span></td>
+                                <td>
+                                    <div class="table-actions">
+                                        <button class="action-btn view btn-link" title="View Details"
+                                            style="font-size: 14px; width: auto; padding: 4px 10px;">Details</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Oct 25, 2023 13:45:10</td>
+                                <td>
+                                    <div class="table-person">
+                                        <div class="info">
+                                            <span class="name">Dr. Sarah Jenkins</span>
+                                            <span class="email">Pharmacist</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Processed Prescription</td>
+                                <td>Prescription RX-90812</td>
+                                <td>192.168.1.112</td>
+                                <td><span class="status-badge success">Success</span></td>
+                                <td>
+                                    <div class="table-actions">
+                                        <button class="action-btn view btn-link" title="View Details"
+                                            style="font-size: 14px; width: auto; padding: 4px 10px;">Details</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Oct 25, 2023 13:20:05</td>
+                                <td>
+                                    <div class="table-person">
+                                        <div class="info">
+                                            <span class="name">Admin User</span>
+                                            <span class="email">System Admin</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Changed System Setting</td>
+                                <td>Payment Gateway Timeout</td>
+                                <td>192.168.1.45</td>
+                                <td><span class="status-badge success">Success</span></td>
+                                <td>
+                                    <div class="table-actions">
+                                        <button class="action-btn view btn-link" title="View Details"
+                                            style="font-size: 14px; width: auto; padding: 4px 10px;">Details</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="pagination">
+                    <span class="page-info">Showing 1 to 5 of 4,820 entries</span>
+                    <button class="page-btn"><i class='bx bx-chevron-left'></i></button>
+                    <button class="page-btn active">1</button>
+                    <button class="page-btn">2</button>
+                    <button class="page-btn">3</button>
+                    <span>...</span>
+                    <button class="page-btn">964</button>
+                    <button class="page-btn"><i class='bx bx-chevron-right'></i></button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="../js/main.js"></script>
+    <script>
+        // Custom script for CSV Export
+        document.addEventListener('DOMContentLoaded', () => {
+            const exportBtn = document.getElementById('export-logs-btn');
+
+            if (exportBtn) {
+                exportBtn.addEventListener('click', () => {
+                    // Simple CSV extraction from the table (skipping the "Actions" column)
+                    const table = document.getElementById('audit-logs-table');
+                    let csvContent = "data:text/csv;charset=utf-8,";
+
+                    // Add Headers
+                    const headers = Array.from(table.querySelectorAll('th'))
+                        .map(th => `"${th.innerText}"`)
+                        .slice(0, 6); // Only first 6 columns
+                    csvContent += headers.join(",") + "\r\n";
+
+                    // Add Rows
+                    const rows = Array.from(table.querySelectorAll('tbody tr'));
+                    rows.forEach(row => {
+                        const rowData = Array.from(row.querySelectorAll('td'))
+                            .map(td => {
+                                // Extract text cleanly (handling nested elements like the User div and Status badges)
+                                let text = td.innerText.replace(/(\r\n|\n|\r)/gm, " ").trim();
+                                // Escape double quotes with double-double quotes for CSV
+                                text = text.replace(/"/g, '""');
+                                return `"${text}"`;
+                            })
+                            .slice(0, 6); // Only first 6 columns
+                        csvContent += rowData.join(",") + "\r\n";
+                    });
+
+                    // Trigger download
+                    const encodedUri = encodeURI(csvContent);
+                    const link = document.createElement("a");
+                    link.setAttribute("href", encodedUri);
+                    link.setAttribute("download", "system_audit_logs.csv");
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                });
+            }
+        });
+    </script>
+    <script src="../js/api/auditLogsApi.js"></script>
+    <script src="../js/pages/auditLogs.js"></script>
+</body>
+
+</html>

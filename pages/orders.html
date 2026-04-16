@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orders - Admin Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <!-- Sidebar content same as patients.html -->
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class='bx bx-plus-medical'></i>
+                <span>Tele-Pharm</span>
+            </div>
+            <i class='bx bx-menu' id="sidebar-toggle"></i>
+        </div>
+
+        <ul class="nav-links">
+            <li>
+                <a href="../index.html">
+                    <i class='bx bx-grid-alt'></i>
+                    <span class="link-name">Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="patients.html">
+                    <i class='bx bx-user'></i>
+                    <span class="link-name">Patients</span>
+                </a>
+            </li>
+            <li>
+                <a href="pharmacists.html">
+                    <i class='bx bx-plus-medical'></i>
+                    <span class="link-name">Pharmacists</span>
+                </a>
+            </li>
+            <li>
+                <a href="intern_pharmacists.html">
+                    <i class='bx bx-book-reader'></i>
+                    <span class="link-name">Intern Pharmacists</span>
+                </a>
+            </li>
+            <li>
+                <a href="pharmacies.html">
+                    <i class='bx bx-store-alt'></i>
+                    <span class="link-name">Pharmacies</span>
+                </a>
+            </li>
+            <li>
+                <a href="medications.html">
+                    <i class='bx bx-capsule'></i>
+                    <span class="link-name">Medications</span>
+                </a>
+            </li>
+            <li>
+                <a href="prescriptions.html">
+                    <i class='bx bx-receipt'></i>
+                    <span class="link-name">Prescriptions</span>
+                </a>
+            </li>
+            <li>
+                <a href="orders.html" class="active">
+                    <i class='bx bx-cart'></i>
+                    <span class="link-name">Orders</span>
+                </a>
+            </li>
+            <li>
+                <a href="reports.html">
+                    <i class='bx bx-pie-chart-alt-2'></i>
+                    <span class="link-name">Reports</span>
+                </a>
+            </li>
+            <li>
+                <a href="audit_logs.html">
+                    <i class='bx bx-file'></i>
+                    <span class="link-name">Audit Logs</span>
+                </a>
+            </li>
+            <li>
+                <a href="notifications.html">
+                    <i class='bx bx-bell'></i>
+                    <span class="link-name">Global Notifications</span>
+                </a>
+            </li>
+            <li>
+                <a href="settings.html">
+                    <i class='bx bx-cog'></i>
+                    <span class="link-name">Settings</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <a href="login.html" class="logout-btn">
+                <i class='bx bx-log-out'></i>
+                <span class="link-name">Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content" id="main-content">
+        <!-- Topbar -->
+        <header class="topbar">
+            <!-- Search & Profile -->
+            <div class="search-box">
+                <i class='bx bx-search'></i>
+                <input type="text" placeholder="Search everywhere...">
+            </div>
+
+            <div class="topbar-right">
+                <div class="notification-icon">
+                    <i class='bx bx-bell'></i>
+                    <span class="badge">3</span>
+                </div>
+                <div class="profile">
+                    <img src="https://ui-avatars.com/api/?name=Admin+User&background=0D8ABC&color=fff"
+                        alt="Admin Profile">
+                    <div class="profile-info">
+                        <span class="name">Admin User</span>
+                        <span class="role">Super Admin</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Page Content -->
+        <div class="page-content">
+            <div class="page-header">
+                <h1>Orders Management</h1>
+                <p>Track and manage patient medication orders across all pharmacies.</p>
+            </div>
+
+            <div class="action-bar">
+                <div class="search-box" style="width: 300px;">
+                    <i class='bx bx-search'></i>
+                    <input type="text" placeholder="Search orders by ID...">
+                </div>
+                <!-- Filter button example -->
+                <button class="btn btn-outline">
+                    <i class='bx bx-filter-alt'></i>
+                    Filters
+                </button>
+            </div>
+
+            <!-- Table Card -->
+            <div class="card">
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Patient Name</th>
+                                <th>Assigned Pharmacy</th>
+                                <th>Order Date</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>#ORD-001</strong></td>
+                                <td>Sarah Jenkins</td>
+                                <td>City Center Pharmacy</td>
+                                <td>Oct 24, 2023</td>
+                                <td>$45.00</td>
+                                <td><span class="status-badge success">Delivered</span></td>
+                                <td>
+                                    <div class="table-actions">
+                                        <button class="action-btn edit" title="View Detail"><i
+                                                class='bx bx-show'></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>#ORD-002</strong></td>
+                                <td>Michael Chang</td>
+                                <td>Westside Meds</td>
+                                <td>Oct 24, 2023</td>
+                                <td>$12.50</td>
+                                <td><span class="status-badge warning">Processing</span></td>
+                                <td>
+                                    <div class="table-actions">
+                                        <button class="action-btn edit" title="View Detail"><i
+                                                class='bx bx-show'></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>#ORD-003</strong></td>
+                                <td>Emma Wilson</td>
+                                <td>HealthPlus Pharmacy</td>
+                                <td>Oct 23, 2023</td>
+                                <td>$89.99</td>
+                                <td><span class="status-badge primary">Shipped</span></td>
+                                <td>
+                                    <div class="table-actions">
+                                        <button class="action-btn edit" title="View Detail"><i
+                                                class='bx bx-show'></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>#ORD-004</strong></td>
+                                <td>David Rodriguez</td>
+                                <td>QuickCare Pharmacy</td>
+                                <td>Oct 23, 2023</td>
+                                <td>$24.00</td>
+                                <td><span class="status-badge danger">Cancelled</span></td>
+                                <td>
+                                    <div class="table-actions">
+                                        <button class="action-btn edit" title="View Detail"><i
+                                                class='bx bx-show'></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>#ORD-005</strong></td>
+                                <td>Robert Taylor</td>
+                                <td>City Center Pharmacy</td>
+                                <td>Oct 22, 2023</td>
+                                <td>$156.00</td>
+                                <td><span class="status-badge success">Delivered</span></td>
+                                <td>
+                                    <div class="table-actions">
+                                        <button class="action-btn edit" title="View Detail"><i
+                                                class='bx bx-show'></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="pagination">
+                    <span class="page-info">Showing 5 of 4,821 entries</span>
+                    <button class="page-btn"><i class='bx bx-chevron-left'></i></button>
+                    <button class="page-btn active">1</button>
+                    <button class="page-btn">2</button>
+                    <button class="page-btn">3</button>
+                    <span>...</span>
+                    <button class="page-btn">965</button>
+                    <button class="page-btn"><i class='bx bx-chevron-right'></i></button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/api/ordersApi.js"></script>
+    <script src="../js/pages/orders.js"></script>
+</body>
+
+</html>

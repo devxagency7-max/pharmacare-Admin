@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Pharma Care</title>
+    <!-- Google Fonts for modern typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Boxicons for icons -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class='bx bx-plus-medical'></i>
+                <span>Pharma Care</span>
+            </div>
+            <i class='bx bx-menu' id="sidebar-toggle"></i>
+        </div>
+
+        <ul class="nav-links">
+            <li>
+                <a href="index.html" class="active">
+                    <i class='bx bx-grid-alt'></i>
+                    <span class="link-name">Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="pages/patients.html">
+                    <i class='bx bx-user'></i>
+                    <span class="link-name">Patients</span>
+                </a>
+            </li>
+            <li>
+                <a href="pages/pharmacists.html">
+                    <i class='bx bx-plus-medical'></i>
+                    <span class="link-name">Pharmacists</span>
+                </a>
+            </li>
+            <li>
+                <a href="pages/intern_pharmacists.html">
+                    <i class='bx bx-book-reader'></i>
+                    <span class="link-name">Intern Pharmacists</span>
+                </a>
+            </li>
+            <li>
+                <a href="pages/pharmacies.html">
+                    <i class='bx bx-store-alt'></i>
+                    <span class="link-name">Pharmacies</span>
+                </a>
+            </li>
+            <li>
+                <a href="pages/medications.html">
+                    <i class='bx bx-capsule'></i>
+                    <span class="link-name">Medications</span>
+                </a>
+            </li>
+            <li>
+                <a href="pages/prescriptions.html">
+                    <i class='bx bx-receipt'></i>
+                    <span class="link-name">Prescriptions</span>
+                </a>
+            </li>
+            <li>
+                <a href="pages/orders.html">
+                    <i class='bx bx-cart'></i>
+                    <span class="link-name">Orders</span>
+                </a>
+            </li>
+            <li>
+                <a href="pages/reports.html">
+                    <i class='bx bx-pie-chart-alt-2'></i>
+                    <span class="link-name">Reports</span>
+                </a>
+            </li>
+            <li>
+                <a href="pages/audit_logs.html">
+                    <i class='bx bx-file'></i>
+                    <span class="link-name">Audit Logs</span>
+                </a>
+            </li>
+            <li>
+                <a href="pages/notifications.html">
+                    <i class='bx bx-bell'></i>
+                    <span class="link-name">Global Notifications</span>
+                </a>
+            </li>
+            <li>
+                <a href="pages/settings.html">
+                    <i class='bx bx-cog'></i>
+                    <span class="link-name">Settings</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <a href="login.html" class="logout-btn">
+                <i class='bx bx-log-out'></i>
+                <span class="link-name">Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content" id="main-content">
+        <!-- Topbar -->
+        <header class="topbar">
+            <div class="search-box">
+                <i class='bx bx-search'></i>
+                <input type="text" placeholder="Search everywhere...">
+            </div>
+
+            <div class="topbar-right">
+                <div class="notification-icon">
+                    <i class='bx bx-bell'></i>
+                    <span class="badge">3</span>
+                </div>
+                <div class="profile">
+                    <img src="https://ui-avatars.com/api/?name=Admin+User&background=0D8ABC&color=fff"
+                        alt="Admin Profile">
+                    <div class="profile-info">
+                        <span class="name">Admin User</span>
+                        <span class="role">Super Admin</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Page Content -->
+        <div class="page-content">
+            <div class="page-header">
+                <h1>Dashboard Overview</h1>
+                <p>Welcome back, here's what's happening today.</p>
+            </div>
+
+            <!-- Statistic Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon primary">
+                        <i class='bx bx-user'></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3>Total Patients</h3>
+                        <h2>12,450</h2>
+                        <span class="trend positive"><i class='bx bx-up-arrow-alt'></i> 12%</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon secondary">
+                        <i class='bx bx-plus-medical'></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3>Pharmacists</h3>
+                        <h2>342</h2>
+                        <span class="trend positive"><i class='bx bx-up-arrow-alt'></i> 4%</span>
+                    </div>
+                </div>
+
+
+
+                <div class="stat-card">
+                    <div class="stat-icon success">
+                        <i class='bx bx-store-alt'></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3>Pharmacies</h3>
+                        <h2>89</h2>
+                        <span class="trend positive"><i class='bx bx-up-arrow-alt'></i> 2%</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon warning">
+                        <i class='bx bx-cart'></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3>Total Orders</h3>
+                        <h2>4,821</h2>
+                        <span class="trend positive"><i class='bx bx-up-arrow-alt'></i> 24%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="dashboard-grid">
+                <!-- Orders Chart -->
+                <div class="card chart-container">
+                    <div class="card-header">
+                        <h3>Orders Trend</h3>
+                        <i class='bx bx-dots-horizontal-rounded'></i>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="ordersChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Patient Growth Chart -->
+                <div class="card chart-container">
+                    <div class="card-header">
+                        <h3>Patients Growth</h3>
+                        <i class='bx bx-dots-horizontal-rounded'></i>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="patientsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Sections -->
+            <div class="dashboard-grid bottom-grid">
+                <!-- Recent Activity -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Recent Activity</h3>
+                    </div>
+                    <div class="activity-list">
+                        <div class="activity-item">
+                            <div class="activity-icon info"><i class='bx bx-user-plus'></i></div>
+                            <div class="activity-content">
+                                <h4>New patient registered</h4>
+                                <p>Sarah Jenkins joined the platform.</p>
+                            </div>
+                            <span class="activity-time">2m ago</span>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon success"><i class='bx bx-upload'></i></div>
+                            <div class="activity-content">
+                                <h4>Prescription uploaded</h4>
+                                <p>RX-90812 was added by Dr. John Doe.</p>
+                            </div>
+                            <span class="activity-time">5m ago</span>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon primary"><i class='bx bx-store'></i></div>
+                            <div class="activity-content">
+                                <h4>Pharmacy added</h4>
+                                <p>Green Cross Pharmacy branches registered.</p>
+                            </div>
+                            <span class="activity-time">1h ago</span>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon warning"><i class='bx bx-check-circle'></i></div>
+                            <div class="activity-content">
+                                <h4>Order completed</h4>
+                                <p>Order #ORD-001 has been delivered.</p>
+                            </div>
+                            <span class="activity-time">2h ago</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Top Pharmacies -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Top Pharmacies</h3>
+                    </div>
+                    <div class="top-pharmacies-list">
+                        <div class="pharmacy-item">
+                            <div class="pharmacy-info">
+                                <div class="pharmacy-icon"><i class='bx bx-plus-medical'></i></div>
+                                <div>
+                                    <h4>City Center Pharmacy</h4>
+                                    <p>1,240 Orders</p>
+                                </div>
+                            </div>
+                            <div class="pharmacy-revenue">
+                                <span>$14,200</span>
+                            </div>
+                        </div>
+                        <div class="pharmacy-item">
+                            <div class="pharmacy-info">
+                                <div class="pharmacy-icon"><i class='bx bx-plus-medical'></i></div>
+                                <div>
+                                    <h4>HealthPlus Pharmacy</h4>
+                                    <p>985 Orders</p>
+                                </div>
+                            </div>
+                            <div class="pharmacy-revenue">
+                                <span>$11,850</span>
+                            </div>
+                        </div>
+                        <div class="pharmacy-item">
+                            <div class="pharmacy-info">
+                                <div class="pharmacy-icon"><i class='bx bx-plus-medical'></i></div>
+                                <div>
+                                    <h4>Westside Meds</h4>
+                                    <p>842 Orders</p>
+                                </div>
+                            </div>
+                            <div class="pharmacy-revenue">
+                                <span>$9,400</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="js/main.js"></script>
+    <script src="js/api/dashboardApi.js"></script>
+    <script src="js/pages/dashboard.js"></script>
+</body>
+
+</html>

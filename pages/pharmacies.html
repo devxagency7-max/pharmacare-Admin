@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Pharmacies - Admin Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <!-- Sidebar content same as patients.html -->
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class='bx bx-plus-medical'></i>
+                <span>Tele-Pharm</span>
+            </div>
+            <i class='bx bx-menu' id="sidebar-toggle"></i>
+        </div>
+
+        <ul class="nav-links">
+            <li>
+                <a href="../index.html">
+                    <i class='bx bx-grid-alt'></i>
+                    <span class="link-name">Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="patients.html">
+                    <i class='bx bx-user'></i>
+                    <span class="link-name">Patients</span>
+                </a>
+            </li>
+            <li>
+                <a href="pharmacists.html">
+                    <i class='bx bx-plus-medical'></i>
+                    <span class="link-name">Pharmacists</span>
+                </a>
+            </li>
+            <li>
+                <a href="intern_pharmacists.html">
+                    <i class='bx bx-book-reader'></i>
+                    <span class="link-name">Intern Pharmacists</span>
+                </a>
+            </li>
+            <li>
+                <a href="pharmacies.html" class="active">
+                    <i class='bx bx-store-alt'></i>
+                    <span class="link-name"> Pharmacies</span>
+                </a>
+            </li>
+            <li>
+                <a href="medications.html">
+                    <i class='bx bx-capsule'></i>
+                    <span class="link-name">Medications</span>
+                </a>
+            </li>
+            <li>
+                <a href="prescriptions.html">
+                    <i class='bx bx-receipt'></i>
+                    <span class="link-name">Prescriptions</span>
+                </a>
+            </li>
+            <li>
+                <a href="orders.html">
+                    <i class='bx bx-cart'></i>
+                    <span class="link-name">Orders</span>
+                </a>
+            </li>
+            <li>
+                <a href="reports.html">
+                    <i class='bx bx-pie-chart-alt-2'></i>
+                    <span class="link-name">Reports</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="audit_logs.html">
+                    <i class='bx bx-file'></i>
+                    <span class="link-name">Audit Logs</span>
+                </a>
+            </li>
+            <li>
+                <a href="notifications.html">
+                    <i class='bx bx-bell'></i>
+                    <span class="link-name">Global Notifications</span>
+                </a>
+            </li>
+            <li>
+                <a href="settings.html">
+                    <i class='bx bx-cog'></i>
+                    <span class="link-name">Settings</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <a href="login.html" class="logout-btn">
+                <i class='bx bx-log-out'></i>
+                <span class="link-name">Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content" id="main-content">
+        <!-- Topbar -->
+        <header class="topbar">
+            <!-- Search & Profile -->
+            <div class="search-box">
+                <i class='bx bx-search'></i>
+                <input type="text" placeholder="Search everywhere...">
+            </div>
+
+            <div class="topbar-right">
+                <div class="notification-icon">
+                    <i class='bx bx-bell'></i>
+                    <span class="badge">3</span>
+                </div>
+                <div class="profile">
+                    <img src="https://ui-avatars.com/api/?name=Admin+User&background=0D8ABC&color=fff"
+                        alt="Admin Profile">
+                    <div class="profile-info">
+                        <span class="name">Admin User</span>
+                        <span class="role">Super Admin</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Page Content -->
+        <div class="page-content">
+            <div class="page-header">
+                <h1> Pharmacies</h1>
+                <p>Review and manage pharmacy registration requests.</p>
+            </div>
+
+            <!-- Stats Grid for Approval Flow -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon primary">
+                        <i class='bx bx-store'></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3>Total Pharmacies</h3>
+                        <h2>124</h2>
+                        <span class="trend neutral"><i class='bx bx-minus'></i> System Total</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon warning">
+                        <i class='bx bx-time'></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3>Pending Review</h3>
+                        <h2>12</h2>
+                        <span class="trend warning" style="color:#F59E0B; background:#FEF3C7;"><i
+                                class='bx bx-error-circle'></i> Action required</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon success">
+                        <i class='bx bx-check-circle'></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3>Approved</h3>
+                        <h2>108</h2>
+                        <span class="trend positive"><i class='bx bx-up-arrow-alt'></i> +3 this week</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon danger">
+                        <i class='bx bx-x-circle'></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3>Rejected</h3>
+                        <h2>4</h2>
+                        <span class="trend negative"><i class='bx bx-down-arrow-alt'></i> -1 this week</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter Tabs -->
+            <div class="filter-tabs">
+                <button class="filter-tab active" data-filter="all">All Requests</button>
+                <button class="filter-tab" data-filter="pending">Pending</button>
+                <button class="filter-tab" data-filter="approved">Approved</button>
+                <button class="filter-tab" data-filter="rejected">Rejected</button>
+            </div>
+
+            <!-- Request Cards Grid -->
+            <div class="request-cards-grid">
+                <!-- Request Card 1 (Pending) -->
+                <div class="request-card" data-status="pending">
+                    <div class="request-card-header">
+                        <div class="request-pharmacy-info">
+                            <h3>Downtown Pharmacy</h3>
+                            <div class="owner"><i class='bx bx-user'></i> Dr. Ahmed Samir</div>
+                        </div>
+                        <span class="status-badge warning">Pending</span>
+                    </div>
+                    <div class="request-details-list">
+                        <div class="request-detail-item">
+                            <i class='bx bx-envelope'></i>
+                            <div>
+                                <p>contact@downtownpharm.com</p>
+                                <span>Email Address</span>
+                            </div>
+                        </div>
+                        <div class="request-detail-item">
+                            <i class='bx bx-phone'></i>
+                            <div>
+                                <p>+20 100 123 4567</p>
+                                <span>Phone Number</span>
+                            </div>
+                        </div>
+                        <div class="request-detail-item">
+                            <i class='bx bx-map'></i>
+                            <div>
+                                <p>12 Tahrir Sq, Cairo</p>
+                                <span>Location</span>
+                            </div>
+                        </div>
+                        <div class="request-detail-item">
+                            <i class='bx bx-id-card'></i>
+                            <div>
+                                <p>LIC-2023-8942</p>
+                                <span>License Number</span>
+                            </div>
+                        </div>
+                        <div class="request-detail-item">
+                            <i class='bx bx-calendar'></i>
+                            <div>
+                                <p>Oct 24, 2023</p>
+                                <span>Submission Date</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="request-card-actions">
+                        <button class="btn-view"><i class='bx bx-show'></i> Details</button>
+                        <button class="btn-approve"><i class='bx bx-check'></i> Approve</button>
+                        <button class="btn-reject"><i class='bx bx-x'></i> Reject</button>
+                    </div>
+                </div>
+
+                <!-- Request Card 2 (Pending) -->
+                <div class="request-card" data-status="pending">
+                    <div class="request-card-header">
+                        <div class="request-pharmacy-info">
+                            <h3>HealthPlus Branch</h3>
+                            <div class="owner"><i class='bx bx-user'></i> Dr. Sarah Jenkins</div>
+                        </div>
+                        <span class="status-badge warning">Pending</span>
+                    </div>
+                    <div class="request-details-list">
+                        <div class="request-detail-item">
+                            <i class='bx bx-envelope'></i>
+                            <div>
+                                <p>branch2@healthplus.com</p>
+                                <span>Email Address</span>
+                            </div>
+                        </div>
+                        <div class="request-detail-item">
+                            <i class='bx bx-phone'></i>
+                            <div>
+                                <p>+20 111 987 6543</p>
+                                <span>Phone Number</span>
+                            </div>
+                        </div>
+                        <div class="request-detail-item">
+                            <i class='bx bx-map'></i>
+                            <div>
+                                <p>45 Maadi St, Cairo</p>
+                                <span>Location</span>
+                            </div>
+                        </div>
+                        <div class="request-detail-item">
+                            <i class='bx bx-id-card'></i>
+                            <div>
+                                <p>LIC-2023-9011</p>
+                                <span>License Number</span>
+                            </div>
+                        </div>
+                        <div class="request-detail-item">
+                            <i class='bx bx-calendar'></i>
+                            <div>
+                                <p>Oct 22, 2023</p>
+                                <span>Submission Date</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="request-card-actions">
+                        <button class="btn-view"><i class='bx bx-show'></i> Details</button>
+                        <button class="btn-approve"><i class='bx bx-check'></i> Approve</button>
+                        <button class="btn-reject"><i class='bx bx-x'></i> Reject</button>
+                    </div>
+                </div>
+
+                <!-- Request Card 3 (Approved) -->
+                <div class="request-card" data-status="approved">
+                    <div class="request-card-header">
+                        <div class="request-pharmacy-info">
+                            <h3>City Center Pharmacy</h3>
+                            <div class="owner"><i class='bx bx-user'></i> Dr. John Doe</div>
+                        </div>
+                        <span class="status-badge success">Approved</span>
+                    </div>
+                    <div class="request-details-list">
+                        <div class="request-detail-item">
+                            <i class='bx bx-envelope'></i>
+                            <div>
+                                <p>admin@citycenter.com</p>
+                                <span>Email Address</span>
+                            </div>
+                        </div>
+                        <div class="request-detail-item">
+                            <i class='bx bx-phone'></i>
+                            <div>
+                                <p>+20 122 555 0000</p>
+                                <span>Phone Number</span>
+                            </div>
+                        </div>
+                        <div class="request-detail-item">
+                            <i class='bx bx-map'></i>
+                            <div>
+                                <p>123 Main St, Downtown</p>
+                                <span>Location</span>
+                            </div>
+                        </div>
+                        <div class="request-detail-item">
+                            <i class='bx bx-id-card'></i>
+                            <div>
+                                <p>LIC-2022-1001</p>
+                                <span>License Number</span>
+                            </div>
+                        </div>
+                        <div class="request-detail-item">
+                            <i class='bx bx-calendar'></i>
+                            <div>
+                                <p>Jan 15, 2023</p>
+                                <span>Submission Date</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="request-card-actions">
+                        <button class="btn-view"><i class='bx bx-show'></i> Details</button>
+                        <!-- Action buttons hidden for already evaluated state usually, but kept for design -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/api/pharmaciesApi.js"></script>
+    <script src="../js/pages/pharmacies.js"></script>
+</body>
+
+</html>
