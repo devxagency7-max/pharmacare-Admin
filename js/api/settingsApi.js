@@ -1,9 +1,16 @@
-const API_BASE_URL = '/api/admin';
+// Settings API hooks using centralized apiClient
+async function fetchAdminProfile() {
+    return await apiClient.get('/admin/profile');
+}
+
+async function updateAdminProfile(data) {
+    return await apiClient.put('/admin/profile', data);
+}
 
 async function fetchSettings() {
-    console.log(`GET ${API_BASE_URL}/settings`);
-    return {};
+    return await apiClient.get('/admin/settings');
 }
+
 async function updateSettings(data) {
-    console.log(`PUT ${API_BASE_URL}/settings`, data);
+    return await apiClient.put('/admin/settings', data);
 }

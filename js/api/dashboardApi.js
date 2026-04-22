@@ -1,22 +1,33 @@
-const API_BASE_URL = '/api/admin';
-
-// Dashboard API hooks
+// Dashboard API hooks using centralized apiClient
 async function fetchDashboardStats() {
-    console.log(`GET ${API_BASE_URL}/dashboard/stats`);
-    return {};
+    return await apiClient.get('/admin/stats');
 }
 
 async function fetchDashboardCharts() {
-    console.log(`GET ${API_BASE_URL}/dashboard/charts`);
-    return {};
+    return await apiClient.get('/admin/analytics/users');
 }
 
 async function fetchRecentActivity() {
-    console.log(`GET ${API_BASE_URL}/dashboard/recent-activity`);
-    return [];
+    return await apiClient.get('/admin/activity');
 }
 
-async function fetchTopPharmacies() {
-    console.log(`GET ${API_BASE_URL}/dashboard/top-pharmacies`);
-    return [];
+async function fetchAnalyticsRevenue() {
+    return await apiClient.get('/admin/analytics/revenue');
 }
+
+async function fetchAnalyticsOrders() {
+    return await apiClient.get('/admin/analytics/orders');
+}
+
+async function fetchAnalyticsTopPharmacies() {
+    return await apiClient.get('/admin/analytics/top-pharmacies');
+}
+
+async function fetchAnalyticsTopMedicines() {
+    return await apiClient.get('/admin/analytics/top-medicines');
+}
+
+async function fetchRecentOrders() {
+    return await apiClient.get('/admin/orders?page=1&pageSize=5');
+}
+

@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/modals.css">
 </head>
 
 <body>
@@ -56,21 +57,15 @@
                 </a>
             </li>
             <li>
-                <a href="medications.html">
-                    <i class='bx bx-capsule'></i>
-                    <span class="link-name">Medications</span>
-                </a>
-            </li>
-            <li>
-                <a href="prescriptions.html">
-                    <i class='bx bx-receipt'></i>
-                    <span class="link-name">Prescriptions</span>
-                </a>
-            </li>
-            <li>
                 <a href="orders.html">
                     <i class='bx bx-cart'></i>
                     <span class="link-name">Orders</span>
+                </a>
+            </li>
+            <li>
+                <a href="medications.html">
+                    <i class='bx bx-capsule'></i>
+                    <span class="link-name">Medications</span>
                 </a>
             </li>
             <li>
@@ -145,10 +140,7 @@
                     <i class='bx bx-search'></i>
                     <input type="text" placeholder="Search patients by name or ID...">
                 </div>
-                <button class="btn btn-primary">
-                    <i class='bx bx-plus'></i>
-                    Add New Patient
-                </button>
+
             </div>
 
             <!-- Table Card -->
@@ -165,149 +157,30 @@
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <div class="table-person">
-                                        <img src="https://ui-avatars.com/api/?name=Sarah+Jenkins&background=E1F0F8&color=0D8ABC"
-                                            alt="Sarah Jenkins">
-                                        <div class="info">
-                                            <span class="name">Sarah Jenkins</span>
-                                            <span class="email">sarah.j@example.com</span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>#PT-09281</td>
-                                <td>(555) 123-4567</td>
-                                <td>Oct 12, 2023</td>
-                                <td><span class="status-badge success">Active</span></td>
-                                <td>
-                                    <div class="table-actions">
-                                        <button class="action-btn edit" title="Edit"><i
-                                                class='bx bx-edit-alt'></i></button>
-                                        <button class="action-btn delete" title="Delete"><i
-                                                class='bx bx-trash'></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="table-person">
-                                        <img src="https://ui-avatars.com/api/?name=Michael+Chang&background=E1F0F8&color=0D8ABC"
-                                            alt="Michael Chang">
-                                        <div class="info">
-                                            <span class="name">Michael Chang</span>
-                                            <span class="email">m.chang@example.com</span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>#PT-09282</td>
-                                <td>(555) 987-6543</td>
-                                <td>Oct 15, 2023</td>
-                                <td><span class="status-badge success">Active</span></td>
-                                <td>
-                                    <div class="table-actions">
-                                        <button class="action-btn edit" title="Edit"><i
-                                                class='bx bx-edit-alt'></i></button>
-                                        <button class="action-btn delete" title="Delete"><i
-                                                class='bx bx-trash'></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="table-person">
-                                        <img src="https://ui-avatars.com/api/?name=David+Rodriguez&background=E1F0F8&color=0D8ABC"
-                                            alt="David Rodriguez">
-                                        <div class="info">
-                                            <span class="name">David Rodriguez</span>
-                                            <span class="email">d.rodri@example.com</span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>#PT-09283</td>
-                                <td>(555) 456-7890</td>
-                                <td>Oct 18, 2023</td>
-                                <td><span class="status-badge warning">Inactive</span></td>
-                                <td>
-                                    <div class="table-actions">
-                                        <button class="action-btn edit" title="Edit"><i
-                                                class='bx bx-edit-alt'></i></button>
-                                        <button class="action-btn delete" title="Delete"><i
-                                                class='bx bx-trash'></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="table-person">
-                                        <img src="https://ui-avatars.com/api/?name=Emma+Wilson&background=E1F0F8&color=0D8ABC"
-                                            alt="Emma Wilson">
-                                        <div class="info">
-                                            <span class="name">Emma Wilson</span>
-                                            <span class="email">emma.w@example.com</span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>#PT-09284</td>
-                                <td>(555) 234-5678</td>
-                                <td>Oct 20, 2023</td>
-                                <td><span class="status-badge success">Active</span></td>
-                                <td>
-                                    <div class="table-actions">
-                                        <button class="action-btn edit" title="Edit"><i
-                                                class='bx bx-edit-alt'></i></button>
-                                        <button class="action-btn delete" title="Delete"><i
-                                                class='bx bx-trash'></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="table-person">
-                                        <img src="https://ui-avatars.com/api/?name=Robert+Taylor&background=E1F0F8&color=0D8ABC"
-                                            alt="Robert Taylor">
-                                        <div class="info">
-                                            <span class="name">Robert Taylor</span>
-                                            <span class="email">r.taylor@example.com</span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>#PT-09285</td>
-                                <td>(555) 345-6789</td>
-                                <td>Oct 22, 2023</td>
-                                <td><span class="status-badge primary">New</span></td>
-                                <td>
-                                    <div class="table-actions">
-                                        <button class="action-btn edit" title="Edit"><i
-                                                class='bx bx-edit-alt'></i></button>
-                                        <button class="action-btn delete" title="Delete"><i
-                                                class='bx bx-trash'></i></button>
-                                    </div>
-                                </td>
-                            </tr>
+                        <tbody id="patients-table-body">
+                            <!-- Data will be loaded dynamically via Admin API -->
                         </tbody>
                     </table>
                 </div>
 
-                <!-- Pagination -->
-                <div class="pagination">
-                    <span class="page-info">Showing 1 to 5 of 12,450 entries</span>
-                    <button class="page-btn"><i class='bx bx-chevron-left'></i></button>
-                    <button class="page-btn active">1</button>
-                    <button class="page-btn">2</button>
-                    <button class="page-btn">3</button>
-                    <span>...</span>
-                    <button class="page-btn">2490</button>
-                    <button class="page-btn"><i class='bx bx-chevron-right'></i></button>
+                <!-- Pagination (Loaded Dynamically) -->
+                <div class="pagination" id="pagination-container">
+                    <span class="page-info">Loading pagination...</span>
+                    <div class="pagination-buttons" id="pagination-buttons">
+                        <!-- Buttons will be injected here -->
+                    </div>
                 </div>
             </div>
-
+            
+            <!-- Secondary Creation Action (Under the table) -->
         </div>
     </main>
 
-    <script src="../js/main.js"></script>
+
+
+    <script src="../js/api/apiClient.js"></script>
     <script src="../js/api/patientsApi.js"></script>
+    <script src="../js/main.js"></script>
     <script src="../js/pages/patients.js"></script>
 </body>
 

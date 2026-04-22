@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login</title>
+    <title>Login - Tele-Pharm Admin</title>
     <!-- Google Fonts for modern typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,22 +18,22 @@
 <body class="login-body">
     <div class="login-container">
         <div class="login-card">
-            <!-- Logo Icon -->
-            <div class="login-logo-icon">
-                <i class='bx bx-capsule'></i>
+            <div class="logo">
+                <i class='bx bx-plus-medical'></i>
+                <span>Tele-Pharm Admin</span>
             </div>
 
             <!-- Header Text -->
-            <h2 class="login-title">Pharma Care</h2>
+            <h2 class="login-title">Tele-Pharm</h2>
             <p class="login-subtitle">Admin Login</p>
 
             <!-- Login Form -->
-            <form action="index.html" class="login-form">
+            <form id="login-form" class="login-form">
                 <div class="input-group">
                     <label>Email Address</label>
                     <div class="input-wrapper">
                         <i class='bx bx-envelope'></i>
-                        <input type="email" placeholder="admin@pharmacare.com" required>
+                        <input type="email" id="email" placeholder="admin@pharmacare.com" required>
                     </div>
                 </div>
 
@@ -41,7 +41,7 @@
                     <label>Password</label>
                     <div class="input-wrapper">
                         <i class='bx bx-lock-alt'></i>
-                        <input type="password" placeholder="••••••••" required>
+                        <input type="password" id="password" placeholder="••••••••" required>
                     </div>
                 </div>
 
@@ -61,6 +61,8 @@
             </div>
         </div>
     </div>
+    <script src="js/api/apiClient.js"></script>
+    <script src="js/pages/login.js"></script>
 </body>
 
 </html>

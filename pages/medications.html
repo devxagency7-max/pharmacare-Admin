@@ -4,138 +4,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medications - Admin Dashboard</title>
+    <title>Medications - Tele-Pharm</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/modals.css">
+    <style>
+        .med-img-cell {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .med-img-cell img {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            object-fit: cover;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+        }
+
+        /* Image Upload Area in Modal */
+        .image-upload-wrapper {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+            border: 2px dashed #e2e8f0;
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .image-upload-wrapper:hover {
+            border-color: var(--primary);
+            background: rgba(79, 143, 234, 0.05);
+        }
+
+        .preview-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 15px;
+            object-fit: cover;
+            display: none;
+            box-shadow: var(--shadow-md);
+        }
+
+        .upload-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+        }
+
+        .upload-placeholder i {
+            font-size: 40px;
+            color: var(--primary);
+        }
+    </style>
 </head>
 
 <body>
-
-    <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
-        <!-- Sidebar content same as patients.html -->
         <div class="sidebar-header">
-            <div class="logo">
-                <i class='bx bx-plus-medical'></i>
-                <span>Tele-Pharm</span>
-            </div>
+            <div class="logo"><i class='bx bx-plus-medical'></i><span>Tele-Pharm</span></div>
             <i class='bx bx-menu' id="sidebar-toggle"></i>
         </div>
-
         <ul class="nav-links">
-            <li>
-                <a href="../index.html">
-                    <i class='bx bx-grid-alt'></i>
-                    <span class="link-name">Dashboard</span>
-                </a>
-            </li>
-            <li>
-                <a href="patients.html">
-                    <i class='bx bx-user'></i>
-                    <span class="link-name">Patients</span>
-                </a>
-            </li>
-            <li>
-                <a href="pharmacists.html">
-                    <i class='bx bx-plus-medical'></i>
-                    <span class="link-name">Pharmacists</span>
-                </a>
-            </li>
-            <li>
-                <a href="intern_pharmacists.html">
-                    <i class='bx bx-book-reader'></i>
-                    <span class="link-name">Intern Pharmacists</span>
-                </a>
-            </li>
-            <li>
-                <a href="pharmacies.html">
-                    <i class='bx bx-store-alt'></i>
-                    <span class="link-name">Pharmacies</span>
-                </a>
-            </li>
-
-            <li>
-                <a href="medications.html" class="active">
-                    <i class='bx bx-capsule'></i>
-                    <span class="link-name">Medications</span>
-                </a>
-            </li>
-            <li>
-                <a href="prescriptions.html">
-                    <i class='bx bx-receipt'></i>
-                    <span class="link-name">Prescriptions</span>
-                </a>
-            </li>
-            <li>
-                <a href="orders.html">
-                    <i class='bx bx-cart'></i>
-                    <span class="link-name">Orders</span>
-                </a>
-            </li>
-            <li>
-                <a href="reports.html">
-                    <i class='bx bx-pie-chart-alt-2'></i>
-                    <span class="link-name">Reports</span>
-                </a>
-            </li>
-            <li>
-                <a href="audit_logs.html">
-                    <i class='bx bx-file'></i>
-                    <span class="link-name">Audit Logs</span>
-                </a>
-            </li>
-            <li>
-                <a href="notifications.html">
-                    <i class='bx bx-bell'></i>
-                    <span class="link-name">Global Notifications</span>
-                </a>
-            </li>
-            <li>
-                <a href="settings.html">
-                    <i class='bx bx-cog'></i>
-                    <span class="link-name">Settings</span>
-                </a>
-            </li>
+            <li><a href="../index.html"><i class='bx bx-grid-alt'></i><span class="link-name">Dashboard</span></a></li>
+            <li><a href="patients.html"><i class='bx bx-user'></i><span class="link-name">Patients</span></a></li>
+            <li><a href="pharmacists.html"><i class='bx bx-plus-medical'></i><span class="link-name">Pharmacists</span></a></li>
+            <li><a href="intern_pharmacists.html"><i class='bx bx-book-reader'></i><span class="link-name">Intern Pharmacists</span></a></li>
+            <li><a href="pharmacies.html"><i class='bx bx-store-alt'></i><span class="link-name">Pharmacies</span></a></li>
+            <li><a href="orders.html"><i class='bx bx-cart'></i><span class="link-name">Orders</span></a></li>
+            <li><a href="medications.html" class="active"><i class='bx bx-capsule'></i><span class="link-name">Medications</span></a></li>
+            <li><a href="reports.html"><i class='bx bx-pie-chart-alt-2'></i><span class="link-name">Reports</span></a></li>
+            <li><a href="audit_logs.html"><i class='bx bx-file'></i><span class="link-name">Audit Logs</span></a></li>
+            <li><a href="notifications.html"><i class='bx bx-bell'></i><span class="link-name">Global Notifications</span></a></li>
+            <li><a href="settings.html"><i class='bx bx-cog'></i><span class="link-name">Settings</span></a></li>
         </ul>
-
-        <div class="sidebar-footer">
-            <a href="login.html" class="logout-btn">
-                <i class='bx bx-log-out'></i>
-                <span class="link-name">Logout</span>
-            </a>
-        </div>
     </aside>
 
-    <!-- Main Content -->
     <main class="main-content" id="main-content">
-        <!-- Topbar -->
         <header class="topbar">
-            <!-- Search & Profile -->
-            <div class="search-box">
-                <i class='bx bx-search'></i>
-                <input type="text" placeholder="Search everywhere...">
-            </div>
-
+            <div class="search-box"><i class='bx bx-search'></i><input type="text" placeholder="Search everywhere..."></div>
             <div class="topbar-right">
-                <div class="notification-icon">
-                    <i class='bx bx-bell'></i>
-                    <span class="badge">3</span>
-                </div>
                 <div class="profile">
-                    <img src="https://ui-avatars.com/api/?name=Admin+User&background=0D8ABC&color=fff"
-                        alt="Admin Profile">
-                    <div class="profile-info">
-                        <span class="name">Admin User</span>
-                        <span class="role">Super Admin</span>
-                    </div>
+                    <img src="https://ui-avatars.com/api/?name=Admin+User&background=0D8ABC&color=fff" alt="Admin Profile">
+                    <div class="profile-info"><span class="name">Admin User</span><span class="role">Super Admin</span></div>
                 </div>
             </div>
         </header>
 
-        <!-- Page Content -->
         <div class="page-content">
             <div class="page-header">
                 <h1>Medications Catalog</h1>
@@ -143,116 +109,122 @@
             </div>
 
             <div class="action-bar">
-                <div class="search-box" style="width: 300px;">
+                <div class="search-box" style="width: 350px;">
                     <i class='bx bx-search'></i>
-                    <input type="text" placeholder="Search medications by name...">
+                    <input type="text" placeholder="Search medications by name or category...">
                 </div>
-                <button class="btn btn-primary">
-                    <i class='bx bx-plus'></i>
+                <button class="btn btn-primary" onclick="openAddMedModal()">
+                    <i class='bx bx-plus-circle'></i>
                     Register Medication
                 </button>
             </div>
 
-            <!-- Table Card -->
             <div class="card">
                 <div class="table-container">
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th>Medication Name</th>
+                                <th>Medication</th>
                                 <th>Category</th>
-                                <th>Manufacturer</th>
                                 <th>Stock Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="medications-table-body">
                             <tr>
                                 <td>
-                                    <strong>Amoxicillin 500mg</strong>
+                                    <div class="med-img-cell">
+                                        <img src="https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=100" alt="Amoxicillin">
+                                        <strong>Amoxicillin 500mg</strong>
+                                    </div>
                                 </td>
                                 <td>Antibiotics</td>
-                                <td>PharmaCorp Inc.</td>
                                 <td><span class="status-badge success">In Stock</span></td>
                                 <td>
                                     <div class="table-actions">
-                                        <button class="action-btn edit" title="Edit"><i
-                                                class='bx bx-edit-alt'></i></button>
-                                        <button class="action-btn delete" title="Delete"><i
-                                                class='bx bx-trash'></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <strong>Lisinopril 10mg</strong>
-                                </td>
-                                <td>Cardiovascular</td>
-                                <td>HealthMeds LLC</td>
-                                <td><span class="status-badge success">In Stock</span></td>
-                                <td>
-                                    <div class="table-actions">
-                                        <button class="action-btn edit" title="Edit"><i
-                                                class='bx bx-edit-alt'></i></button>
-                                        <button class="action-btn delete" title="Delete"><i
-                                                class='bx bx-trash'></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <strong>Ibuprofen 400mg</strong>
-                                </td>
-                                <td>Pain Relief</td>
-                                <td>Global Pharma</td>
-                                <td><span class="status-badge warning">Low Stock</span></td>
-                                <td>
-                                    <div class="table-actions">
-                                        <button class="action-btn edit" title="Edit"><i
-                                                class='bx bx-edit-alt'></i></button>
-                                        <button class="action-btn delete" title="Delete"><i
-                                                class='bx bx-trash'></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <strong>Metformin 850mg</strong>
-                                </td>
-                                <td>Antidiabetic</td>
-                                <td>DiabetesCare Inc.</td>
-                                <td><span class="status-badge danger">Out of Stock</span></td>
-                                <td>
-                                    <div class="table-actions">
-                                        <button class="action-btn edit" title="Edit"><i
-                                                class='bx bx-edit-alt'></i></button>
-                                        <button class="action-btn delete" title="Delete"><i
-                                                class='bx bx-trash'></i></button>
+                                        <button class="action-btn edit"><i class='bx bx-edit-alt'></i></button>
+                                        <button class="action-btn delete"><i class='bx bx-trash'></i></button>
                                     </div>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
-
-                <div class="pagination">
-                    <span class="page-info">Showing 4 of 1,204 entries</span>
-                    <button class="page-btn"><i class='bx bx-chevron-left'></i></button>
-                    <button class="page-btn active">1</button>
-                    <button class="page-btn">2</button>
-                    <button class="page-btn">3</button>
-                    <span>...</span>
-                    <button class="page-btn">121</button>
-                    <button class="page-btn"><i class='bx bx-chevron-right'></i></button>
-                </div>
             </div>
-
         </div>
     </main>
 
+    <!-- Add/Edit Medication Modal -->
+    <div class="modal-overlay" id="medication-modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2 id="modal-title"><i class='bx bx-capsule'></i> Register Medication</h2>
+                <i class='bx bx-x close-modal' onclick="closeModal()"></i>
+            </div>
+            <form id="medication-form">
+                <div class="image-upload-wrapper" onclick="document.getElementById('med-image-input').click()">
+                    <input type="file" id="med-image-input" hidden accept="image/*" onchange="previewMedImage(this)">
+                    <img id="image-preview" class="preview-img" src="#" alt="Preview">
+                    <div id="upload-placeholder" class="upload-placeholder">
+                        <i class='bx bx-cloud-upload'></i>
+                        <p>Click to upload medication photo</p>
+                        <span>JPG, PNG up to 2MB</span>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Medication Name</label>
+                        <input type="text" id="med-name" placeholder="e.g. Panadol Advance" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="med-category" required>
+                            <option value="">Select Category</option>
+                            <option value="Antibiotics">Antibiotics</option>
+                            <option value="Pain Relief">Pain Relief</option>
+                            <option value="Cardiovascular">Cardiovascular</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Initial Stock Status</label>
+                        <select id="med-status">
+                            <option value="in-stock">In Stock</option>
+                            <option value="low-stock">Low Stock</option>
+                            <option value="out-of-stock">Out of Stock</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Medication</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script src="../js/main.js"></script>
-    <script src="../js/api/medicationsApi.js"></script>
-    <script src="../js/pages/medications.js"></script>
+    <script>
+        function openAddMedModal() {
+            document.getElementById('medication-modal').classList.add('active');
+        }
+        function closeModal() {
+            document.getElementById('medication-modal').classList.remove('active');
+        }
+        function previewMedImage(input) {
+            const preview = document.getElementById('image-preview');
+            const placeholder = document.getElementById('upload-placeholder');
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    placeholder.style.display = 'none';
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
 </body>
 
 </html>

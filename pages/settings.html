@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Settings - Pharma Care</title>
+    <title>Settings - Tele-Pharm</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -188,11 +188,18 @@
                         Pharmacists</span></a></li>
             <li><a href="pharmacies.html"><i class='bx bx-store-alt'></i><span class="link-name">Pharmacies</span></a>
             </li>
-            <li><a href="medications.html"><i class='bx bx-capsule'></i><span class="link-name">Medications</span></a>
+            <li>
+                <a href="orders.html">
+                    <i class='bx bx-cart'></i>
+                    <span class="link-name">Orders</span>
+                </a>
             </li>
-            <li><a href="prescriptions.html"><i class='bx bx-receipt'></i><span
-                        class="link-name">Prescriptions</span></a></li>
-            <li><a href="orders.html"><i class='bx bx-cart'></i><span class="link-name">Orders</span></a></li>
+            <li>
+                <a href="medications.html">
+                    <i class='bx bx-capsule'></i>
+                    <span class="link-name">Medications</span>
+                </a>
+            </li>
             <li><a href="reports.html"><i class='bx bx-pie-chart-alt-2'></i><span class="link-name">Reports</span></a>
             </li>
             <li>
@@ -268,23 +275,23 @@
                     <div style="display: flex; gap: 20px;">
                         <div class="form-group" style="flex: 1;">
                             <label>First Name</label>
-                            <input type="text" class="form-control" value="Admin">
+                            <input type="text" id="settings-first-name" class="form-control" value="Admin">
                         </div>
                         <div class="form-group" style="flex: 1;">
                             <label>Last Name</label>
-                            <input type="text" class="form-control" value="User">
+                            <input type="text" id="settings-last-name" class="form-control" value="User">
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label>Email Address</label>
-                        <input type="email" class="form-control" value="admin@pharmacare.com" readonly
+                        <input type="email" id="settings-email" class="form-control" value="admin@pharmacare.com" readonly
                             style="opacity: 0.7; cursor: not-allowed;">
                     </div>
 
                     <div class="form-group">
                         <label>Phone Number</label>
-                        <input type="text" class="form-control" value="+1 (555) 123-4567">
+                        <input type="text" id="settings-phone" class="form-control" value="+1 (555) 123-4567">
                     </div>
 
                     <h3 class="settings-section-title" style="margin-top: 40px;">System Preferences</h3>
@@ -323,8 +330,10 @@
         </div>
     </main>
 
-    <script src="../js/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../js/api/apiClient.js"></script>
     <script src="../js/api/settingsApi.js"></script>
+    <script src="../js/main.js"></script>
     <script src="../js/pages/settings.js"></script>
 </body>
 

@@ -4,12 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pharmacists - Admin Dashboard</title>
+    <title>Pharmacists - Tele-Pharm</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/modals.css">
 </head>
 
 <body>
@@ -57,21 +58,15 @@
                 </a>
             </li>
             <li>
-                <a href="medications.html">
-                    <i class='bx bx-capsule'></i>
-                    <span class="link-name">Medications</span>
-                </a>
-            </li>
-            <li>
-                <a href="prescriptions.html">
-                    <i class='bx bx-receipt'></i>
-                    <span class="link-name">Prescriptions</span>
-                </a>
-            </li>
-            <li>
                 <a href="orders.html">
                     <i class='bx bx-cart'></i>
                     <span class="link-name">Orders</span>
+                </a>
+            </li>
+            <li>
+                <a href="medications.html">
+                    <i class='bx bx-capsule'></i>
+                    <span class="link-name">Medications</span>
                 </a>
             </li>
             <li>
@@ -141,15 +136,17 @@
                 <p>Manage licensed pharmacists registered in the platform.</p>
             </div>
 
+            <div class="tabs" style="display: flex; gap: 30px; margin-bottom: 24px; border-bottom: 1px solid #e2e8f0; padding-bottom: 0;">
+                <button class="tab-btn active" id="tab-all" onclick="switchTab('all')" style="background:none; border:none; padding:10px 5px; font-size:15px; font-weight:600; color:#0f172a; border-bottom: 2px solid #0057d1; cursor:pointer;">All Pharmacists</button>
+                <button class="tab-btn" id="tab-requests" onclick="switchTab('requests')" style="background:none; border:none; padding:10px 5px; font-size:15px; font-weight:500; color:#64748b; border-bottom: 2px solid transparent; cursor:pointer;">Applications & Requests</button>
+            </div>
+
             <div class="action-bar">
                 <div class="search-box" style="width: 300px;">
                     <i class='bx bx-search'></i>
                     <input type="text" placeholder="Search pharmacists by name...">
                 </div>
-                <button class="btn btn-primary">
-                    <i class='bx bx-plus'></i>
-                    Add Pharmacist
-                </button>
+
             </div>
 
             <!-- Table Card -->
@@ -159,103 +156,36 @@
                         <thead>
                             <tr>
                                 <th>Pharmacist Details</th>
-                                <th>License Number</th>
-                                <th>Assigned Pharmacy</th>
+                                <th>Type</th>
+                                <th>License No.</th>
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <div class="table-person">
-                                        <img src="https://ui-avatars.com/api/?name=Dr+John+Doe&background=14B8A6&color=fff"
-                                            alt="John Doe">
-                                        <div class="info">
-                                            <span class="name">Dr. John Doe</span>
-                                            <span class="email">john.doe@example.com</span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>LIC-10924</td>
-                                <td>City Center Pharmacy</td>
-                                <td><span class="status-badge success">Verified</span></td>
-                                <td>
-                                    <div class="table-actions">
-                                        <button class="action-btn edit" title="Edit"><i
-                                                class='bx bx-edit-alt'></i></button>
-                                        <button class="action-btn delete" title="Delete"><i
-                                                class='bx bx-trash'></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="table-person">
-                                        <img src="https://ui-avatars.com/api/?name=Dr+Jane+Smith&background=14B8A6&color=fff"
-                                            alt="Jane Smith">
-                                        <div class="info">
-                                            <span class="name">Dr. Jane Smith</span>
-                                            <span class="email">jane.smith@example.com</span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>LIC-10925</td>
-                                <td>Westside Meds</td>
-                                <td><span class="status-badge success">Verified</span></td>
-                                <td>
-                                    <div class="table-actions">
-                                        <button class="action-btn edit" title="Edit"><i
-                                                class='bx bx-edit-alt'></i></button>
-                                        <button class="action-btn delete" title="Delete"><i
-                                                class='bx bx-trash'></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="table-person">
-                                        <img src="https://ui-avatars.com/api/?name=Dr+Alan+Turing&background=14B8A6&color=fff"
-                                            alt="Alan Turing">
-                                        <div class="info">
-                                            <span class="name">Dr. Alan Turing</span>
-                                            <span class="email">a.turing@example.com</span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>LIC-10926</td>
-                                <td>HealthPlus Pharmacy</td>
-                                <td><span class="status-badge warning">Pending</span></td>
-                                <td>
-                                    <div class="table-actions">
-                                        <button class="action-btn edit" title="Edit"><i
-                                                class='bx bx-edit-alt'></i></button>
-                                        <button class="action-btn delete" title="Delete"><i
-                                                class='bx bx-trash'></i></button>
-                                    </div>
-                                </td>
-                            </tr>
+                        <tbody id="pharmacists-table-body">
+                            <!-- Data will be loaded dynamically via Admin API -->
                         </tbody>
                     </table>
                 </div>
 
-                <div class="pagination">
-                    <span class="page-info">Showing 1 to 3 of 342 entries</span>
-                    <button class="page-btn"><i class='bx bx-chevron-left'></i></button>
-                    <button class="page-btn active">1</button>
-                    <button class="page-btn">2</button>
-                    <button class="page-btn">3</button>
-                    <span>...</span>
-                    <button class="page-btn">35</button>
-                    <button class="page-btn"><i class='bx bx-chevron-right'></i></button>
+                <!-- Pagination (Loaded Dynamically) -->
+                <div class="pagination" id="pagination-container">
+                    <span class="page-info">Loading pagination...</span>
+                    <div class="pagination-buttons" id="pagination-buttons">
+                        <!-- Buttons will be injected here -->
+                    </div>
                 </div>
             </div>
+            
 
         </div>
     </main>
 
-    <script src="../js/main.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../js/api/apiClient.js"></script>
     <script src="../js/api/pharmacistsApi.js"></script>
+    <script src="../js/main.js"></script>
     <script src="../js/pages/pharmacists.js"></script>
 </body>
 

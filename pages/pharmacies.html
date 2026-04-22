@@ -4,12 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Pharmacies - Admin Dashboard</title>
+    <title>Pharmacies - Tele-Pharm Admin</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/modals.css">
 </head>
 
 <body>
@@ -57,21 +58,15 @@
                 </a>
             </li>
             <li>
-                <a href="medications.html">
-                    <i class='bx bx-capsule'></i>
-                    <span class="link-name">Medications</span>
-                </a>
-            </li>
-            <li>
-                <a href="prescriptions.html">
-                    <i class='bx bx-receipt'></i>
-                    <span class="link-name">Prescriptions</span>
-                </a>
-            </li>
-            <li>
                 <a href="orders.html">
                     <i class='bx bx-cart'></i>
                     <span class="link-name">Orders</span>
+                </a>
+            </li>
+            <li>
+                <a href="medications.html">
+                    <i class='bx bx-capsule'></i>
+                    <span class="link-name">Medications</span>
                 </a>
             </li>
             <li>
@@ -138,8 +133,14 @@
         <!-- Page Content -->
         <div class="page-content">
             <div class="page-header">
-                <h1> Pharmacies</h1>
-                <p>Review and manage pharmacy registration requests.</p>
+                <div class="header-content">
+                    <h1>Pharmacies</h1>
+                    <p>Review and manage pharmacy registration requests.</p>
+                </div>
+                <button class="btn btn-primary" onclick="openCreateModal()">
+                    <i class='bx bx-plus-circle'></i>
+                    Add New Pharmacy
+                </button>
             </div>
 
             <!-- Stats Grid for Approval Flow -->
@@ -196,7 +197,9 @@
             </div>
 
             <!-- Request Cards Grid -->
-            <div class="request-cards-grid">
+            <div class="request-cards-grid" id="pharmacy-requests-container">
+                <!-- Dynamic cards will be loaded here -->
+            </div>
                 <!-- Request Card 1 (Pending) -->
                 <div class="request-card" data-status="pending">
                     <div class="request-card-header">
@@ -233,38 +236,6 @@
                             <div>
                                 <p>LIC-2023-8942</p>
                                 <span>License Number</span>
-                            </div>
-                        </div>
-                        <div class="request-detail-item">
-                            <i class='bx bx-calendar'></i>
-                            <div>
-                                <p>Oct 24, 2023</p>
-                                <span>Submission Date</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="request-card-actions">
-                        <button class="btn-view"><i class='bx bx-show'></i> Details</button>
-                        <button class="btn-approve"><i class='bx bx-check'></i> Approve</button>
-                        <button class="btn-reject"><i class='bx bx-x'></i> Reject</button>
-                    </div>
-                </div>
-
-                <!-- Request Card 2 (Pending) -->
-                <div class="request-card" data-status="pending">
-                    <div class="request-card-header">
-                        <div class="request-pharmacy-info">
-                            <h3>HealthPlus Branch</h3>
-                            <div class="owner"><i class='bx bx-user'></i> Dr. Sarah Jenkins</div>
-                        </div>
-                        <span class="status-badge warning">Pending</span>
-                    </div>
-                    <div class="request-details-list">
-                        <div class="request-detail-item">
-                            <i class='bx bx-envelope'></i>
-                            <div>
-                                <p>branch2@healthplus.com</p>
-                                <span>Email Address</span>
                             </div>
                         </div>
                         <div class="request-detail-item">
@@ -356,11 +327,53 @@
                 </div>
             </div>
 
+            <!-- Pagination (Loaded Dynamically) -->
+            <div class="pagination" id="pagination-container" style="margin-top: 30px;">
+                <span class="page-info">Loading pagination...</span>
+                <div class="pagination-buttons" id="pagination-buttons">
+                    <!-- Buttons will be injected here -->
+                </div>
+            </div>
         </div>
     </main>
 
-    <script src="../js/main.js"></script>
+    <!-- Create Pharmacy Modal -->
+    <div class="modal-overlay" id="create-pharmacy-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class='bx bx-store'></i> Register New Pharmacy</h2>
+                <i class='bx bx-x close-modal' onclick="closeCreateModal()"></i>
+            </div>
+            <form id="create-pharmacy-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="name">Pharmacy Name</label>
+                        <input type="text" id="name" name="name" placeholder="e.g. Care Plus Pharmacy" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" placeholder="e.g. info@pharmacy.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" name="phone" placeholder="e.g. +20..." required>
+                    </div>
+                    <div class="form-group">
+                        <label for="licenseNumber">License Number</label>
+                        <input type="text" id="licenseNumber" name="licenseNumber" placeholder="e.g. LIC-2024-X" required>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-outline" onclick="closeCreateModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Register Pharmacy</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/api/apiClient.js"></script>
     <script src="../js/api/pharmaciesApi.js"></script>
+    <script src="../js/main.js"></script>
     <script src="../js/pages/pharmacies.js"></script>
 </body>
 

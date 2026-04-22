@@ -1,15 +1,38 @@
-const API_BASE_URL = '/api/admin';
+// Pharmacists API hooks using centralized apiClient
+async function fetchPharmacists(page = 1, pageSize = 20, search = '', status = '') {
+    let query = `page=${page}&pageSize=${pageSize}`;
+    if (search) query += `&search=${encodeURIComponent(search)}`;
+    if (status) query += `&status=${encodeURIComponent(status)}`;
+    
+    return await apiClient.get(`/admin/pharmacists?${query}`);
+}
 
-async function fetchPharmacists() {
-    console.log(`GET ${API_BASE_URL}/pharmacists`);
-    return [];
-}
 async function createPharmacist(data) {
-    console.log(`POST ${API_BASE_URL}/pharmacists`, data);
+    // Phase 1: Create Account in Firebase Auth
+    const firebaseUser = await apiClient.registerFirebaseUser(data.email, data.password);
+    
+    // Phase 2: Sync with Platform Backend
+    return await apiClient.post('/users/sync', {
+        email: data.email,
+        displayName: data.fullName,
+        phoneNumber: data.phone,
+        firebaseUid: firebaseUser.localId, // Correct field name
+        roles: ['Pharmacist']
+    });
 }
-async function updatePharmacist(id, data) {
-    console.log(`PUT ${API_BASE_URL}/pharmacists/${id}`, data);
+
+async function fetchPharmacistApplications(page = 1, pageSize = 20) {
+    return await apiClient.get(apiClient.paginate('/admin/pharmacist-applications', page, pageSize));
 }
+
+async function approvePharmacist(id) {
+    return await apiClient.post(`/admin/pharmacist/${id}/approve`);
+}
+
+async function rejectPharmacist(id, reason) {
+    return await apiClient.post(`/admin/pharmacist/${id}/reject`, { reason });
+}
+
 async function deletePharmacist(id) {
-    console.log(`DELETE ${API_BASE_URL}/pharmacists/${id}`);
+    return await apiClient.delete(`/admin/pharmacists/${id}`);
 }

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Global Notifications - Admin Dashboard</title>
+    <title>Global Notifications - Tele-Pharm</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -126,7 +126,7 @@
         <div class="sidebar-header">
             <div class="logo">
                 <i class='bx bx-plus-medical'></i>
-                <span>Pharma Care</span>
+                <span>Tele-Pharm</span>
             </div>
             <i class='bx bx-menu' id="sidebar-toggle"></i>
         </div>
@@ -140,11 +140,18 @@
                         Pharmacists</span></a></li>
             <li><a href="pharmacies.html"><i class='bx bx-store-alt'></i><span class="link-name">Pharmacies</span></a>
             </li>
-            <li><a href="medications.html"><i class='bx bx-capsule'></i><span class="link-name">Medications</span></a>
+            <li>
+                <a href="orders.html">
+                    <i class='bx bx-cart'></i>
+                    <span class="link-name">Orders</span>
+                </a>
             </li>
-            <li><a href="prescriptions.html"><i class='bx bx-receipt'></i><span
-                        class="link-name">Prescriptions</span></a></li>
-            <li><a href="orders.html"><i class='bx bx-cart'></i><span class="link-name">Orders</span></a></li>
+            <li>
+                <a href="medications.html">
+                    <i class='bx bx-capsule'></i>
+                    <span class="link-name">Medications</span>
+                </a>
+            </li>
             <li><a href="reports.html"><i class='bx bx-pie-chart-alt-2'></i><span class="link-name">Reports</span></a>
             </li>
             <li><a href="audit_logs.html"><i class='bx bx-file'></i><span class="link-name">Audit Logs</span></a>
@@ -246,7 +253,7 @@
                     <h3><i class='bx bx-edit'></i> Compose New Notification</h3>
                 </div>
 
-                <form action="#" method="POST" onsubmit="event.preventDefault();">
+                <form id="broadcast-form" onsubmit="event.preventDefault();">
                     <div class="form-group" style="margin-bottom: 20px;">
                         <label for="notif-title">Notification Title</label>
                         <input type="text" id="notif-title" class="form-control"
@@ -332,90 +339,8 @@
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td style="max-width:300px;">
-                                    <strong>App Update Required 2.1.0</strong>
-                                    <p
-                                        style="font-size:13px; color:var(--text-muted); margin-top:4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
-                                        Please update your app to access the latest features and bug fixes.</p>
-                                </td>
-                                <td><span class="badge-type type-system">System</span></td>
-                                <td>All Users</td>
-                                <td>Oct 25, 2023 - 09:00 AM</td>
-                                <td><span class="status-badge success">Sent</span></td>
-                                <td>
-                                    <div class="table-actions">
-                                        <button class="action-btn edit" title="View Details"><i
-                                                class='bx bx-show'></i></button>
-                                        <button class="action-btn delete" title="Delete"><i
-                                                class='bx bx-trash'></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="max-width:300px;">
-                                    <strong>New Feature: Tele-Consultations</strong>
-                                    <p
-                                        style="font-size:13px; color:var(--text-muted); margin-top:4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
-                                        You can now book standard pharmacist tele-consultations dynamically.</p>
-                                </td>
-                                <td><span class="badge-type type-info">Info</span></td>
-                                <td>Patients Only</td>
-                                <td>Tomorrow - 10:00 AM</td>
-                                <td><span class="status-badge warning"
-                                        style="color:#F59E0B; background:#FEF3C7;">Scheduled</span></td>
-                                <td>
-                                    <div class="table-actions">
-                                        <button class="action-btn edit" title="Edit"><i
-                                                class='bx bx-edit-alt'></i></button>
-                                        <button class="action-btn delete" title="Delete"><i
-                                                class='bx bx-trash'></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="max-width:300px;">
-                                    <strong>Emergency Outage Warning</strong>
-                                    <p
-                                        style="font-size:13px; color:var(--text-muted); margin-top:4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
-                                        The main prescription database will be down tonight for 15 minutes.</p>
-                                </td>
-                                <td><span class="badge-type type-alert">Alert</span></td>
-                                <td>Pharmacists Only</td>
-                                <td>Oct 20, 2023 - 11:30 PM</td>
-                                <td><span class="status-badge danger">Failed</span></td>
-                                <td>
-                                    <div class="table-actions">
-                                        <button class="action-btn edit" title="Resend"><i
-                                                class='bx bx-refresh'></i></button>
-                                        <button class="action-btn delete" title="Delete"><i
-                                                class='bx bx-trash'></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="max-width:300px;">
-                                    <strong>Draft: Holiday Operations</strong>
-                                    <p
-                                        style="font-size:13px; color:var(--text-muted); margin-top:4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
-                                        This informs the users about the upcoming pharmacy hours over the holiday
-                                        weekend.</p>
-                                </td>
-                                <td><span class="badge-type type-warning">Warning</span></td>
-                                <td>All Users</td>
-                                <td>-</td>
-                                <td><span class="status-badge"
-                                        style="background:#E2E8F0; color:var(--text-main);">Draft</span></td>
-                                <td>
-                                    <div class="table-actions">
-                                        <button class="action-btn edit" title="Edit"><i
-                                                class='bx bx-edit-alt'></i></button>
-                                        <button class="action-btn delete" title="Delete"><i
-                                                class='bx bx-trash'></i></button>
-                                    </div>
-                                </td>
-                            </tr>
+                        <tbody id="notifications-requests-body">
+                            <!-- Admin requests will be loaded here via admin api -->
                         </tbody>
                     </table>
                 </div>
@@ -435,8 +360,9 @@
         </div>
     </main>
 
-    <script src="../js/main.js"></script>
+    <script src="../js/api/apiClient.js"></script>
     <script src="../js/api/notificationsApi.js"></script>
+    <script src="../js/main.js"></script>
     <script src="../js/pages/notifications.js"></script>
 </body>
 

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Pharma Care</title>
+    <title>Admin Dashboard - Tele-Pharm</title>
     <!-- Google Fonts for modern typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,7 +24,7 @@
         <div class="sidebar-header">
             <div class="logo">
                 <i class='bx bx-plus-medical'></i>
-                <span>Pharma Care</span>
+                <span>Tele-Pharm</span>
             </div>
             <i class='bx bx-menu' id="sidebar-toggle"></i>
         </div>
@@ -61,21 +61,15 @@
                 </a>
             </li>
             <li>
-                <a href="pages/medications.html">
-                    <i class='bx bx-capsule'></i>
-                    <span class="link-name">Medications</span>
-                </a>
-            </li>
-            <li>
-                <a href="pages/prescriptions.html">
-                    <i class='bx bx-receipt'></i>
-                    <span class="link-name">Prescriptions</span>
-                </a>
-            </li>
-            <li>
                 <a href="pages/orders.html">
                     <i class='bx bx-cart'></i>
                     <span class="link-name">Orders</span>
+                </a>
+            </li>
+            <li>
+                <a href="pages/medications.html">
+                    <i class='bx bx-capsule'></i>
+                    <span class="link-name">Medications</span>
                 </a>
             </li>
             <li>
@@ -145,15 +139,15 @@
             </div>
 
             <!-- Statistic Cards -->
-            <div class="stats-grid">
+            <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
                 <div class="stat-card">
                     <div class="stat-icon primary">
                         <i class='bx bx-user'></i>
                     </div>
                     <div class="stat-details">
                         <h3>Total Patients</h3>
-                        <h2>12,450</h2>
-                        <span class="trend positive"><i class='bx bx-up-arrow-alt'></i> 12%</span>
+                        <h2 id="stat-total-patients">...</h2>
+                        <span class="trend positive"><i class='bx bx-up-arrow-alt'></i> Active</span>
                     </div>
                 </div>
 
@@ -163,12 +157,21 @@
                     </div>
                     <div class="stat-details">
                         <h3>Pharmacists</h3>
-                        <h2>342</h2>
-                        <span class="trend positive"><i class='bx bx-up-arrow-alt'></i> 4%</span>
+                        <h2 id="stat-total-pharmacists">...</h2>
+                        <span class="trend positive"><i class='bx bx-up-arrow-alt'></i> Active</span>
                     </div>
                 </div>
 
-
+                <div class="stat-card">
+                    <div class="stat-icon info">
+                        <i class='bx bx-book-reader'></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3>Intern Pharmacists</h3>
+                        <h2 id="stat-total-interns">...</h2>
+                        <span class="trend positive"><i class='bx bx-up-arrow-alt'></i> Active</span>
+                    </div>
+                </div>
 
                 <div class="stat-card">
                     <div class="stat-icon success">
@@ -176,8 +179,8 @@
                     </div>
                     <div class="stat-details">
                         <h3>Pharmacies</h3>
-                        <h2>89</h2>
-                        <span class="trend positive"><i class='bx bx-up-arrow-alt'></i> 2%</span>
+                        <h2 id="stat-total-pharmacies">...</h2>
+                        <span class="trend positive"><i class='bx bx-up-arrow-alt'></i> Registered</span>
                     </div>
                 </div>
 
@@ -187,131 +190,96 @@
                     </div>
                     <div class="stat-details">
                         <h3>Total Orders</h3>
-                        <h2>4,821</h2>
-                        <span class="trend positive"><i class='bx bx-up-arrow-alt'></i> 24%</span>
+                        <h2 id="stat-total-orders">...</h2>
+                        <span class="trend text-muted">All Requests</span>
                     </div>
                 </div>
             </div>
 
             <!-- Charts Section -->
             <div class="dashboard-grid">
-                <!-- Orders Chart -->
-                <div class="card chart-container">
+                <!-- Orders by Status Chart -->
+                <div class="card chart-container" style="grid-column: span 4;">
                     <div class="card-header">
-                        <h3>Orders Trend</h3>
-                        <i class='bx bx-dots-horizontal-rounded'></i>
+                        <h3>Orders Breakdown</h3>
+                        <i class='bx bx-pie-chart-alt'></i>
                     </div>
-                    <div class="card-body">
-                        <canvas id="ordersChart"></canvas>
-                    </div>
-                </div>
-
-                <!-- Patient Growth Chart -->
-                <div class="card chart-container">
-                    <div class="card-header">
-                        <h3>Patients Growth</h3>
-                        <i class='bx bx-dots-horizontal-rounded'></i>
-                    </div>
-                    <div class="card-body">
-                        <canvas id="patientsChart"></canvas>
+                    <div class="card-body" style="display: flex; justify-content: center; align-items: center; min-height: 250px;">
+                        <canvas id="ordersChart" style="max-height: 250px;"></canvas>
                     </div>
                 </div>
             </div>
 
-            <!-- Bottom Sections -->
-            <div class="dashboard-grid bottom-grid">
-                <!-- Recent Activity -->
-                <div class="card">
-                    <div class="card-header">
-                        <h3>Recent Activity</h3>
+            <!-- Dashboard Bottom Layout -->
+            <div class="bottom-layout" style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
+                
+                <!-- Recent Orders Table -->
+                <div class="chart-card" style="margin: 0; display: flex; flex-direction: column;">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Recent Orders</h3>
+                        <a href="pages/orders.html" style="font-size: 14px; color: var(--primary); text-decoration: none;">View All</a>
                     </div>
-                    <div class="activity-list">
-                        <div class="activity-item">
-                            <div class="activity-icon info"><i class='bx bx-user-plus'></i></div>
-                            <div class="activity-content">
-                                <h4>New patient registered</h4>
-                                <p>Sarah Jenkins joined the platform.</p>
-                            </div>
-                            <span class="activity-time">2m ago</span>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-icon success"><i class='bx bx-upload'></i></div>
-                            <div class="activity-content">
-                                <h4>Prescription uploaded</h4>
-                                <p>RX-90812 was added by Dr. John Doe.</p>
-                            </div>
-                            <span class="activity-time">5m ago</span>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-icon primary"><i class='bx bx-store'></i></div>
-                            <div class="activity-content">
-                                <h4>Pharmacy added</h4>
-                                <p>Green Cross Pharmacy branches registered.</p>
-                            </div>
-                            <span class="activity-time">1h ago</span>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-icon warning"><i class='bx bx-check-circle'></i></div>
-                            <div class="activity-content">
-                                <h4>Order completed</h4>
-                                <p>Order #ORD-001 has been delivered.</p>
-                            </div>
-                            <span class="activity-time">2h ago</span>
-                        </div>
+                    <div style="flex: 1; overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse; text-align: left; margin-top: 10px;">
+                            <thead>
+                                <tr style="border-bottom: 1px solid #f1f5f9;">
+                                    <th style="padding: 12px; font-weight: 600; color: #64748b;">Order ID</th>
+                                    <th style="padding: 12px; font-weight: 600; color: #64748b;">Patient</th>
+                                    <th style="padding: 12px; font-weight: 600; color: #64748b;">Pharmacy</th>
+                                    <th style="padding: 12px; font-weight: 600; color: #64748b;">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-orders-list">
+                                <!-- Populated via JS -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
-                <!-- Top Pharmacies -->
-                <div class="card">
-                    <div class="card-header">
-                        <h3>Top Pharmacies</h3>
+                <!-- Recent Activity, Top Medicines & Top Pharmacies -->
+                <div style="display: flex; flex-direction: column; gap: 24px;">
+                    <!-- Top Pharmacies -->
+                    <div class="chart-card" style="margin: 0;">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Top Performing Pharmacies</h3>
+                            <i class='bx bx-trophy'></i>
+                        </div>
+                        <div class="horizontal-bars" id="top-pharmacies-list" style="margin-top: 15px;">
+                            <!-- Populated via JS -->
+                        </div>
                     </div>
-                    <div class="top-pharmacies-list">
-                        <div class="pharmacy-item">
-                            <div class="pharmacy-info">
-                                <div class="pharmacy-icon"><i class='bx bx-plus-medical'></i></div>
-                                <div>
-                                    <h4>City Center Pharmacy</h4>
-                                    <p>1,240 Orders</p>
-                                </div>
-                            </div>
-                            <div class="pharmacy-revenue">
-                                <span>$14,200</span>
-                            </div>
+
+                    <!-- Top Medicines -->
+                    <div class="chart-card" style="margin: 0;">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Top Medicines</h3>
+                            <i class='bx bx-capsule'></i>
                         </div>
-                        <div class="pharmacy-item">
-                            <div class="pharmacy-info">
-                                <div class="pharmacy-icon"><i class='bx bx-plus-medical'></i></div>
-                                <div>
-                                    <h4>HealthPlus Pharmacy</h4>
-                                    <p>985 Orders</p>
-                                </div>
-                            </div>
-                            <div class="pharmacy-revenue">
-                                <span>$11,850</span>
-                            </div>
+                        <div class="activity-list" id="top-medicines-list">
+                            <!-- Populated via JS -->
                         </div>
-                        <div class="pharmacy-item">
-                            <div class="pharmacy-info">
-                                <div class="pharmacy-icon"><i class='bx bx-plus-medical'></i></div>
-                                <div>
-                                    <h4>Westside Meds</h4>
-                                    <p>842 Orders</p>
-                                </div>
-                            </div>
-                            <div class="pharmacy-revenue">
-                                <span>$9,400</span>
-                            </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="chart-card" style="margin: 0;">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Recent Activity</h3>
+                            <i class='bx bx-time-five'></i>
+                        </div>
+                        <div class="activity-list" id="recent-activity-list">
+                            <!-- Populated via JS -->
                         </div>
                     </div>
                 </div>
+                
             </div>
 
         </div>
     </main>
 
-    <script src="js/main.js"></script>
+    <script src="js/api/apiClient.js"></script>
     <script src="js/api/dashboardApi.js"></script>
+    <script src="js/main.js"></script>
     <script src="js/pages/dashboard.js"></script>
 </body>
 

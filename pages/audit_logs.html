@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audit Logs - Admin Dashboard</title>
+    <title>Audit Logs - Tele-Pharm</title>
     <!-- Google Fonts for modern typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,7 +22,7 @@
         <div class="sidebar-header">
             <div class="logo">
                 <i class='bx bx-plus-medical'></i>
-                <span>Pharma Care</span>
+                <span>Tele-Pharm</span>
             </div>
             <i class='bx bx-menu' id="sidebar-toggle"></i>
         </div>
@@ -59,21 +59,15 @@
                 </a>
             </li>
             <li>
-                <a href="medications.html">
-                    <i class='bx bx-capsule'></i>
-                    <span class="link-name">Medications</span>
-                </a>
-            </li>
-            <li>
-                <a href="prescriptions.html">
-                    <i class='bx bx-receipt'></i>
-                    <span class="link-name">Prescriptions</span>
-                </a>
-            </li>
-            <li>
                 <a href="orders.html">
                     <i class='bx bx-cart'></i>
                     <span class="link-name">Orders</span>
+                </a>
+            </li>
+            <li>
+                <a href="medications.html">
+                    <i class='bx bx-capsule'></i>
+                    <span class="link-name">Medications</span>
                 </a>
             </li>
             <li>
@@ -221,113 +215,8 @@
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>Oct 25, 2023 14:32:01</td>
-                                <td>
-                                    <div class="table-person">
-                                        <div class="info">
-                                            <span class="name">Admin User</span>
-                                            <span class="email">System Admin</span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>Approved Pharmacy Request</td>
-                                <td>Pharmacy ID: 4901</td>
-                                <td>192.168.1.45</td>
-                                <td><span class="status-badge success">Success</span></td>
-                                <td>
-                                    <div class="table-actions">
-                                        <button class="action-btn view btn-link" title="View Details"
-                                            style="font-size: 14px; width: auto; padding: 4px 10px;">Details</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Oct 25, 2023 14:28:15</td>
-                                <td>
-                                    <div class="table-person">
-                                        <div class="info">
-                                            <span class="name">Unknown User</span>
-                                            <span class="email">Unauthenticated</span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>Failed Login Attempt</td>
-                                <td>Authentication Service</td>
-                                <td>45.22.19.102</td>
-                                <td><span class="status-badge warning"
-                                        style="color:#F59E0B; background:#FEF3C7;">Failed</span></td>
-                                <td>
-                                    <div class="table-actions">
-                                        <button class="action-btn view btn-link" title="View Details"
-                                            style="font-size: 14px; width: auto; padding: 4px 10px;">Details</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Oct 25, 2023 14:15:22</td>
-                                <td>
-                                    <div class="table-person">
-                                        <div class="info">
-                                            <span class="name">System Auto</span>
-                                            <span class="email">Background Job</span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>Suspicious Query Execution</td>
-                                <td>Database Cluster B</td>
-                                <td>10.0.1.5</td>
-                                <td><span class="status-badge danger">Security Alert</span></td>
-                                <td>
-                                    <div class="table-actions">
-                                        <button class="action-btn view btn-link" title="View Details"
-                                            style="font-size: 14px; width: auto; padding: 4px 10px;">Details</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Oct 25, 2023 13:45:10</td>
-                                <td>
-                                    <div class="table-person">
-                                        <div class="info">
-                                            <span class="name">Dr. Sarah Jenkins</span>
-                                            <span class="email">Pharmacist</span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>Processed Prescription</td>
-                                <td>Prescription RX-90812</td>
-                                <td>192.168.1.112</td>
-                                <td><span class="status-badge success">Success</span></td>
-                                <td>
-                                    <div class="table-actions">
-                                        <button class="action-btn view btn-link" title="View Details"
-                                            style="font-size: 14px; width: auto; padding: 4px 10px;">Details</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Oct 25, 2023 13:20:05</td>
-                                <td>
-                                    <div class="table-person">
-                                        <div class="info">
-                                            <span class="name">Admin User</span>
-                                            <span class="email">System Admin</span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>Changed System Setting</td>
-                                <td>Payment Gateway Timeout</td>
-                                <td>192.168.1.45</td>
-                                <td><span class="status-badge success">Success</span></td>
-                                <td>
-                                    <div class="table-actions">
-                                        <button class="action-btn view btn-link" title="View Details"
-                                            style="font-size: 14px; width: auto; padding: 4px 10px;">Details</button>
-                                    </div>
-                                </td>
-                            </tr>
+                        <tbody id="audit-logs-body">
+                            <!-- Loaded via admin api -->
                         </tbody>
                     </table>
                 </div>
@@ -347,52 +236,9 @@
         </div>
     </main>
 
-    <script src="../js/main.js"></script>
-    <script>
-        // Custom script for CSV Export
-        document.addEventListener('DOMContentLoaded', () => {
-            const exportBtn = document.getElementById('export-logs-btn');
-
-            if (exportBtn) {
-                exportBtn.addEventListener('click', () => {
-                    // Simple CSV extraction from the table (skipping the "Actions" column)
-                    const table = document.getElementById('audit-logs-table');
-                    let csvContent = "data:text/csv;charset=utf-8,";
-
-                    // Add Headers
-                    const headers = Array.from(table.querySelectorAll('th'))
-                        .map(th => `"${th.innerText}"`)
-                        .slice(0, 6); // Only first 6 columns
-                    csvContent += headers.join(",") + "\r\n";
-
-                    // Add Rows
-                    const rows = Array.from(table.querySelectorAll('tbody tr'));
-                    rows.forEach(row => {
-                        const rowData = Array.from(row.querySelectorAll('td'))
-                            .map(td => {
-                                // Extract text cleanly (handling nested elements like the User div and Status badges)
-                                let text = td.innerText.replace(/(\r\n|\n|\r)/gm, " ").trim();
-                                // Escape double quotes with double-double quotes for CSV
-                                text = text.replace(/"/g, '""');
-                                return `"${text}"`;
-                            })
-                            .slice(0, 6); // Only first 6 columns
-                        csvContent += rowData.join(",") + "\r\n";
-                    });
-
-                    // Trigger download
-                    const encodedUri = encodeURI(csvContent);
-                    const link = document.createElement("a");
-                    link.setAttribute("href", encodedUri);
-                    link.setAttribute("download", "system_audit_logs.csv");
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                });
-            }
-        });
-    </script>
+    <script src="../js/api/apiClient.js"></script>
     <script src="../js/api/auditLogsApi.js"></script>
+    <script src="../js/main.js"></script>
     <script src="../js/pages/auditLogs.js"></script>
 </body>
 

@@ -1,20 +1,31 @@
-const API_BASE_URL = '/api/admin';
-
-// Pharmacies API hooks for Backend Integration
-async function fetchPharmacies() {
-    console.log(`GET ${API_BASE_URL}/pharmacies`);
-    return [];
+// Pharmacies API hooks using centralized apiClient
+async function fetchPharmacies(page = 1, pageSize = 20, search = '', status = '') {
+    let query = `page=${page}&pageSize=${pageSize}`;
+    if (search) query += `&search=${encodeURIComponent(search)}`;
+    if (status) query += `&status=${encodeURIComponent(status)}`;
+    
+    return await apiClient.get(`/admin/pharmacies?${query}`);
 }
 
-async function fetchPharmacyRequests() {
-    console.log(`GET ${API_BASE_URL}/pharmacies/requests`);
-    return [];
+async function createPharmacy(data) {
+    // Verified endpoint from latest Swagger screenshot: POST /pharmacies
+    // (Note: This is different from the GET /admin/pharmacies endpoint)
+    console.log('[Pharmacy] Creating with payload:', data);
+    return await apiClient.post('/pharmacies', data);
+}
+
+async function fetchPharmacyById(id) {
+    return await apiClient.get(`/admin/pharmacies/${id}`);
 }
 
 async function approvePharmacyApi(id) {
-    console.log(`POST ${API_BASE_URL}/pharmacies/${id}/approve`);
+    return await apiClient.put(`/admin/pharmacies/${id}/approve`);
 }
 
 async function rejectPharmacyApi(id) {
-    console.log(`POST ${API_BASE_URL}/pharmacies/${id}/reject`);
+    return await apiClient.put(`/admin/pharmacies/${id}/reject`);
+}
+
+async function suspendPharmacyApi(id) {
+    return await apiClient.put(`/admin/pharmacies/${id}/suspend`);
 }

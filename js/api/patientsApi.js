@@ -1,37 +1,38 @@
-const API_BASE_URL = '/api/admin';
-
-// Patients API hooks for Backend Integration
-async function fetchPatients() {
-    console.log(`GET ${API_BASE_URL}/patients`);
-    /* 
-    try {
-        const response = await fetch(`${API_BASE_URL}/patients`);
-        if (!response.ok) throw new Error('Failed to fetch patients');
-        return await response.json();
-    } catch (error) {
-        console.error('Error fetching patients:', error);
-        throw error;
-    }
-    */
-    return []; // Return mock data or empty structure for now
+// Patients API hooks using centralized apiClient
+async function fetchPatients(page = 1, pageSize = 20, search = '', status = '') {
+    // Verified endpoint from Swagger: GET /admin/patients
+    // Supports: status, search, page, pageSize
+    let query = `page=${page}&pageSize=${pageSize}`;
+    if (search) query += `&search=${encodeURIComponent(search)}`;
+    if (status) query += `&status=${encodeURIComponent(status)}`;
+    
+    return await apiClient.get(`/admin/patients?${query}`);
 }
 
-async function createPatient(patientData) {
-    console.log(`POST ${API_BASE_URL}/patients`, patientData);
-    /*
-    const response = await fetch(`${API_BASE_URL}/patients`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(patientData)
-    });
-    return await response.json();
-    */
+async function fetchPatientById(id) {
+    return await apiClient.get(`/admin/patients/${id}`);
 }
 
-async function updatePatient(id, patientData) {
-    console.log(`PUT ${API_BASE_URL}/patients/${id}`, patientData);
+async function updatePatientStatus(id, status) {
+    return await apiClient.put(`/admin/patients/${id}/status`, { status });
 }
 
 async function deletePatient(id) {
-    console.log(`DELETE ${API_BASE_URL}/patients/${id}`);
+    return await apiClient.delete(`/admin/patients/${id}`);
+}
+
+async function createPatient(patientData) {
+    // Phase 1: Create Account in Firebase Auth
+    const firebaseUser = await apiClient.registerFirebaseUser(patientData.email, patientData.password);
+    
+    // Phase 2: Sync with Platform Backend using multiple role formats for safety
+    return await apiClient.post('/users/sync', {
+        email: patientData.email,
+        displayName: patientData.fullName,
+        phoneNumber: patientData.phone,
+        firebaseUid: firebaseUser.localId,
+        role: 'Patient',      // Singular format
+        roles: ['Patient'],   // Array format
+        status: 'Active'      // Ensure they aren't created as 'Hidden'
+    });
 }
