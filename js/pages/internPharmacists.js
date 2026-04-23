@@ -64,17 +64,25 @@ async function loadInternPharmacists(page = 1) {
         // 2. SELF-HEALING: If empty, try deep discovery from global users
         if ((!interns || interns.length === 0) && !currentSearch) {
             console.warn('[Interns] Primary endpoint empty. Starting Deep Discovery scan...');
-            const allUsersResponse = await apiClient.get('/admin/users?pageSize=1000');
-            const allUsers = allUsersResponse?.data || allUsersResponse?.items || allUsersResponse || [];
-            
-            interns = allUsers.filter(u => {
-                const role = (u.role || '').toLowerCase();
-                const roles = (u.roles || []).map(r => r.toLowerCase());
-                return role === 'intern' || roles.includes('intern');
-            });
-            
-            total = interns.length;
-            console.log(`[Interns] Discovery found ${total} interns in global list.`);
+            try {
+                const allUsersResponse = await apiClient.get('/admin/users?pageSize=1000');
+                const allUsersData = allUsersResponse?.data || allUsersResponse || {};
+                // Safely extract the array regardless of nesting
+                const allUsers = Array.isArray(allUsersData)
+                    ? allUsersData
+                    : (allUsersData.items || allUsersData.users || allUsersData.content || []);
+
+                interns = allUsers.filter(u => {
+                    const role = String(u.role || '').toLowerCase();
+                    const roles = (Array.isArray(u.roles) ? u.roles : []).map(r => String(r).toLowerCase());
+                    return role === 'intern' || roles.includes('intern');
+                });
+
+                total = interns.length;
+                console.log(`[Interns] Discovery found ${total} interns in global list.`);
+            } catch (discoveryErr) {
+                console.warn('[Interns] Discovery also failed:', discoveryErr.message);
+            }
         }
 
         if (!interns || interns.length === 0) {
@@ -201,5 +209,20 @@ async function rejectInternAction(id) {
             alert('Intern application rejected successfully');
             loadInternPharmacists(currentPage);
         } catch (err) { alert('Rejection failed: ' + err.message); }
+    }
+}
+
+async function submitSuspendIntern() {
+    const id = document.getElementById('suspend-intern-id').value.trim();
+    if (!id) { alert('Please enter Intern ID.'); return; }
+    if (confirm('Are you sure you want to suspend this intern?')) {
+        try {
+            await suspendInternPharmacistApi(id);
+            alert('Intern suspended successfully.');
+            document.getElementById('suspend-intern-id').value = '';
+            loadInternPharmacists(currentPage);
+        } catch (err) {
+            alert('Failed to suspend intern: ' + err.message);
+        }
     }
 }

@@ -1,9 +1,21 @@
-// Audit Logs API hooks using centralized apiClient
+// Audit Logs API
+const AUDIT_ENDPOINTS = {
+    LATEST: '/admin/activity/logs',
+    EXPORT: '/admin/activity/logs/export'
+};
+
+/**
+ * Fetch latest activity logs with pagination
+ */
 async function fetchAuditLogs(page = 1, pageSize = 20) {
-    return await apiClient.get(apiClient.paginate('/admin/activity', page, pageSize));
+    return apiClient.get(`${AUDIT_ENDPOINTS.LATEST}?page=${page}&pageSize=${pageSize}`);
 }
 
+/**
+ * Export logs as CSV
+ */
 async function exportAuditLogsApi(filters = {}) {
-    console.log('[Audit Logs] Exporting with filters:', filters);
-    return await apiClient.get(apiClient.paginate('/admin/activity', 1, 1000, filters));
+    // In production this might be a direct link or a blob response
+    const token = await apiClient.getAuthToken();
+    window.open(`${apiClient.baseUrl}${AUDIT_ENDPOINTS.EXPORT}?token=${token}`, '_blank');
 }

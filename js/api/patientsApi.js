@@ -21,6 +21,10 @@ async function deletePatient(id) {
     return await apiClient.delete(`/admin/patients/${id}`);
 }
 
+async function suspendPatientApi(id) {
+    return await apiClient.put(`/admin/patients/${id}/suspend`, {});
+}
+
 async function createPatient(patientData) {
     // Phase 1: Create Account in Firebase Auth
     const firebaseUser = await apiClient.registerFirebaseUser(patientData.email, patientData.password);

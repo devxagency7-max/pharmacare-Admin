@@ -8,7 +8,8 @@ async function fetchInternPharmacists(page = 1, pageSize = 20, search = '', stat
 }
 
 async function fetchInternPharmacistApplications(page = 1, pageSize = 20) {
-    return await apiClient.get(apiClient.paginate('/admin/intern-applications', page, pageSize));
+    // Correct endpoint per API docs: /admin/applications?type=Intern
+    return await apiClient.get(`/admin/applications?type=Intern&page=${page}&pageSize=${pageSize}`);
 }
 
 async function createInternPharmacist(data) {
@@ -36,5 +37,9 @@ async function rejectIntern(id) {
 }
 
 async function deleteInternPharmacist(id) {
-    return await apiClient.delete(`/admin/interns/${id}`);
+    return await apiClient.delete(`/admin/intern-pharmacists/${id}`);
+}
+
+async function suspendInternPharmacistApi(id) {
+    return await apiClient.put(`/admin/intern-pharmacists/${id}/suspend`, {});
 }

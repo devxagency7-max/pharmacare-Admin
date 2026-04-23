@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function loadDashboardData() {
-    console.log('[Dashboard] Loading Analytics Data Concurrently...');
+    console.log('[Dashboard] Loading Analytics Data...');
     
     // UI Elements
     const statPatients = document.getElementById('stat-total-patients');
@@ -11,65 +11,61 @@ async function loadDashboardData() {
     const statInterns = document.getElementById('stat-total-interns');
     const statPharmacies = document.getElementById('stat-total-pharmacies');
     const statOrders = document.getElementById('stat-total-orders');
-    const statAvgOrder = document.getElementById('stat-avg-order-value');
-    const statRevenue = document.getElementById('stat-total-revenue');
 
-    // 1. Fetch Users & Pharmacies
-    fetchDashboardStats().then(stats => {
-        const data = stats?.data || stats || {};
-        if (statPatients) statPatients.textContent = (data.totalPatients || 0).toLocaleString();
-        if (statPharmacists) statPharmacists.textContent = (data.totalPharmacists || 0).toLocaleString();
-        if (statInterns) statInterns.textContent = (data.totalInterns || 0).toLocaleString();
-        if (statPharmacies) statPharmacies.textContent = (data.totalPharmacies || 0).toLocaleString();
-
-        // Self-Healing Logic
-        if (!data.totalPatients && !data.totalPharmacists && statPatients) {
-            console.log('[Dashboard] Self-healing: Scanning users...');
-            apiClient.get('/admin/users?pageSize=1000').then(usersRes => {
-                const users = usersRes?.data?.items || usersRes?.data || [];
-                if (statPatients) statPatients.textContent = users.filter(u => (u.roles || u.role || u.type || '').toString().toLowerCase().includes('patient')).length.toLocaleString();
-                if (statPharmacists) statPharmacists.textContent = users.filter(u => (u.roles || u.role || u.type || '').toString().toLowerCase().includes('pharmacist')).length.toLocaleString();
-                if (statInterns) statInterns.textContent = users.filter(u => (u.roles || u.role || u.type || '').toString().toLowerCase().includes('intern')).length.toLocaleString();
-            }).catch(e => console.warn('Discovery failed', e));
-
-            apiClient.get('/admin/pharmacies?pageSize=1').then(pharmRes => {
-                const total = pharmRes?.data?.totalCount || pharmRes?.data?.items?.length || 0;
-                if (statPharmacies) statPharmacies.textContent = total.toLocaleString();
-            }).catch(() => {
-                if (statPharmacies) statPharmacies.textContent = '0';
-            });
-        }
-    }).catch(err => {
-        console.warn('Failed to load users stats:', err);
-        // Fallback to discovery
-        apiClient.get('/admin/users?pageSize=1000').then(usersRes => {
-            const users = usersRes?.data?.items || usersRes?.data || [];
-            if (statPatients) statPatients.textContent = users.filter(u => (u.roles || u.role || u.type || '').toString().toLowerCase().includes('patient')).length.toLocaleString();
-            if (statPharmacists) statPharmacists.textContent = users.filter(u => (u.roles || u.role || u.type || '').toString().toLowerCase().includes('pharmacist')).length.toLocaleString();
-            if (statInterns) statInterns.textContent = users.filter(u => (u.roles || u.role || u.type || '').toString().toLowerCase().includes('intern')).length.toLocaleString();
-        }).catch(e => console.warn('Discovery fallback failed', e));
-
-        apiClient.get('/admin/pharmacies?pageSize=1').then(pharmRes => {
-            const total = pharmRes?.data?.totalCount || pharmRes?.data?.items?.length || 0;
-            if (statPharmacies) statPharmacies.textContent = total.toLocaleString();
-        }).catch(() => {
-            if (statPharmacies) statPharmacies.textContent = '0';
-        });
+    // Show loading state instead of "..."
+    [statPatients, statPharmacists, statInterns, statPharmacies, statOrders].forEach(el => {
+        if (el) el.innerHTML = '<span style="font-size: 14px; color: var(--text-muted);">Loading...</span>';
     });
+
+    // Debug: Check token is present
+    const token = localStorage.getItem('idToken');
+    if (!token) {
+        console.warn('[Dashboard] No token in localStorage — redirecting to login');
+        window.location.href = 'login.html';
+        return;
+    }
+    console.log('[Dashboard] Token found, length:', token.length);
+
+    // 1. Fetch Main Stats
+    try {
+        const statsRes = await fetchDashboardStats();
+        const data = statsRes?.data || statsRes || {};
+        console.log('[Dashboard] Stats response:', data);
+
+        if (statPatients)    statPatients.textContent    = (data.totalPatients    || 0).toLocaleString();
+        if (statPharmacists) statPharmacists.textContent = (data.totalPharmacists || 0).toLocaleString();
+        if (statInterns)     statInterns.textContent     = (data.totalInterns     || 0).toLocaleString();
+        if (statPharmacies)  statPharmacies.textContent  = (data.totalPharmacies  || 0).toLocaleString();
+        if (statOrders)      statOrders.textContent      = (data.totalOrders      || 0).toLocaleString();
+
+        if (!data.totalPatients && !data.totalPharmacists) {
+            runStatsDiscovery();
+        }
+    } catch (err) {
+        console.warn('[Dashboard] Stats failed:', err.message);
+        // Reset Loading... to 0 so UI doesn't stay stuck
+        [statPatients, statPharmacists, statInterns, statPharmacies, statOrders].forEach(el => {
+            if (el && el.innerHTML.includes('Loading')) el.textContent = '0';
+        });
+        runStatsDiscovery();
+    }
 
     // 2. Fetch Orders Analytics
     fetchAnalyticsOrders().then(ordersData => {
         const orders = ordersData?.data || {};
         const ordersPerDay = orders.ordersPerDay || [];
-        const totalOrdersCount = ordersPerDay.reduce((sum, item) => sum + (item.count || 0), 0);
+        // API returns "value" field (not "count")
+        const totalOrdersCount = ordersPerDay.reduce((sum, item) => sum + (item.value || item.count || 0), 0);
         
         if (statOrders) statOrders.textContent = totalOrdersCount.toLocaleString();
         
-        initOrdersChart(orders.ordersByStatus || { 'Approved': 65, 'Pending': 25, 'Rejected': 10 });
+        // Map real API status keys
+        const statusData = orders.ordersByStatus || {};
+        initOrdersChart(statusData);
     }).catch(err => {
         console.warn('Failed to load orders analytics:', err);
         if (statOrders) statOrders.textContent = '0';
-        initOrdersChart({ 'Approved': 65, 'Pending': 25, 'Rejected': 10 });
+        initOrdersChart({});
     });
 
 
@@ -100,6 +96,7 @@ async function loadDashboardData() {
     });
 
     // 7. Fetch Recent Orders Table
+    // 7. Fetch Recent Orders Table
     fetchRecentOrders().then(res => {
         const ordersList = Array.isArray(res) ? res : (res?.data?.items || res?.data || []);
         updateRecentOrdersUI(ordersList);
@@ -107,6 +104,43 @@ async function loadDashboardData() {
         console.warn('Failed to load recent orders:', err);
         updateRecentOrdersUI([]);
     });
+}
+
+/**
+ * Fallback discovery logic to count users and pharmacies manually if stats endpoint fails
+ */
+async function runStatsDiscovery() {
+    const statPatients    = document.getElementById('stat-total-patients');
+    const statPharmacists = document.getElementById('stat-total-pharmacists');
+    const statInterns     = document.getElementById('stat-total-interns');
+    const statPharmacies  = document.getElementById('stat-total-pharmacies');
+
+    // Helper to safely set text
+    const set = (el, val) => { if (el) el.textContent = val; };
+
+    try {
+        const usersRes = await apiClient.get('/admin/users?pageSize=1000');
+        const users = usersRes?.data?.items || usersRes?.data || [];
+        console.log('[Discovery] Users found:', users.length);
+
+        set(statPatients,    users.filter(u => String(u.roles || u.role || u.type || '').toLowerCase().includes('patient')).length.toLocaleString());
+        set(statPharmacists, users.filter(u => String(u.roles || u.role || u.type || '').toLowerCase().includes('pharmacist')).length.toLocaleString());
+        set(statInterns,     users.filter(u => String(u.roles || u.role || u.type || '').toLowerCase().includes('intern')).length.toLocaleString());
+    } catch (e) {
+        console.warn('[Discovery] Users failed:', e.message);
+        set(statPatients, '0');
+        set(statPharmacists, '0');
+        set(statInterns, '0');
+    }
+
+    try {
+        const pharmRes = await apiClient.get('/admin/pharmacies?pageSize=1');
+        const total = pharmRes?.data?.totalCount || pharmRes?.data?.items?.length || 0;
+        set(statPharmacies, total.toLocaleString());
+    } catch (e) {
+        console.warn('[Discovery] Pharmacies failed:', e.message);
+        set(statPharmacies, '0');
+    }
 }
 
 function updateRecentOrdersUI(orders) {
@@ -155,30 +189,25 @@ function initOrdersChart(statusData) {
     const ctx = document.getElementById('ordersChart');
     if (!ctx) return;
 
-    // Mapping API status structure to arrays, fallback to dummies
-    // Ensure we map standard terms to the pharmacy workflow: Approved, Pending, Rejected
-    let approved = 0, pending = 0, rejected = 0;
-    
-    if (Object.keys(statusData).length) {
-        for (const [k, v] of Object.entries(statusData)) {
-            const key = k.toLowerCase();
-            if (key.includes('complet') || key.includes('approv')) approved += v;
-            else if (key.includes('pend')) pending += v;
-            else if (key.includes('cancel') || key.includes('reject')) rejected += v;
-        }
-    } else {
-        approved = 65; pending = 25; rejected = 10;
-    }
+    // Map all real API statuses
+    const pending     = (statusData['Pending'] || 0) + (statusData['PricingResponded'] || 0);
+    const confirmed   = (statusData['Confirmed'] || 0);
+    const completed   = (statusData['Completed'] || 0);
+    const rejected    = (statusData['Rejected'] || 0) + (statusData['Cancelled'] || 0);
 
-    const labels = ['Approved', 'Pending', 'Rejected'];
-    const values = [approved, pending, rejected];
-    
-    const colors = ['#10b981', '#f59e0b', '#ef4444']; // Success, Warning, Danger
+    // Fallback to dummy if all zero
+    const total = pending + confirmed + completed + rejected;
+    const labels = ['Pending', 'Confirmed', 'Completed', 'Rejected/Cancelled'];
+    const values = total > 0 ? [pending, confirmed, completed, rejected] : [25, 30, 35, 10];
+    const colors = ['#f59e0b', '#6366f1', '#10b981', '#ef4444'];
 
-    new Chart(ctx, {
+    // Destroy existing chart if re-rendering
+    if (ctx._chartInstance) ctx._chartInstance.destroy();
+
+    ctx._chartInstance = new Chart(ctx, {
         type: 'doughnut',
         data: {
-            labels: labels,
+            labels,
             datasets: [{
                 data: values,
                 backgroundColor: colors,

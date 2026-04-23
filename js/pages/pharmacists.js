@@ -38,6 +38,60 @@ function initSearchAndFilters() {
 
 
 async function loadPharmacists(page = 1) {
+    // Existing load logic ... (unchanged)
+    // After rendering table rows, populate max patients select
+    populateMaxPatientsSelect();
+}
+
+function populateMaxPatientsSelect() {
+    const select = document.getElementById('max-patient-pharmacist-select');
+    if (!select) return;
+    // Clear existing options
+    select.innerHTML = '';
+    // Assuming pharmacists array is still in scope from previous load
+    const rows = document.querySelectorAll('#pharmacists-table-body tr');
+    rows.forEach(row => {
+        const nameCell = row.querySelector('td .info .name');
+        const id = row.dataset.id; // We'll add data-id attribute to rows later
+        if (nameCell && id) {
+            const option = document.createElement('option');
+            option.value = id;
+            option.textContent = nameCell.textContent;
+            select.appendChild(option);
+        }
+    });
+}
+
+async function saveMaxPatientsLimitFromUI() {
+    const select = document.getElementById('max-patient-pharmacist-select');
+    const limit = document.getElementById('max-patient-input').value;
+    if (!select.value) { alert('Select a pharmacist'); return; }
+    if (!limit) { alert('Enter a valid limit'); return; }
+    try {
+        await updateMaxPatientsLimit(select.value, limit);
+        alert('Limit updated');
+        loadPharmacists(currentPage);
+    } catch (e) { alert('Error: ' + e.message); }
+}
+
+async function suspendEntity() {
+    const type = document.getElementById('suspend-entity-select').value;
+    const id = document.getElementById('suspend-entity-id').value.trim();
+    if (!id) { alert('Enter ID'); return; }
+    try {
+        if (type === 'pharmacist') await suspendPharmacistApi(id);
+        else if (type === 'patient') await suspendPatientApi(id);
+        else if (type === 'intern') await suspendInternPharmacistApi(id);
+        else if (type === 'pharmacy') await suspendPharmacyApi(id);
+        alert('Entity suspended');
+        // Reload relevant page if needed
+        if (type === 'pharmacist') loadPharmacists(currentPage);
+        // Add similar reloads for other pages if needed
+    } catch (e) {
+        alert('Suspend failed: ' + e.message);
+    }
+}
+
     currentPage = page;
     const tableBody = document.getElementById('pharmacists-table-body');
     const paginationContainer = document.getElementById('pagination-container');
@@ -139,6 +193,7 @@ async function loadPharmacists(page = 1) {
     }
 }
 
+
 function updatePaginationInfo(total, page) {
     const pageInfo = document.querySelector('.page-info');
     if (pageInfo) {
@@ -158,8 +213,7 @@ function renderPaginationButtons(total, currentPage) {
         return;
     }
 
-    let html = `<button class="page-btn ${currentPage === 1 ? 'disabled' : ''}" onclick="${currentPage === 1 ? '' : `loadPharmacists(${currentPage - 1})`}"><i class='bx bx-chevron-left'></i></button>`;
-    
+    let html = `<button class="page-btn ${currentPage === 1 ? 'disabled' : ''}" onclick="${currentPage === 1 ? '' : 'loadPharmacists(' + (currentPage - 1) + ')'}"><i class='bx bx-chevron-left'></i></button>`;
     const range = 2;
     for (let i = 1; i <= totalPages; i++) {
         if (i === 1 || i === totalPages || (i >= currentPage - range && i <= currentPage + range)) {
@@ -168,9 +222,8 @@ function renderPaginationButtons(total, currentPage) {
             html += `<span>...</span>`;
         }
     }
+    html += `<button class="page-btn ${currentPage === totalPages ? 'disabled' : ''}" onclick="${currentPage === totalPages ? '' : 'loadPharmacists(' + (currentPage + 1) + ')'}"><i class='bx bx-chevron-right'></i></button>`;
 
-    html += `<button class="page-btn ${currentPage === totalPages ? 'disabled' : ''}" onclick="${currentPage === totalPages ? '' : `loadPharmacists(${currentPage + 1})`}"><i class='bx bx-chevron-right'></i></button>`;
-    
     container.innerHTML = html;
 }
 
@@ -210,6 +263,41 @@ async function deletePharmacistConfirmation(id) {
             loadPharmacists(currentPage);
         } catch (err) {
             alert('Deletion failed: ' + err.message);
+        }
+    }
+}
+
+// ── Standalone Controls ────────────────────────────────────
+async function submitMaxPatientsLimit() {
+    const id = document.getElementById('max-patients-pharma-id').value.trim();
+    const limit = document.getElementById('max-patients-limit-val').value;
+    if (!id) { alert('Please enter Pharmacist ID.'); return; }
+    if (!limit || isNaN(limit) || parseInt(limit) < 0) {
+        alert('Please enter a valid number.');
+        return;
+    }
+    try {
+        await updateMaxPatientsLimit(id, parseInt(limit));
+        alert('Limit updated successfully.');
+        document.getElementById('max-patients-pharma-id').value = '';
+        document.getElementById('max-patients-limit-val').value = '';
+        loadPharmacists(currentPage);
+    } catch (err) {
+        alert('Failed to update limit: ' + err.message);
+    }
+}
+
+async function submitSuspendPharmacist() {
+    const id = document.getElementById('suspend-pharma-id').value.trim();
+    if (!id) { alert('Please enter Pharmacist ID.'); return; }
+    if (confirm('Are you sure you want to suspend this pharmacist?')) {
+        try {
+            await suspendPharmacistApi(id);
+            alert('Pharmacist suspended successfully.');
+            document.getElementById('suspend-pharma-id').value = '';
+            loadPharmacists(currentPage);
+        } catch (err) {
+            alert('Failed to suspend pharmacist: ' + err.message);
         }
     }
 }

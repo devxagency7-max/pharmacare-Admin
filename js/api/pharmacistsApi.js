@@ -22,7 +22,8 @@ async function createPharmacist(data) {
 }
 
 async function fetchPharmacistApplications(page = 1, pageSize = 20) {
-    return await apiClient.get(apiClient.paginate('/admin/pharmacist-applications', page, pageSize));
+    // Correct endpoint per API docs: /admin/applications?type=Pharmacist
+    return await apiClient.get(`/admin/applications?type=Pharmacist&page=${page}&pageSize=${pageSize}`);
 }
 
 async function approvePharmacist(id) {
@@ -35,4 +36,14 @@ async function rejectPharmacist(id, reason) {
 
 async function deletePharmacist(id) {
     return await apiClient.delete(`/admin/pharmacists/${id}`);
+}
+
+async function updateMaxPatientsLimit(id, limit) {
+    return await apiClient.put(`/admin/pharmacists/${id}/max-patients`, {
+        maxPatientsLimit: parseInt(limit)
+    });
+}
+
+async function suspendPharmacistApi(id) {
+    return await apiClient.put(`/admin/pharmacists/${id}/suspend`, {});
 }

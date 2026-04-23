@@ -19,13 +19,13 @@ async function fetchPharmacyById(id) {
 }
 
 async function approvePharmacyApi(id) {
-    return await apiClient.put(`/admin/pharmacies/${id}/approve`);
+    return await apiClient.put(`/admin/pharmacies/${id}/approve`, {});
 }
 
 async function rejectPharmacyApi(id) {
-    return await apiClient.put(`/admin/pharmacies/${id}/reject`);
+    return await apiClient.put(`/admin/pharmacies/${id}/reject`, {});
 }
 
 async function suspendPharmacyApi(id) {
-    return await apiClient.put(`/admin/pharmacies/${id}/suspend`);
+    return await apiClient.put(`/admin/pharmacies/${id}/suspend`, {});
 }

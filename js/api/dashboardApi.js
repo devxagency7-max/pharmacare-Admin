@@ -1,33 +1,51 @@
-// Dashboard API hooks using centralized apiClient
+// Dashboard Analytics API
+const DASHBOARD_ENDPOINTS = {
+    STATS: '/admin/stats',
+    ANALYTICS_ORDERS: '/admin/analytics/orders',
+    TOP_PHARMACIES: '/admin/analytics/top-pharmacies',
+    TOP_MEDICINES: '/admin/analytics/top-medicines',
+    RECENT_ACTIVITY: '/admin/activity/logs',
+    RECENT_ORDERS: '/admin/orders?pageSize=10'
+};
+
+/**
+ * Fetch main dashboard stats (Patients, Pharmacists, etc.)
+ */
 async function fetchDashboardStats() {
-    return await apiClient.get('/admin/stats');
+    return apiClient.get(DASHBOARD_ENDPOINTS.STATS);
 }
 
-async function fetchDashboardCharts() {
-    return await apiClient.get('/admin/analytics/users');
-}
-
-async function fetchRecentActivity() {
-    return await apiClient.get('/admin/activity');
-}
-
-async function fetchAnalyticsRevenue() {
-    return await apiClient.get('/admin/analytics/revenue');
-}
-
+/**
+ * Fetch orders analytics for the charts
+ */
 async function fetchAnalyticsOrders() {
-    return await apiClient.get('/admin/analytics/orders');
+    return apiClient.get(DASHBOARD_ENDPOINTS.ANALYTICS_ORDERS);
 }
 
+/**
+ * Fetch top performing pharmacies
+ */
 async function fetchAnalyticsTopPharmacies() {
-    return await apiClient.get('/admin/analytics/top-pharmacies');
+    return apiClient.get(DASHBOARD_ENDPOINTS.TOP_PHARMACIES);
 }
 
+/**
+ * Fetch most requested medicines
+ */
 async function fetchAnalyticsTopMedicines() {
-    return await apiClient.get('/admin/analytics/top-medicines');
+    return apiClient.get(DASHBOARD_ENDPOINTS.TOP_MEDICINES);
 }
 
+/**
+ * Fetch latest system activity
+ */
+async function fetchRecentActivity() {
+    return apiClient.get(DASHBOARD_ENDPOINTS.RECENT_ACTIVITY);
+}
+
+/**
+ * Fetch latest orders list
+ */
 async function fetchRecentOrders() {
-    return await apiClient.get('/admin/orders?page=1&pageSize=5');
+    return apiClient.get(DASHBOARD_ENDPOINTS.RECENT_ORDERS);
 }
-

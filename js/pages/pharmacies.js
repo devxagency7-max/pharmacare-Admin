@@ -3,6 +3,7 @@ let currentSearch = '';
 const PAGE_SIZE = 12;
 
 document.addEventListener('DOMContentLoaded', () => {
+    loadPharmacyStats();
     loadPharmacyRequests();
     initFilterTabs();
     initCreatePharmacyForm();
@@ -117,42 +118,93 @@ async function loadPharmacyRequests(page = 1) {
             return;
         }
 
-        container.innerHTML = pharmacies.map(ph => `
-            <div class="request-card" data-status="${ph.status || 'pending'}">
-                <div class="request-card-header">
-                    <div class="request-pharmacy-info">
-                        <h3>${ph.name || 'Unnamed Pharmacy'}</h3>
-                        <div class="owner"><i class='bx bx-user'></i> ${ph.ownerName || ph.owner || 'N/A'}</div>
+        if (activeFilter === 'all') {
+            // Render Table View
+            container.className = 'table-container';
+            container.style.display = 'block'; // Ensure it's not a grid
+            
+            container.innerHTML = `
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Pharmacy Name</th>
+                            <th>Registration Number</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${pharmacies.map(ph => {
+                            const email = ph.email || (ph.ownerName && ph.ownerName.includes('@') ? ph.ownerName.split('/').pop() : 'N/A');
+                            return `
+                                <tr>
+                                    <td>
+                                        <div class="table-person">
+                                            <div class="info">
+                                                <span class="name">${ph.name || 'Unnamed Pharmacy'}</span>
+                                                <span class="email">${email}</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><code>${ph.registrationNumber || ph.licenseNumber || 'N/A'}</code></td>
+                                    <td><span class="status-badge ${getStatusClass(ph.status)}">${ph.status || 'Pending'}</span></td>
+                                    <td>
+                                        <div class="table-actions">
+                                            <button class="action-btn edit" onclick="viewPharmacyDetails('${ph.id}')" title="Details"><i class='bx bx-show'></i></button>
+                                            ${(ph.status === 'Pending' || ph.status === 'pending') ? `
+                                                <button class="action-btn" style="background:#ccfbf1;color:#0d9488;" onclick="approvePharmacy('${ph.id}')" title="Approve"><i class='bx bx-check'></i></button>
+                                                <button class="action-btn" style="background:#fee2e2;color:#e11d48;" onclick="rejectPharmacy('${ph.id}')" title="Reject"><i class='bx bx-x'></i></button>
+                                            ` : ''}
+                                        </div>
+                                    </td>
+                                </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                </table>
+            `;
+        } else {
+            // Render Card View
+            container.className = 'request-cards-grid';
+            container.style.display = 'grid'; // Reset to grid
+            
+            container.innerHTML = pharmacies.map(ph => `
+                <div class="request-card" data-status="${ph.status || 'pending'}">
+                    <div class="request-card-header">
+                        <div class="request-pharmacy-info">
+                            <h3>${ph.name || 'Unnamed Pharmacy'}</h3>
+                            <div class="owner"><i class='bx bx-user'></i> ${ph.ownerName || ph.owner || 'N/A'}</div>
+                        </div>
+                        <span class="status-badge ${getStatusClass(ph.status)}">${ph.status || 'Pending'}</span>
                     </div>
-                    <span class="status-badge ${getStatusClass(ph.status)}">${ph.status || 'Pending'}</span>
+                    <div class="request-details-list">
+                        <div class="request-detail-item">
+                            <i class='bx bx-envelope'></i>
+                            <div><p>${ph.email || (ph.ownerName && ph.ownerName.includes('@') ? ph.ownerName.split('/').pop() : 'N/A')}</p><span>Email Address</span></div>
+                        </div>
+                        <div class="request-detail-item">
+                            <i class='bx bx-phone'></i>
+                            <div><p>${ph.phone || 'N/A'}</p><span>Phone Number</span></div>
+                        </div>
+                        <div class="request-detail-item">
+                            <i class='bx bx-map'></i>
+                            <div><p>${ph.address || ph.location || 'N/A'}</p><span>Location</span></div>
+                        </div>
+                        <div class="request-detail-item">
+                            <i class='bx bx-id-card'></i>
+                            <div><p>${ph.registrationNumber || ph.licenseNumber || 'N/A'}</p><span>Registration Number</span></div>
+                        </div>
+                    </div>
+                    <div class="request-card-actions">
+                        <button class="btn-view" onclick="viewPharmacyDetails('${ph.id}')"><i class='bx bx-show'></i> Details</button>
+                        ${ph.status === 'Pending' || ph.status === 'pending' ? `
+                            <button class="btn-approve" onclick="approvePharmacy('${ph.id}')"><i class='bx bx-check'></i> Approve</button>
+                            <button class="btn-reject" onclick="rejectPharmacy('${ph.id}')"><i class='bx bx-x'></i> Reject</button>
+                        ` : ''}
+                    </div>
                 </div>
-                <div class="request-details-list">
-                    <div class="request-detail-item">
-                        <i class='bx bx-envelope'></i>
-                        <div><p>${ph.email || 'N/A'}</p><span>Email Address</span></div>
-                    </div>
-                    <div class="request-detail-item">
-                        <i class='bx bx-phone'></i>
-                        <div><p>${ph.phone || 'N/A'}</p><span>Phone Number</span></div>
-                    </div>
-                    <div class="request-detail-item">
-                        <i class='bx bx-map'></i>
-                        <div><p>${ph.address || ph.location || 'N/A'}</p><span>Location</span></div>
-                    </div>
-                    <div class="request-detail-item">
-                        <i class='bx bx-id-card'></i>
-                        <div><p>${ph.licenseNumber || 'N/A'}</p><span>License Number</span></div>
-                    </div>
-                </div>
-                <div class="request-card-actions">
-                    <button class="btn-view" onclick="viewPharmacyDetails('${ph.id}')"><i class='bx bx-show'></i> Details</button>
-                    ${ph.status === 'Pending' || ph.status === 'pending' ? `
-                        <button class="btn-approve" onclick="approvePharmacy('${ph.id}')"><i class='bx bx-check'></i> Approve</button>
-                        <button class="btn-reject" onclick="rejectPharmacy('${ph.id}')"><i class='bx bx-x'></i> Reject</button>
-                    ` : ''}
-                </div>
-            </div>
-        `).join('');
+            `).join('');
+        }
 
         updatePaginationInfo(total, page);
         renderPaginationButtons(total, page);
@@ -211,6 +263,7 @@ async function approvePharmacy(id) {
         try {
             await approvePharmacyApi(id);
             loadPharmacyRequests(currentPage);
+            loadPharmacyStats();
         } catch (err) { alert('Approval failed: ' + err.message); }
     }
 }
@@ -220,7 +273,42 @@ async function rejectPharmacy(id) {
         try {
             await rejectPharmacyApi(id);
             loadPharmacyRequests(currentPage);
+            loadPharmacyStats();
         } catch (err) { alert('Rejection failed: ' + err.message); }
+    }
+}
+
+async function loadPharmacyStats() {
+    const totalEl = document.getElementById('total-pharmacies-stat');
+    const pendingEl = document.getElementById('pending-pharmacies-stat');
+    const approvedEl = document.getElementById('approved-pharmacies-stat');
+    const rejectedEl = document.getElementById('rejected-pharmacies-stat');
+
+    if (!totalEl) return;
+
+    try {
+        const [allRes, pendingRes, approvedRes, rejectedRes] = await Promise.all([
+            fetchPharmacies(1, 1, '', ''),
+            fetchPharmacies(1, 1, '', 'Pending'),
+            fetchPharmacies(1, 1, '', 'Active'),
+            fetchPharmacies(1, 1, '', 'Rejected')
+        ]);
+
+        const getTotal = (res) => {
+            const data = res?.data || res;
+            return data.totalCount || data.total || data.recordsTotal || 0;
+        };
+
+        totalEl.textContent = getTotal(allRes);
+        pendingEl.textContent = getTotal(pendingRes);
+        approvedEl.textContent = getTotal(approvedRes);
+        rejectedEl.textContent = getTotal(rejectedRes);
+    } catch (error) {
+        console.error('[Pharmacies] Failed to load stats:', error);
+        totalEl.textContent = '-';
+        pendingEl.textContent = '-';
+        approvedEl.textContent = '-';
+        rejectedEl.textContent = '-';
     }
 }
 

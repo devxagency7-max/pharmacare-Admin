@@ -86,6 +86,7 @@
             <li><a href="medications.html" class="active"><i class='bx bx-capsule'></i><span class="link-name">Medications</span></a></li>
             <li><a href="reports.html"><i class='bx bx-pie-chart-alt-2'></i><span class="link-name">Reports</span></a></li>
             <li><a href="audit_logs.html"><i class='bx bx-file'></i><span class="link-name">Audit Logs</span></a></li>
+            <li><a href="file_review.html"><i class='bx bx-file-find'></i><span class="link-name">File Review</span></a></li>
             <li><a href="notifications.html"><i class='bx bx-bell'></i><span class="link-name">Global Notifications</span></a></li>
             <li><a href="settings.html"><i class='bx bx-cog'></i><span class="link-name">Settings</span></a></li>
         </ul>
@@ -111,12 +112,17 @@
             <div class="action-bar">
                 <div class="search-box" style="width: 350px;">
                     <i class='bx bx-search'></i>
-                    <input type="text" placeholder="Search medications by name or category...">
+                    <input type="text" id="meds-search" placeholder="Search medications by name or ingredient...">
                 </div>
-                <button class="btn btn-primary" onclick="openAddMedModal()">
-                    <i class='bx bx-plus-circle'></i>
-                    Register Medication
-                </button>
+                <div style="display: flex; gap: 10px;">
+                    <input type="file" id="import-file-input" hidden accept=".xlsx,.xls" onchange="handleImport(this)">
+                    <button class="btn btn-outline" onclick="document.getElementById('import-file-input').click()">
+                        <i class='bx bx-import'></i> Import Excel
+                    </button>
+                    <button class="btn btn-primary" onclick="openAddMedModal()">
+                        <i class='bx bx-plus-circle'></i> Register Medication
+                    </button>
+                </div>
             </div>
 
             <div class="card">
@@ -125,28 +131,14 @@
                         <thead>
                             <tr>
                                 <th>Medication</th>
-                                <th>Category</th>
-                                <th>Stock Status</th>
+                                <th>Active Ingredient</th>
+                                <th>Form / Dosage</th>
+                                <th>Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="medications-table-body">
-                            <tr>
-                                <td>
-                                    <div class="med-img-cell">
-                                        <img src="https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=100" alt="Amoxicillin">
-                                        <strong>Amoxicillin 500mg</strong>
-                                    </div>
-                                </td>
-                                <td>Antibiotics</td>
-                                <td><span class="status-badge success">In Stock</span></td>
-                                <td>
-                                    <div class="table-actions">
-                                        <button class="action-btn edit"><i class='bx bx-edit-alt'></i></button>
-                                        <button class="action-btn delete"><i class='bx bx-trash'></i></button>
-                                    </div>
-                                </td>
-                            </tr>
+                            <!-- Populated dynamically -->
                         </tbody>
                     </table>
                 </div>
@@ -156,43 +148,46 @@
 
     <!-- Add/Edit Medication Modal -->
     <div class="modal-overlay" id="medication-modal">
-        <div class="modal-content" style="max-width: 600px;">
+        <div class="modal-content" style="max-width: 650px;">
             <div class="modal-header">
                 <h2 id="modal-title"><i class='bx bx-capsule'></i> Register Medication</h2>
                 <i class='bx bx-x close-modal' onclick="closeModal()"></i>
             </div>
             <form id="medication-form">
-                <div class="image-upload-wrapper" onclick="document.getElementById('med-image-input').click()">
-                    <input type="file" id="med-image-input" hidden accept="image/*" onchange="previewMedImage(this)">
-                    <img id="image-preview" class="preview-img" src="#" alt="Preview">
-                    <div id="upload-placeholder" class="upload-placeholder">
-                        <i class='bx bx-cloud-upload'></i>
-                        <p>Click to upload medication photo</p>
-                        <span>JPG, PNG up to 2MB</span>
-                    </div>
-                </div>
-
                 <div class="form-grid">
                     <div class="form-group">
                         <label>Medication Name</label>
-                        <input type="text" id="med-name" placeholder="e.g. Panadol Advance" required>
+                        <input type="text" id="med-name" placeholder="e.g. Panadol" required>
                     </div>
                     <div class="form-group">
-                        <label>Category</label>
-                        <select id="med-category" required>
-                            <option value="">Select Category</option>
-                            <option value="Antibiotics">Antibiotics</option>
-                            <option value="Pain Relief">Pain Relief</option>
-                            <option value="Cardiovascular">Cardiovascular</option>
+                        <label>Active Ingredient</label>
+                        <input type="text" id="med-ingredient" placeholder="e.g. Paracetamol" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Form</label>
+                        <select id="med-form" required>
+                            <option value="">Select Form</option>
+                            <option value="Tablet">Tablet</option>
+                            <option value="Capsule">Capsule</option>
+                            <option value="Syrup">Syrup</option>
+                            <option value="Injection">Injection</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Initial Stock Status</label>
-                        <select id="med-status">
-                            <option value="in-stock">In Stock</option>
-                            <option value="low-stock">Low Stock</option>
-                            <option value="out-of-stock">Out of Stock</option>
-                        </select>
+                        <label>Dosage</label>
+                        <input type="text" id="med-dosage" placeholder="e.g. 500mg" required>
+                    </div>
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>Image URL</label>
+                        <input type="url" id="med-image-url" placeholder="https://example.com/image.jpg">
+                    </div>
+                    <div class="form-group" style="grid-column: span 2; display: flex; gap: 20px; align-items: center; margin-top: 10px;">
+                        <label style="display: flex; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" id="med-rx"> Rx Required
+                        </label>
+                        <label style="display: flex; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" id="med-controlled"> Controlled
+                        </label>
                     </div>
                 </div>
                 <div class="modal-actions">
@@ -204,27 +199,9 @@
     </div>
 
     <script src="../js/main.js"></script>
-    <script>
-        function openAddMedModal() {
-            document.getElementById('medication-modal').classList.add('active');
-        }
-        function closeModal() {
-            document.getElementById('medication-modal').classList.remove('active');
-        }
-        function previewMedImage(input) {
-            const preview = document.getElementById('image-preview');
-            const placeholder = document.getElementById('upload-placeholder');
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    preview.src = e.target.result;
-                    preview.style.display = 'block';
-                    placeholder.style.display = 'none';
-                }
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-    </script>
+    <script src="../js/api/apiClient.js"></script>
+    <script src="../js/api/medicationsApi.js"></script>
+    <script src="../js/pages/medications.js"></script>
 </body>
 
 </html>

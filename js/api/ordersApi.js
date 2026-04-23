@@ -1,9 +1,36 @@
-const API_BASE_URL = '/api/admin';
+// API endpoints for Orders
+const ORDERS_ENDPOINTS = {
+    TOTAL_COUNT: '/admin/orders/total',
+    PER_PHARMACY: '/admin/orders/per-pharmacy',
+    ANALYTICS: '/admin/analytics/orders',
+    GLOBAL_STATS: '/admin/stats'
+};
 
-async function fetchOrders() {
-    console.log(`GET ${API_BASE_URL}/orders`);
-    return [];
+/**
+ * Fetch total orders count
+ */
+async function fetchTotalOrdersCount() {
+    return apiClient.get(ORDERS_ENDPOINTS.TOTAL_COUNT);
 }
-async function updateOrderStatus(id, status) {
-    console.log(`PUT ${API_BASE_URL}/orders/${id}/status`, { status });
+
+/**
+ * Fetch orders statistics (Pending, Approved, Rejected etc.)
+ */
+async function fetchOrdersStats() {
+    // We can get these from global stats or analytics
+    return apiClient.get(ORDERS_ENDPOINTS.GLOBAL_STATS);
+}
+
+/**
+ * Fetch orders per pharmacy for the main table
+ */
+async function fetchOrdersPerPharmacy() {
+    return apiClient.get(ORDERS_ENDPOINTS.PER_PHARMACY);
+}
+
+/**
+ * Fetch order analytics for breakdown
+ */
+async function fetchOrderAnalytics() {
+    return apiClient.get(ORDERS_ENDPOINTS.ANALYTICS);
 }

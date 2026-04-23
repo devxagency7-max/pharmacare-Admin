@@ -177,3 +177,18 @@ async function deletePatientConfirmation(id) {
     }
 }
 
+async function submitSuspendPatient() {
+    const id = document.getElementById('suspend-patient-id').value.trim();
+    if (!id) { alert('Please enter Patient ID.'); return; }
+    if (confirm('Are you sure you want to suspend this patient?')) {
+        try {
+            await suspendPatientApi(id);
+            alert('Patient suspended successfully.');
+            document.getElementById('suspend-patient-id').value = '';
+            loadPatients(currentPage);
+        } catch (err) {
+            alert('Failed to suspend patient: ' + err.message);
+        }
+    }
+}
+
