@@ -315,3 +315,18 @@ async function loadPharmacyStats() {
 function viewPharmacyDetails(id) {
     console.log('View details for pharmacy:', id);
 }
+
+async function submitSuspendPharmacy() {
+    const id = document.getElementById('suspend-pharmacy-id').value.trim();
+    if (!id) { alert('Please enter Pharmacy ID.'); return; }
+    if (confirm('Are you sure you want to suspend this pharmacy?')) {
+        try {
+            await suspendPharmacyApi(id);
+            alert('Pharmacy suspended successfully.');
+            document.getElementById('suspend-pharmacy-id').value = '';
+            loadPharmacyRequests(currentPage);
+        } catch (err) {
+            alert('Failed to suspend pharmacy: ' + err.message);
+        }
+    }
+}
