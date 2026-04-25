@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audit Logs - Tele-Pharm</title>
+    <title>Audit Logs - Tamenny</title>
     <!-- Google Fonts for modern typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,9 +20,11 @@
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
+            
+            
             <div class="logo">
-                <i class='bx bx-plus-medical'></i>
-                <span>Tele-Pharm</span>
+                <img src="../logo.jpeg" alt="Logo">
+                <span>Tamenny</span>
             </div>
             <i class='bx bx-menu' id="sidebar-toggle"></i>
         </div>
@@ -150,9 +152,9 @@
                         <i class='bx bx-list-ul'></i>
                     </div>
                     <div class="stat-details">
-                        <h3>Total Events Today</h3>
-                        <h2>4,820</h2>
-                        <span class="trend neutral"><i class='bx bx-minus'></i> Monitored actions</span>
+                        <h3>Total Events</h3>
+                        <h2 id="audit-total"><i class='bx bx-loader-alt bx-spin'></i></h2>
+                        <span class="trend neutral"><i class='bx bx-minus'></i> All time</span>
                     </div>
                 </div>
                 <div class="stat-card">
@@ -160,9 +162,9 @@
                         <i class='bx bx-check-shield'></i>
                     </div>
                     <div class="stat-details">
-                        <h3>Successful</h3>
-                        <h2>4,795</h2>
-                        <span class="trend positive"><i class='bx bx-up-arrow-alt'></i> 99.4% Rate</span>
+                        <h3>Unique Actors</h3>
+                        <h2 id="audit-actors"><i class='bx bx-loader-alt bx-spin'></i></h2>
+                        <span class="trend positive"><i class='bx bx-user'></i> Users & Systems</span>
                     </div>
                 </div>
                 <div class="stat-card">
@@ -170,10 +172,10 @@
                         <i class='bx bx-error'></i>
                     </div>
                     <div class="stat-details">
-                        <h3>Failed</h3>
-                        <h2>23</h2>
+                        <h3>Actions Today</h3>
+                        <h2 id="audit-today"><i class='bx bx-loader-alt bx-spin'></i></h2>
                         <span class="trend warning" style="color:#F59E0B; background:#FEF3C7;"><i
-                                class='bx bx-error-circle'></i> Review required</span>
+                                class='bx bx-time'></i> Last 24 hours</span>
                     </div>
                 </div>
                 <div class="stat-card">
@@ -181,30 +183,14 @@
                         <i class='bx bx-shield-quarter'></i>
                     </div>
                     <div class="stat-details">
-                        <h3>Security Alerts</h3>
-                        <h2>2</h2>
-                        <span class="trend negative"><i class='bx bx-down-arrow-alt'></i> High priority urgency</span>
+                        <h3>Admin Actions</h3>
+                        <h2 id="audit-admin"><i class='bx bx-loader-alt bx-spin'></i></h2>
+                        <span class="trend negative"><i class='bx bx-shield'></i> By admins</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Action Bar -->
-            <div class="action-bar">
-                <div class="search-box" style="width: 320px;">
-                    <i class='bx bx-search'></i>
-                    <input type="text" placeholder="Search by user, action, or resource...">
-                </div>
-                <div style="display: flex; gap: 15px;">
-                    <button class="btn btn-outline">
-                        <i class='bx bx-filter-alt'></i>
-                        Filter: Date/Status/User
-                    </button>
-                    <button class="btn btn-primary" id="export-logs-btn">
-                        <i class='bx bx-export'></i>
-                        Export Logs (CSV)
-                    </button>
-                </div>
-            </div>
+            <!-- Action Bar Removed -->
 
             <!-- Table Card -->
             <div class="card">
@@ -213,12 +199,12 @@
                         <thead>
                             <tr>
                                 <th>Timestamp</th>
-                                <th>User</th>
+                                <th>Admin</th>
                                 <th>Action</th>
                                 <th>Resource</th>
-                                <th>IP Address</th>
-                                <th>Status</th>
-                                <th>Actions</th>
+                                <th>Entity ID</th>
+                                <th>Log ID</th>
+                                <th>Details</th>
                             </tr>
                         </thead>
                         <tbody id="audit-logs-body">
@@ -227,15 +213,11 @@
                     </table>
                 </div>
 
-                <div class="pagination">
-                    <span class="page-info">Showing 1 to 5 of 4,820 entries</span>
-                    <button class="page-btn"><i class='bx bx-chevron-left'></i></button>
-                    <button class="page-btn active">1</button>
-                    <button class="page-btn">2</button>
-                    <button class="page-btn">3</button>
-                    <span>...</span>
-                    <button class="page-btn">964</button>
-                    <button class="page-btn"><i class='bx bx-chevron-right'></i></button>
+                <div class="pagination" id="audit-pagination">
+                    <span class="page-info" id="audit-page-info">Loading...</span>
+                    <button class="page-btn" id="audit-prev-btn" onclick="changePage(-1)"><i class='bx bx-chevron-left'></i></button>
+                    <span id="audit-page-buttons"></span>
+                    <button class="page-btn" id="audit-next-btn" onclick="changePage(1)"><i class='bx bx-chevron-right'></i></button>
                 </div>
             </div>
 

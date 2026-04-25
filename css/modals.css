@@ -24,11 +24,22 @@
 .modal-content {
     background: var(--bg-card);
     width: 100%;
-    max-width: 600px;
+    max-width: 800px;
+    max-height: 90vh;
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-lg);
+    display: flex;
+    flex-direction: column;
     overflow: hidden;
     animation: modalSlide 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modal-content form,
+.modal-form,
+#intern-details-content {
+    overflow-y: auto;
+    flex: 1;
+    padding: 30px;
 }
 
 @keyframes modalSlide {

@@ -1,36 +1,27 @@
-// API endpoints for Orders
+// API endpoints for Orders (Admin-specific)
 const ORDERS_ENDPOINTS = {
-    TOTAL_COUNT: '/admin/orders/total',
-    PER_PHARMACY: '/admin/orders/per-pharmacy',
-    ANALYTICS: '/admin/analytics/orders',
-    GLOBAL_STATS: '/admin/stats'
+    LIST: '/admin/orders',
+    ANALYTICS: '/admin/analytics/orders'
 };
 
-/**
- * Fetch total orders count
- */
-async function fetchTotalOrdersCount() {
-    return apiClient.get(ORDERS_ENDPOINTS.TOTAL_COUNT);
+async function fetchOrders(page = 1, pageSize = 20, search = '', status = '') {
+    let query = `page=${page}&pageSize=${pageSize}`;
+    if (search) query += `&search=${encodeURIComponent(search)}`;
+    if (status && status !== 'all') query += `&status=${status}`;
+    
+    return apiClient.get(`${ORDERS_ENDPOINTS.LIST}?${query}`);
 }
 
-/**
- * Fetch orders statistics (Pending, Approved, Rejected etc.)
- */
-async function fetchOrdersStats() {
-    // We can get these from global stats or analytics
-    return apiClient.get(ORDERS_ENDPOINTS.GLOBAL_STATS);
-}
-
-/**
- * Fetch orders per pharmacy for the main table
- */
-async function fetchOrdersPerPharmacy() {
-    return apiClient.get(ORDERS_ENDPOINTS.PER_PHARMACY);
-}
-
-/**
- * Fetch order analytics for breakdown
- */
 async function fetchOrderAnalytics() {
     return apiClient.get(ORDERS_ENDPOINTS.ANALYTICS);
 }
+
+async function fetchOrderById(id) {
+    return apiClient.get(`${ORDERS_ENDPOINTS.LIST}/${id}`);
+}
+
+// Keep branch-specific fetch for internal use if needed
+async function fetchOrdersByBranch(branchId) {
+    return apiClient.get(`/orders/branch/${branchId}`);
+}
+

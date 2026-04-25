@@ -29,3 +29,7 @@ async function rejectPharmacyApi(id) {
 async function suspendPharmacyApi(id) {
     return await apiClient.put(`/admin/pharmacies/${id}/suspend`, {});
 }
+
+async function fetchPharmacyBranches(pharmacyId) {
+    return await apiClient.get(`/pharmacies/${pharmacyId}/branches`);
+}

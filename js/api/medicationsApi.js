@@ -3,8 +3,9 @@ const MEDS_ENDPOINTS = {
     LIST: '/admin/drugs',
     CREATE: '/admin/drugs',
     UPDATE: (id) => `/admin/drugs/${id}`,
+    DELETE: (id) => `/admin/drugs/${id}`,
     TOGGLE: (id) => `/admin/drugs/${id}/toggle`,
-    IMPORT: '/admin/drugs/import/excel',
+    IMPORT: '/admin/drugs/import',
     SYNONYMS: (id) => `/admin/drugs/${id}/synonyms`,
     ADD_SYNONYM: (id) => `/admin/drugs/${id}/synonyms`,
     DELETE_SYNONYM: (drugId, synId) => `/admin/drugs/${drugId}/synonyms/${synId}`
@@ -23,6 +24,9 @@ async function fetchDrugs(page = 1, pageSize = 20, search = '') {
  * Create a new medication
  */
 async function createDrug(payload) {
+    if (payload instanceof FormData) {
+        return apiClient.request(MEDS_ENDPOINTS.CREATE, { method: 'POST', body: payload });
+    }
     return apiClient.post(MEDS_ENDPOINTS.CREATE, payload);
 }
 
@@ -30,6 +34,9 @@ async function createDrug(payload) {
  * Update an existing medication
  */
 async function updateDrug(id, payload) {
+    if (payload instanceof FormData) {
+        return apiClient.request(MEDS_ENDPOINTS.UPDATE(id), { method: 'PUT', body: payload });
+    }
     return apiClient.put(MEDS_ENDPOINTS.UPDATE(id), payload);
 }
 
@@ -37,7 +44,7 @@ async function updateDrug(id, payload) {
  * Toggle drug active status
  */
 async function toggleDrug(id) {
-    return apiClient.post(MEDS_ENDPOINTS.TOGGLE(id), {});
+    return apiClient.patch(MEDS_ENDPOINTS.TOGGLE(id), {});
 }
 
 /**

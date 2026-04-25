@@ -1,5 +1,7 @@
 const apiClient = {
-    baseUrl: 'http://localhost:3000/api/v1', // Using local proxy
+    baseUrl: (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+             ? 'http://localhost:3000/api/v1' 
+             : 'http://148.230.114.124:8080/api/v1',
 
     async getAuthToken() {
         return localStorage.getItem('idToken');
@@ -24,10 +26,11 @@ const apiClient = {
         const token = await this.getAuthToken();
         const url = endpoint.startsWith('http') ? endpoint : `${this.baseUrl}${endpoint}`;
         
-        const headers = {
-            'Content-Type': 'application/json',
-            ...options.headers
-        };
+        const isFormData = options.body instanceof FormData;
+        const headers = { ...options.headers };
+        if (!isFormData) {
+            headers['Content-Type'] = 'application/json';
+        }
 
         if (token) {
             headers['Authorization'] = `Bearer ${token}`;
@@ -41,8 +44,13 @@ const apiClient = {
         }
 
         if (!response.ok) {
-            const error = await response.json().catch(() => ({}));
-            throw new Error(error.message || `API Error: ${response.status}`);
+            const errorData = await response.json().catch(() => ({}));
+            const msg = errorData.message || errorData.error || `API Error: ${response.status}`;
+            console.error('[API Client Error]', errorData);
+            const error = new Error(msg);
+            error.status = response.status;
+            error.data = errorData;
+            throw error;
         }
 
         return response.json();
@@ -62,5 +70,21 @@ const apiClient = {
 
     delete(endpoint, options = {}) {
         return this.request(endpoint, { ...options, method: 'DELETE' });
+    },
+
+    patch(endpoint, body = {}, options = {}) {
+        return this.request(endpoint, { ...options, method: 'PATCH', body: JSON.stringify(body) });
+    },
+
+    banUser(id) {
+        return this.put(`/admin/users/${id}/ban`, {});
+    },
+
+    suspendUser(id) {
+        return this.put(`/admin/users/${id}/suspend`, {});
+    },
+
+    activateUser(id) {
+        return this.put(`/admin/users/${id}/activate`, {});
     }
 };

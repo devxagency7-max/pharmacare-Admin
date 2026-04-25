@@ -4,13 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medications - Tele-Pharm</title>
+    <title>Medications - Tamenny</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/modals.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         .med-img-cell {
             display: flex;
@@ -73,7 +74,12 @@
 <body>
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <div class="logo"><i class='bx bx-plus-medical'></i><span>Tele-Pharm</span></div>
+            
+            
+            <div class="logo">
+                <img src="../logo.jpeg" alt="Logo">
+                <span>Tamenny</span>
+            </div>
             <i class='bx bx-menu' id="sidebar-toggle"></i>
         </div>
         <ul class="nav-links">
@@ -161,11 +167,11 @@
                     </div>
                     <div class="form-group">
                         <label>Active Ingredient</label>
-                        <input type="text" id="med-ingredient" placeholder="e.g. Paracetamol" required>
+                        <input type="text" id="med-ingredient" placeholder="e.g. Paracetamol">
                     </div>
                     <div class="form-group">
                         <label>Form</label>
-                        <select id="med-form" required>
+                        <select id="med-form">
                             <option value="">Select Form</option>
                             <option value="Tablet">Tablet</option>
                             <option value="Capsule">Capsule</option>
@@ -175,24 +181,45 @@
                     </div>
                     <div class="form-group">
                         <label>Dosage</label>
-                        <input type="text" id="med-dosage" placeholder="e.g. 500mg" required>
+                        <input type="text" id="med-dosage" placeholder="e.g. 500mg">
                     </div>
                     <div class="form-group" style="grid-column: span 2;">
-                        <label>Image URL</label>
-                        <input type="url" id="med-image-url" placeholder="https://example.com/image.jpg">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 500; color: #475569;">Medication Image (URL)</label>
+                        <input type="url" id="med-image-url" placeholder="Paste direct image link (e.g. https://example.com/image.jpg)" 
+                               oninput="updateLivePreview()"
+                               style="width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; font-family: inherit; transition: all 0.3s; background: #F8FAFC;">
+                        <div id="preview-container" style="margin-top: 10px; text-align: center; display: none; background: #f8fafc; padding: 10px; border-radius: 10px; border: 1px dashed #cbd5e1;">
+                            <img id="med-url-preview" src="" alt="Preview" style="max-height: 120px; max-width: 100%; border-radius: 6px;">
+                        </div>
+                        <p style="font-size: 11px; color: #64748b; margin-top: 6px;">
+                            <i class='bx bx-info-circle'></i> Use <b>Right Click -> Copy Image Address</b> on any web image.
+                        </p>
                     </div>
-                    <div class="form-group" style="grid-column: span 2; display: flex; gap: 20px; align-items: center; margin-top: 10px;">
-                        <label style="display: flex; gap: 8px; cursor: pointer;">
-                            <input type="checkbox" id="med-rx"> Rx Required
-                        </label>
-                        <label style="display: flex; gap: 8px; cursor: pointer;">
-                            <input type="checkbox" id="med-controlled"> Controlled
-                        </label>
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>Description</label>
+                        <textarea id="med-description" placeholder="Short clinical description..." rows="3" style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit;"></textarea>
+                    </div>
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>Warnings & Contraindications</label>
+                        <textarea id="med-warnings" placeholder="e.g. Do not use with alcohol..." rows="2" style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit;"></textarea>
+                    </div>
+                    <div class="form-group" style="grid-column: span 2; background: #F8FAFC; padding: 15px; border-radius: 12px; border: 1px solid #E2E8F0; margin-top: 10px;">
+                        <div style="display: flex; gap: 30px; justify-content: center;">
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; font-weight: 500; color: #475569;">
+                                <input type="checkbox" id="med-rx" style="width: 16px; height: 16px; accent-color: var(--primary);"> <span>Rx Required</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; font-weight: 500; color: #475569;">
+                                <input type="checkbox" id="med-controlled" style="width: 16px; height: 16px; accent-color: var(--primary);"> <span>Controlled</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; font-weight: 500; color: #475569;">
+                                <input type="checkbox" id="med-sensitive" style="width: 16px; height: 16px; accent-color: var(--primary);"> <span>Sensitive</span>
+                            </label>
+                        </div>
                     </div>
                 </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Medication</button>
+                <div class="modal-actions" style="margin-top: 25px; padding-top: 20px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 12px;">
+                    <button type="button" class="btn btn-outline" onclick="closeModal()" style="min-width: 120px;">Cancel</button>
+                    <button type="submit" class="btn btn-primary" style="min-width: 160px; background: linear-gradient(135deg, #4f8fea 0%, #3b82f6 100%); border: none; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">Save Medication</button>
                 </div>
             </form>
         </div>

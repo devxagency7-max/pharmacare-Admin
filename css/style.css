@@ -114,11 +114,20 @@ ul {
     display: flex;
     align-items: center;
     gap: 12px;
-    font-size: 22px;
+    font-size: 20px;
     font-weight: 700;
     color: #FFFFFF;
     transition: var(--transition);
 }
+
+.logo img {
+    height: 35px;
+    width: 35px;
+    object-fit: contain;
+    border-radius: 6px;
+}
+
+
 
 .logo i {
     font-size: 24px;
@@ -1235,3 +1244,42 @@ ul {
         display: none;
     }
 }
+
+/* ==========================================================================
+   Animations & Premium Effects
+   ========================================================================== */
+@keyframes pulse {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+    70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+.status-badge {
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.status-badge.success {
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.1);
+}
+
+.status-badge.warning {
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.1);
+}
+
+.status-badge.danger {
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.1);
+}
+
+#requests-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    background: var(--danger);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    margin-left: 8px;
+    box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+}

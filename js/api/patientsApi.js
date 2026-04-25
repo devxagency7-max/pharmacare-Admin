@@ -22,7 +22,7 @@ async function deletePatient(id) {
 }
 
 async function suspendPatientApi(id) {
-    return await apiClient.put(`/admin/patients/${id}/suspend`, {});
+    return await apiClient.suspendUser(id);
 }
 
 async function createPatient(patientData) {

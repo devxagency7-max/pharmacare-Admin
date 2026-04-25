@@ -55,7 +55,12 @@ async function loadDashboardData() {
         const orders = ordersData?.data || {};
         const ordersPerDay = orders.ordersPerDay || [];
         // API returns "value" field (not "count")
-        const totalOrdersCount = ordersPerDay.reduce((sum, item) => sum + (item.value || item.count || 0), 0);
+        let totalOrdersCount = ordersPerDay.reduce((sum, item) => sum + (item.value || item.count || 0), 0);
+        
+        // Fallback calculation from status if ordersPerDay is empty
+        if (totalOrdersCount === 0 && orders.ordersByStatus) {
+            totalOrdersCount = Object.values(orders.ordersByStatus).reduce((a, b) => a + b, 0);
+        }
         
         if (statOrders) statOrders.textContent = totalOrdersCount.toLocaleString();
         
@@ -103,6 +108,16 @@ async function loadDashboardData() {
     }).catch(err => {
         console.warn('Failed to load recent orders:', err);
         updateRecentOrdersUI([]);
+    });
+
+    // 8. Fetch Active Users Trend
+    fetchAnalyticsUsers().then(usersData => {
+        const users = usersData?.data || {};
+        const activeUsers = users.activeUsersPerDay || [];
+        initActiveUsersChart(activeUsers);
+    }).catch(err => {
+        console.warn('Failed to load user analytics:', err);
+        initActiveUsersChart([]);
     });
 }
 
@@ -189,17 +204,30 @@ function initOrdersChart(statusData) {
     const ctx = document.getElementById('ordersChart');
     if (!ctx) return;
 
-    // Map all real API statuses
-    const pending     = (statusData['Pending'] || 0) + (statusData['PricingResponded'] || 0);
-    const confirmed   = (statusData['Confirmed'] || 0);
-    const completed   = (statusData['Completed'] || 0);
-    const rejected    = (statusData['Rejected'] || 0) + (statusData['Cancelled'] || 0);
+    let pending = 0, confirmed = 0, completed = 0, rejected = 0;
 
-    // Fallback to dummy if all zero
+    if (statusData && Object.keys(statusData).length > 0) {
+        for (const [key, val] of Object.entries(statusData)) {
+            const k = key.toLowerCase();
+            if (k.includes('complet') || k.includes('approv') || k.includes('deliver')) completed += val;
+            else if (k.includes('confirm')) confirmed += val;
+            else if (k.includes('pend') || k.includes('process')) pending += val;
+            else if (k.includes('cancel') || k.includes('reject')) rejected += val;
+        }
+    }
+
     const total = pending + confirmed + completed + rejected;
-    const labels = ['Pending', 'Confirmed', 'Completed', 'Rejected/Cancelled'];
-    const values = total > 0 ? [pending, confirmed, completed, rejected] : [25, 30, 35, 10];
-    const colors = ['#f59e0b', '#6366f1', '#10b981', '#ef4444'];
+    
+    let labels, values, colors;
+    if (total > 0) {
+        labels = ['Pending', 'Confirmed', 'Completed', 'Rejected/Cancelled'];
+        values = [pending, confirmed, completed, rejected];
+        colors = ['#f59e0b', '#6366f1', '#10b981', '#ef4444'];
+    } else {
+        labels = ['No Orders'];
+        values = [1];
+        colors = ['#e2e8f0'];
+    }
 
     // Destroy existing chart if re-rendering
     if (ctx._chartInstance) ctx._chartInstance.destroy();
@@ -225,6 +253,14 @@ function initOrdersChart(statusData) {
                         usePointStyle: true,
                         padding: 20,
                         font: { family: "'Inter', sans-serif" }
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            if (total === 0) return ' 0 Orders';
+                            return ` ${context.label}: ${context.raw}`;
+                        }
                     }
                 }
             }
@@ -287,16 +323,102 @@ function updateActivityUI(activity) {
         return;
     }
 
-    list.innerHTML = activity.slice(0, 5).map(item => `
+    list.innerHTML = activity.slice(0, 5).map(item => {
+        const title = item.action || item.title || 'Action Taken';
+        
+        let desc = item.description || item.message;
+        if (!desc) {
+            desc = item.entityType ? `Action on ${item.entityType} by ${item.actorType || 'System'}` : 'System Activity';
+        }
+        
+        let timeStr = item.time || 'recent';
+        if (item.createdAt) {
+            const d = new Date(item.createdAt);
+            timeStr = isNaN(d) ? 'recent' : d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        return `
         <div class="activity-item">
             <div class="activity-icon primary">
                 <i class='bx bx-info-circle'></i>
             </div>
             <div class="activity-content">
-                <h4>${item.title || 'Action Taken'}</h4>
-                <p>${item.description || item.message}</p>
+                <h4>${title}</h4>
+                <p>${desc}</p>
             </div>
-            <span class="activity-time">${item.time || 'recent'}</span>
+            <span class="activity-time">${timeStr}</span>
         </div>
-    `).join('');
+        `;
+    }).join('');
+}
+
+function initActiveUsersChart(data) {
+    const ctx = document.getElementById('activeUsersChart');
+    if (!ctx) return;
+
+    let labels = [];
+    let values = [];
+
+    if (data && data.length > 0) {
+        data.slice(-7).forEach(item => {
+            let dateStr = 'N/A';
+            if (item.date && item.date !== 'N/A') {
+                const dateObj = new Date(item.date);
+                if (!isNaN(dateObj)) {
+                    dateStr = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                }
+            }
+            labels.push(dateStr);
+            values.push(item.value || 0);
+        });
+    } else {
+        labels = ['N/A'];
+        values = [0];
+    }
+
+    if (ctx._chartInstance) ctx._chartInstance.destroy();
+
+    ctx._chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels,
+            datasets: [{
+                label: 'Active Users',
+                data: values,
+                borderColor: '#0057d1',
+                backgroundColor: 'rgba(0, 87, 209, 0.1)',
+                borderWidth: 2,
+                pointBackgroundColor: '#0057d1',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return ` ${context.raw} users`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: { display: false }
+                },
+                y: {
+                    beginAtZero: true,
+                    ticks: { precision: 0 },
+                    grid: { borderDash: [5, 5] }
+                }
+            }
+        }
+    });
 }

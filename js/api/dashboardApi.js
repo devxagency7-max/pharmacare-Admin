@@ -4,8 +4,9 @@ const DASHBOARD_ENDPOINTS = {
     ANALYTICS_ORDERS: '/admin/analytics/orders',
     TOP_PHARMACIES: '/admin/analytics/top-pharmacies',
     TOP_MEDICINES: '/admin/analytics/top-medicines',
-    RECENT_ACTIVITY: '/admin/activity/logs',
-    RECENT_ORDERS: '/admin/orders?pageSize=10'
+    RECENT_ACTIVITY: '/admin/activity',
+    RECENT_ORDERS: '/admin/orders?pageSize=10',
+    USERS: '/admin/analytics/users'
 };
 
 /**
@@ -48,4 +49,11 @@ async function fetchRecentActivity() {
  */
 async function fetchRecentOrders() {
     return apiClient.get(DASHBOARD_ENDPOINTS.RECENT_ORDERS);
+}
+
+/**
+ * Fetch user analytics
+ */
+async function fetchAnalyticsUsers() {
+    return apiClient.get(DASHBOARD_ENDPOINTS.USERS);
 }

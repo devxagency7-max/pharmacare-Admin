@@ -1,207 +1,128 @@
 document.addEventListener('DOMContentLoaded', () => {
-    loadNotificationRequests();
-    initBroadcastForm();
+    loadNotificationHistory();
+    initNotificationForm();
 });
 
-async function loadNotificationRequests(page = 1) {
-    const tableBody = document.getElementById('notifications-requests-body');
-    if (!tableBody) return;
+function toggleTargetFields() {
+    const targetType = document.getElementById('notif-target-type').value;
+    const audienceGroup = document.getElementById('group-audience');
+    const userGroup = document.getElementById('group-userid');
 
-    tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 40px;"><i class="bx bx-loader-alt bx-spin"></i> Loading requests...</td></tr>';
-
-    try {
-        const response = await fetchNotificationRequests(page, 20);
-        const requests = Array.isArray(response) ? response : (response?.data?.items || response?.data || response?.requests || response?.content || []);
-        
-        if (!requests || requests.length === 0) {
-            tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 40px;">No pending notification requests.</td></tr>';
-            return;
-        }
-
-        tableBody.innerHTML = requests.map(req => `
-            <tr>
-                <td style="max-width:300px;">
-                    <div style="font-weight:600; color:var(--text-main);">${req.title || 'Untitled'}</div>
-                    <p style="font-size:13px; color:var(--text-muted); margin-top:4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
-                        ${req.message || req.body || 'No message content provided.'}
-                    </p>
-                </td>
-                <td><span class="badge-type type-${(req.type || 'info').toLowerCase()}">${req.type || 'Info'}</span></td>
-                <td><span style="text-transform: capitalize;">${req.targetAudience || req.target || 'All Users'}</span></td>
-                <td>${req.createdAt ? new Date(req.createdAt).toLocaleString() : 'N/A'}</td>
-                <td><span class="status-badge ${req.status === 'Approved' ? 'success' : 'warning'}">${req.status || 'Pending'}</span></td>
-                <td>
-                    <div class="table-actions">
-                        ${req.status === 'Pending' ? `
-                            <button class="action-btn edit" onclick="approveRequest('${req.id}')" title="Approve"><i class='bx bx-check'></i></button>
-                            <button class="action-btn delete" onclick="rejectRequest('${req.id}')" title="Reject"><i class='bx bx-x'></i></button>
-                        ` : `
-                            <button class="action-btn view" title="Resend"><i class='bx bx-redo'></i></button>
-                        `}
-                    </div>
-                </td>
-            </tr>
-        `).join('');
-
-        updatePagination(total, page);
-        renderPaginationButtons(total, page);
-
-    } catch (error) {
-        console.error('[Notifications] Failed to load:', error);
-        tableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 40px; color: var(--danger);">Failed to load requests. <button class="btn btn-sm btn-outline" onclick="loadNotificationRequests()">Retry</button></td></tr>`;
+    if (targetType === 'broadcast') {
+        audienceGroup.style.display = 'flex';
+        userGroup.style.display = 'none';
+    } else {
+        audienceGroup.style.display = 'none';
+        userGroup.style.display = 'flex';
     }
 }
 
-function renderPaginationButtons(total, currentPage) {
-    const container = document.querySelector('.pagination');
-    if (!container) return;
+// Global export for HTML onchange
+window.toggleTargetFields = toggleTargetFields;
 
-    const totalPages = Math.ceil(total / 20);
-    if (totalPages <= 1) {
-        container.style.display = 'none';
-        return;
-    }
-    container.style.display = 'flex';
-
-    let html = `
-        <button class="page-btn ${currentPage === 1 ? 'disabled' : ''}" onclick="${currentPage === 1 ? '' : `loadNotificationRequests(${currentPage - 1})`}">
-            <i class='bx bx-chevron-left'></i>
-        </button>
-    `;
-
-    for (let i = 1; i <= totalPages; i++) {
-        if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
-            html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="loadNotificationRequests(${i})">${i}</button>`;
-        } else if (i === currentPage - 3 || i === currentPage + 3) {
-            html += `<span>...</span>`;
-        }
-    }
-
-    html += `
-        <button class="page-btn ${currentPage === totalPages ? 'disabled' : ''}" onclick="${currentPage === totalPages ? '' : `loadNotificationRequests(${currentPage + 1})`}">
-            <i class='bx bx-chevron-right'></i>
-        </button>
-    `;
-    container.innerHTML = html;
-}
-
-function initBroadcastForm() {
+function initNotificationForm() {
     const form = document.getElementById('broadcast-form');
     if (!form) return;
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        
         const title = document.getElementById('notif-title').value;
-        const message = document.getElementById('notif-message').value;
+        const body = document.getElementById('notif-message').value;
+        const type = document.getElementById('notif-type').value;
+        const targetType = document.getElementById('notif-target-type').value;
 
-        if (!title || !message) {
-            Swal.fire('Required Fields', 'Please enter both title and message.', 'warning');
+        if (!title || !body) {
+            alert('Please enter both title and message.');
             return;
         }
 
-        const notificationData = {
-            title,
-            message,
-            type: document.getElementById('notif-type').value,
-            targetAudience: document.getElementById('notif-audience').value,
-            deliveryMethod: document.getElementById('notif-delivery').value,
-            scheduleTime: document.getElementById('notif-schedule').value || null
-        };
+        try {
+            submitBtn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Sending...';
+            submitBtn.disabled = true;
 
-        const confirmResult = await Swal.fire({
-            title: 'Send Broadcast?',
-            text: `This will send a notification to ${notificationData.targetAudience} via ${notificationData.deliveryMethod}.`,
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, Send Now'
-        });
-
-        if (confirmResult.isConfirmed) {
-            try {
-                const btn = form.querySelector('button[type="submit"]');
-                const originalText = btn.innerHTML;
-                btn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Processing...';
-                btn.disabled = true;
-
-                await createBroadcastNotification(notificationData);
-                
-                Swal.fire('Success!', 'Notification has been broadcasted successfully.', 'success');
-                form.reset();
-                loadNotificationRequests();
-                
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-            } catch (err) {
-                Swal.fire('Failed', err.message || 'Error occurred while broadcasting.', 'error');
+            let response;
+            if (targetType === 'broadcast') {
+                const role = document.getElementById('notif-audience').value;
+                response = await createBroadcastNotification({
+                    role,
+                    title,
+                    body,
+                    type
+                });
+            } else {
+                const userId = document.getElementById('notif-userid').value;
+                if (!userId) {
+                    alert('Please enter a Target User ID.');
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                    return;
+                }
+                response = await sendDirectNotification({
+                    userId,
+                    title,
+                    body,
+                    type
+                });
             }
+
+            alert('Notification sent successfully!');
+            form.reset();
+            toggleTargetFields();
+            loadNotificationHistory();
+
+        } catch (error) {
+            console.error('[Notifications] Failed to send:', error);
+            alert('Failed to send notification: ' + error.message);
+        } finally {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
         }
     });
 }
 
-async function approveRequest(id) {
-    const confirmResult = await Swal.fire({
-        title: 'Approve Notification?',
-        text: 'This will authorize the delivery of this message.',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#10B981',
-        confirmButtonText: 'Approve'
-    });
+async function loadNotificationHistory() {
+    const tableBody = document.getElementById('notifications-requests-body');
+    if (!tableBody) return;
 
-    if (confirmResult.isConfirmed) {
-        try {
-            await approveNotificationRequest(id);
-            Swal.fire('Approved!', 'The notification has been sent.', 'success');
-            loadNotificationRequests();
-        } catch (err) { Swal.fire('Error', 'Approval failed', 'error'); }
-    }
-}
-
-async function rejectRequest(id) {
-    const reason = prompt('Please enter rejection reason:');
-    if (reason !== null) {
-        try {
-            await rejectNotificationRequest(id, reason);
-            loadNotificationRequests();
-        } catch (err) { alert('Rejection failed'); }
-    }
-}
-
-async function loadNotificationsHistory() {
-    console.log('[Notifications] Loading history via activity endpoint...');
-    try {
-        const response = await fetchAuditLogs(1, 10);
-        const history = Array.isArray(response) ? response : (response?.data || []);
-        console.log('[Notifications] History loaded:', history);
-    } catch (err) {
-        console.error('[Notifications] Error loading history:', err);
-    }
-}
-
-async function sendNotification() {
-    console.log('[Notifications Page] Validating and sending notification...');
-    const title = document.getElementById('notif-title')?.value;
-    const message = document.getElementById('notif-message')?.value;
-    const type = document.getElementById('notif-type')?.value;
-    const audience = document.getElementById('notif-audience')?.value;
-    const delivery = document.getElementById('notif-delivery')?.value;
-    const schedule = document.getElementById('notif-schedule')?.value;
-
-    const payload = {
-        title,
-        message,
-        type,
-        audience,
-        deliveryMethod: delivery,
-        scheduleTime: schedule || null
-    };
+    tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 40px;"><i class="bx bx-loader-alt bx-spin"></i> Loading history...</td></tr>';
 
     try {
-        await createNotificationApi(payload);
-        console.log('[Notifications Page] FCM Notification request sent.');
-        // Clear form and refresh history
-    } catch (err) {
-        console.error('Error sending notification:', err);
+        const res = await fetchNotificationRequests(1, 10);
+        const items = res.data?.items || res.items || [];
+
+        if (items.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 40px; color: var(--text-muted);">No notification history found.</td></tr>';
+            return;
+        }
+
+        tableBody.innerHTML = items.map(item => {
+            const date = new Date(item.createdAt || item.timestamp).toLocaleString();
+            const statusClass = (item.status || 'Sent').toLowerCase().includes('fail') ? 'danger' : 'success';
+            
+            return `
+            <tr>
+                <td>
+                    <div style="font-weight:600; color:var(--text-main);">${item.title}</div>
+                    <div style="font-size:12px; color:var(--text-muted); max-width:300px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.body}</div>
+                </td>
+                <td><span class="badge-type type-info">${item.type || 'Standard'}</span></td>
+                <td><span style="font-size:13px; font-weight:500; color:var(--primary);">${item.role || item.userId || 'Global'}</span></td>
+                <td><span style="font-size:13px; color:var(--text-muted);">${date}</span></td>
+                <td><span class="status-badge ${statusClass}">${item.status || 'Delivered'}</span></td>
+                <td>
+                    <div class="table-actions">
+                        <button class="action-btn view" title="View Details"><i class='bx bx-search-alt'></i></button>
+                    </div>
+                </td>
+            </tr>`;
+        }).join('');
+
+    } catch (error) {
+        console.error('[Notifications] Failed to load history:', error);
+        tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 40px; color: var(--danger);">Failed to load history.</td></tr>';
     }
 }

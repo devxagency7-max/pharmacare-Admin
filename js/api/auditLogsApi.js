@@ -1,7 +1,7 @@
 // Audit Logs API
 const AUDIT_ENDPOINTS = {
-    LATEST: '/admin/activity/logs',
-    EXPORT: '/admin/activity/logs/export'
+    LATEST: '/admin/activity',
+    EXPORT: '/admin/activity/export'
 };
 
 /**

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Patients - Admin Dashboard</title>
+    <title>Patients - Tamenny</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -18,9 +18,11 @@
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
+            
+            
             <div class="logo">
-                <i class='bx bx-plus-medical'></i>
-                <span>Tele-Pharm</span>
+                <img src="../logo.jpeg" alt="Logo">
+                <span>Tamenny</span>
             </div>
             <i class='bx bx-menu' id="sidebar-toggle"></i>
         </div>
@@ -177,23 +179,24 @@
                     </div>
                 </div>
             </div>
-            </div>
-            
-            <!-- Admin Controls -->
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 30px;">
-                <!-- Suspend Panel -->
-                <div class="card" style="padding: 20px; box-shadow: var(--shadow-sm); border-radius: var(--radius-lg);">
-                    <h3 style="margin-bottom: 15px; font-size: 16px; color: var(--danger);">Suspend Patient</h3>
-                    <div style="display: flex; gap: 10px;">
-                        <input type="text" id="suspend-patient-id" placeholder="Patient ID" class="search-box" style="flex: 1; padding: 10px; border: 1px solid rgba(79, 143, 234, 0.2); border-radius: 8px; background: var(--bg-main); outline: none;">
-                        <button class="btn" onclick="submitSuspendPatient()" style="background: var(--danger); color: white; padding: 10px 20px;">Suspend</button>
-                    </div>
-                </div>
-            </div>
         </div>
     </main>
-
-
+ 
+    <!-- View Patient Details Modal -->
+    <div class="modal-overlay" id="view-patient-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class='bx bx-user'></i> Patient Profile</h2>
+                <i class='bx bx-x close-modal' onclick="closeViewModal()"></i>
+            </div>
+            <div id="patient-details-content" class="modal-form">
+                <!-- Data will be injected here -->
+            </div>
+            <div class="modal-actions" style="padding: 20px 30px; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end;">
+                <button class="btn btn-outline" onclick="closeViewModal()" style="min-width: 140px;">Close Profile</button>
+            </div>
+        </div>
+    </div>
 
     <script src="../js/api/apiClient.js"></script>
     <script src="../js/api/patientsApi.js"></script>

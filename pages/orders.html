@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Orders - Tele-Pharm</title>
+    <title>Orders - Tamenny</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -163,7 +163,12 @@
 <body>
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <div class="logo"><i class='bx bx-plus-medical'></i><span>Tele-Pharm</span></div>
+            
+            
+            <div class="logo">
+                <img src="../logo.jpeg" alt="Logo">
+                <span>Tamenny</span>
+            </div>
             <i class='bx bx-menu' id="sidebar-toggle"></i>
         </div>
         <ul class="nav-links">
@@ -207,7 +212,7 @@
                 <div class="stat-card">
                     <div class="stat-icon primary"><i class='bx bx-store'></i></div>
                     <div class="stat-details">
-                        <h3>Total Pharmacies</h3>
+                        <h3>Total Orders</h3>
                         <h2 id="stat-total">124</h2>
                         <span class="trend neutral">System Total</span>
                     </div>
@@ -223,7 +228,7 @@
                 <div class="stat-card">
                     <div class="stat-icon success"><i class='bx bx-check-circle'></i></div>
                     <div class="stat-details">
-                        <h3>Approved</h3>
+                        <h3>In Progress</h3>
                         <h2 id="stat-approved">108</h2>
                         <span class="trend positive"><i class='bx bx-up-arrow-alt'></i> +3 this week</span>
                     </div>
@@ -241,9 +246,10 @@
             <!-- New Filter Action Bar with Pill Tabs and Search -->
             <div class="filter-action-bar">
                 <div class="filter-tabs">
-                    <button class="filter-tab active" data-filter="all">All Requests</button>
+                    <button class="filter-tab active" data-filter="all">All Orders</button>
                     <button class="filter-tab" data-filter="pending">Pending</button>
-                    <button class="filter-tab" data-filter="approved">Approved</button>
+                    <button class="filter-tab" data-filter="accepted">Accepted</button>
+                    <button class="filter-tab" data-filter="completed">Completed</button>
                     <button class="filter-tab" data-filter="rejected">Rejected</button>
                 </div>
                 <div class="search-wrapper">
@@ -266,22 +272,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td><strong>#ORD-001</strong></td>
-                                <td>Sarah Jenkins</td>
-                                <td>City Center Pharmacy</td>
-                                <td>Oct 24, 2023</td>
-                                <td><span class="status-badge success">Approved</span></td>
-                                <td><button class="action-btn edit"><i class='bx bx-show'></i></button></td>
-                            </tr>
-                            <tr>
-                                <td><strong>#ORD-002</strong></td>
-                                <td>Michael Chang</td>
-                                <td>Westside Meds</td>
-                                <td>Oct 24, 2023</td>
-                                <td><span class="status-badge warning">Pending</span></td>
-                                <td><button class="action-btn edit"><i class='bx bx-show'></i></button></td>
-                            </tr>
+                            <!-- Populated dynamically via JS -->
                         </tbody>
                     </table>
                 </div>
@@ -289,10 +280,23 @@
         </div>
     </main>
 
+    <!-- View Order Modal -->
+    <div class="modal-overlay" id="view-order-modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2>Order Details</h2>
+                <button class="close-modal" onclick="closeOrderModal()"><i class='bx bx-x'></i></button>
+            </div>
+            <div class="modal-body" id="order-details-content">
+                <!-- Content injected dynamically via orders.js -->
+            </div>
+        </div>
+    </div>
+
     <script src="../js/main.js"></script>
     <script src="../js/api/apiClient.js"></script>
+    <script src="../js/api/pharmaciesApi.js"></script>
     <script src="../js/api/ordersApi.js"></script>
     <script src="../js/pages/orders.js"></script>
 </body>
-
 </html>

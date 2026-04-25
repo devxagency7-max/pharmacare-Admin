@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reports - Tele-Pharm</title>
+    <title>Reports - Tamenny</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -12,6 +12,8 @@
     <link rel="stylesheet" href="../css/style.css">
     <!-- html2pdf.js for exporting PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         .charts-grid {
             display: grid;
@@ -215,9 +217,76 @@
             transition: width 1s ease-in-out;
         }
 
+        /* Parent override to prevent clipping during export */
+        body.exporting-pdf, body.exporting-pdf .main-content {
+            overflow: visible !important;
+            height: auto !important;
+            width: auto !important;
+        }
+
         .pdf-mode {
-            background: #f8fafc !important;
+            background: #ffffff !important;
             padding: 40px !important;
+            width: 800px !important;
+            max-width: 800px !important;
+            margin: 0 auto !important;
+            box-shadow: none !important;
+            overflow: visible !important;
+        }
+
+        .pdf-mode .action-bar,
+        .pdf-mode .page-header {
+            display: none !important;
+        }
+
+        .pdf-mode .charts-grid {
+            display: block !important;
+            overflow: hidden !important;
+            margin-bottom: 20px !important;
+        }
+
+        .pdf-mode .chart-card {
+            display: block !important;
+            float: left !important;
+            width: calc(50% - 10px) !important;
+            margin-right: 20px !important;
+            margin-bottom: 20px !important;
+            box-sizing: border-box !important;
+            height: auto !important;
+        }
+
+        .pdf-mode .chart-card:nth-child(2n) {
+            margin-right: 0 !important;
+        }
+
+        .pdf-mode .metrics-row {
+            display: block !important;
+            overflow: hidden !important;
+            height: auto !important;
+            margin-bottom: 20px !important;
+        }
+
+        .pdf-mode .metric-tile {
+            display: block !important;
+            float: left !important;
+            width: calc(25% - 15px) !important;
+            margin-right: 20px !important;
+            margin-bottom: 20px !important;
+            box-sizing: border-box !important;
+            height: auto !important;
+        }
+
+        .pdf-mode .metric-tile:nth-child(4n) {
+            margin-right: 0 !important;
+        }
+
+        .pdf-mode .chart-card,
+        .pdf-mode .card,
+        .pdf-mode .metric-tile {
+            page-break-inside: avoid;
+            break-inside: avoid;
+            border: 1px solid #e2e8f0 !important;
+            box-shadow: none !important;
         }
 
         .pdf-header {
@@ -238,7 +307,12 @@
 <body>
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <div class="logo"><i class='bx bx-plus-medical'></i><span>Tele-Pharm</span></div>
+            
+            
+            <div class="logo">
+                <img src="../logo.jpeg" alt="Logo">
+                <span>Tamenny</span>
+            </div>
             <i class='bx bx-menu' id="sidebar-toggle"></i>
         </div>
         <ul class="nav-links">
@@ -275,7 +349,7 @@
 
         <div class="page-content" id="reports-content">
             <div class="pdf-header">
-                <div><h2>PharmaCare Administrative Report</h2><p id="pdf-report-date"></p></div>
+                <div><h2>Tamenny Administrative Report</h2><p id="pdf-report-date"></p></div>
                 <div style="text-align: right;"><img src="https://ui-avatars.com/api/?name=Tele+Pharm&background=0057d1&color=fff&size=64" alt="Logo"></div>
             </div>
 
@@ -291,9 +365,59 @@
                     <span class="trend text-muted">All time</span>
                 </div>
                 <div class="metric-tile">
+                    <span class="label">Pending Orders</span>
+                    <span class="value" id="rep-pending-orders">...</span>
+                    <span class="trend text-warning">Needs action</span>
+                </div>
+                <div class="metric-tile">
+                    <span class="label">Completed Orders</span>
+                    <span class="value" id="rep-completed-orders">...</span>
+                    <span class="trend text-success">Delivered</span>
+                </div>
+                <div class="metric-tile">
+                    <span class="label">Total Patients</span>
+                    <span class="value" id="rep-total-users">...</span>
+                    <span class="trend text-muted">Registered</span>
+                </div>
+                <div class="metric-tile">
+                    <span class="label">Active Pharmacists</span>
+                    <span class="value" id="rep-active-pharmacists">...</span>
+                    <span class="trend text-muted">Staff</span>
+                </div>
+                <div class="metric-tile">
+                    <span class="label">Avg Response</span>
+                    <span class="value" id="rep-avg-response">...</span>
+                    <span class="trend text-muted">Minutes</span>
+                </div>
+                <div class="metric-tile">
                     <span class="label">Top Pharmacy</span>
-                    <span class="value" id="rep-top-pharmacy" style="font-size: 18px;">...</span>
+                    <span class="value" id="rep-top-pharmacy" style="font-size: 16px;">...</span>
                     <span class="trend text-muted">Most Active</span>
+                </div>
+                <div class="metric-tile">
+                    <span class="label">Top Medicine</span>
+                    <span class="value" id="rep-top-medicine" style="font-size: 16px;">...</span>
+                    <span class="trend text-muted">Most Requested</span>
+                </div>
+                <div class="metric-tile">
+                    <span class="label">Cancelled Orders</span>
+                    <span class="value" id="rep-cancelled-orders">...</span>
+                    <span class="trend text-danger">Needs Review</span>
+                </div>
+                <div class="metric-tile">
+                    <span class="label">New Patients Today</span>
+                    <span class="value" id="rep-new-patients-today">...</span>
+                    <span class="trend text-success">Last 24h</span>
+                </div>
+                <div class="metric-tile">
+                    <span class="label">Active Patients Today</span>
+                    <span class="value" id="rep-active-patients-today">...</span>
+                    <span class="trend text-muted">Engaged</span>
+                </div>
+                <div class="metric-tile">
+                    <span class="label">Total Msgs Handled</span>
+                    <span class="value" id="rep-total-msgs">...</span>
+                    <span class="trend text-muted">By Pharmacists</span>
                 </div>
             </div>
 
@@ -304,53 +428,38 @@
 
             <div class="charts-grid">
                 <div class="chart-card">
-                    <div class="chart-header"><h3 class="chart-title">Intern Enrollment</h3><i class='bx bx-dots-horizontal-rounded'></i></div>
-                    <div class="bar-chart">
-                        <div class="bar" style="height: 20%;"><span>Jan</span></div>
-                        <div class="bar" style="height: 35%;"><span>Feb</span></div>
-                        <div class="bar" style="height: 50%;"><span>Mar</span></div>
-                        <div class="bar" style="height: 40%;"><span>Apr</span></div>
-                        <div class="bar" style="height: 65%;"><span>May</span></div>
-                        <div class="bar" style="height: 80%;"><span>Jun</span></div>
-                        <div class="bar" style="height: 95%;"><span>Jul</span></div>
+                    <div class="chart-header"><h3 class="chart-title">New Patients Growth</h3><i class='bx bx-dots-horizontal-rounded'></i></div>
+                    <div style="height: 200px; width: 100%; position: relative;">
+                        <canvas id="newUsersChart"></canvas>
                     </div>
                 </div>
 
                 <div class="chart-card">
-                    <div class="chart-header"><h3 class="chart-title">Patients Growth</h3><span class="trend positive"><i class='bx bx-up-arrow-alt'></i> 12%</span></div>
-                    <div class="line-chart-container">
-                        <svg viewBox="0 0 400 200" style="width: 100%; height: 100%;" preserveAspectRatio="none">
-                            <defs><linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0057d1" stop-opacity="0.3"/><stop offset="100%" stop-color="#0057d1" stop-opacity="0"/></linearGradient></defs>
-                            <polyline fill="url(#lineGrad)" stroke="none" points="0,200 0,150 66,130 133,140 200,90 266,110 333,50 400,20 400,200"/>
-                            <polyline fill="none" stroke="#0057d1" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" points="0,150 66,130 133,140 200,90 266,110 333,50 400,20"/>
-                        </svg>
+                    <div class="chart-header"><h3 class="chart-title">Active Patients Trend</h3><span class="trend positive"><i class='bx bx-up-arrow-alt'></i> 12%</span></div>
+                    <div style="height: 200px; width: 100%; position: relative;">
+                        <canvas id="activeUsersChart"></canvas>
                     </div>
                 </div>
 
                 <div class="chart-card">
-                    <div class="chart-header"><h3 class="chart-title">Pharmacist Specialization</h3><i class='bx bx-dots-horizontal-rounded'></i></div>
-                    <div class="pie-chart-container">
-                        <div class="pie-chart"></div>
-                        <div class="pie-legend">
-                            <div class="legend-item"><div class="legend-dot" style="background:#0057d1"></div> Clinical (50%)</div>
-                            <div class="legend-item"><div class="legend-dot" style="background:#6CB5FF"></div> Retail (30%)</div>
-                            <div class="legend-item"><div class="legend-dot" style="background:#E2E8F0"></div> Research (20%)</div>
-                        </div>
+                    <div class="chart-header"><h3 class="chart-title">Top 3 Medicines</h3><i class='bx bx-capsule'></i></div>
+                    <div class="horizontal-bars" id="top-meds-bars">
+                        <div class="h-bar-item"><div class="h-bar-label"><span>Medicine 1</span><span>...</span></div><div class="h-bar-bg"><div class="h-bar-fill" style="width: 0%"></div></div></div>
+                        <div class="h-bar-item"><div class="h-bar-label"><span>Medicine 2</span><span>...</span></div><div class="h-bar-bg"><div class="h-bar-fill" style="width: 0%"></div></div></div>
+                        <div class="h-bar-item"><div class="h-bar-label"><span>Medicine 3</span><span>...</span></div><div class="h-bar-bg"><div class="h-bar-fill" style="width: 0%"></div></div></div>
                     </div>
                 </div>
 
                 <div class="chart-card">
                     <div class="chart-header"><h3 class="chart-title">Orders Breakdown</h3><i class='bx bx-pie-chart-alt'></i></div>
-                    <div class="doughnut-chart-container">
-                        <div class="doughnut-chart" id="rep-orders-doughnut">
-                            <div class="doughnut-inner"><span id="rep-orders-success">...</span><label>Approved</label></div>
-                        </div>
+                    <div style="height: 200px; width: 100%; position: relative; display: flex; justify-content: center; align-items: center;">
+                        <canvas id="ordersDoughnut"></canvas>
                     </div>
                 </div>
 
                 <div class="chart-card">
                     <div class="chart-header"><h3 class="chart-title">Top 5 Pharmacies</h3><i class='bx bx-medal'></i></div>
-                    <div class="horizontal-bars">
+                    <div class="horizontal-bars" id="top-pharmacies-bars">
                         <div class="h-bar-item"><div class="h-bar-label"><span>Pharmacy 1</span><span>...</span></div><div class="h-bar-bg"><div class="h-bar-fill" style="width: 0%"></div></div></div>
                         <div class="h-bar-item"><div class="h-bar-label"><span>Pharmacy 2</span><span>...</span></div><div class="h-bar-bg"><div class="h-bar-fill" style="width: 0%"></div></div></div>
                         <div class="h-bar-item"><div class="h-bar-label"><span>Pharmacy 3</span><span>...</span></div><div class="h-bar-bg"><div class="h-bar-fill" style="width: 0%"></div></div></div>
@@ -358,17 +467,25 @@
                         <div class="h-bar-item"><div class="h-bar-label"><span>Pharmacy 5</span><span>...</span></div><div class="h-bar-bg"><div class="h-bar-fill" style="width: 0%"></div></div></div>
                     </div>
                 </div>
+
+                <div class="chart-card">
+                    <div class="chart-header"><h3 class="chart-title">Top Pharmacist Performance</h3><i class='bx bx-headphone'></i></div>
+                    <div class="horizontal-bars" id="pharmacist-perf-bars">
+                        <div class="h-bar-item"><div class="h-bar-label"><span>Pharmacist 1</span><span>...</span></div><div class="h-bar-bg"><div class="h-bar-fill" style="width: 0%"></div></div></div>
+                        <div class="h-bar-item"><div class="h-bar-label"><span>Pharmacist 2</span><span>...</span></div><div class="h-bar-bg"><div class="h-bar-fill" style="width: 0%"></div></div></div>
+                        <div class="h-bar-item"><div class="h-bar-label"><span>Pharmacist 3</span><span>...</span></div><div class="h-bar-bg"><div class="h-bar-fill" style="width: 0%"></div></div></div>
+                        <div class="h-bar-item"><div class="h-bar-label"><span>Pharmacist 4</span><span>...</span></div><div class="h-bar-bg"><div class="h-bar-fill" style="width: 0%"></div></div></div>
+                        <div class="h-bar-item"><div class="h-bar-label"><span>Pharmacist 5</span><span>...</span></div><div class="h-bar-bg"><div class="h-bar-fill" style="width: 0%"></div></div></div>
+                    </div>
+                </div>
             </div>
 
-            <div class="card">
-                <div class="card-header"><h3>Generated Reports History</h3></div>
-                <div class="table-container"><table class="data-table"><thead><tr><th>Report Name</th><th>Generated By</th><th>Date</th><th>Actions</th></tr></thead><tbody id="reports-history-body"></tbody></table></div>
-            </div>
+
         </div>
     </main>
 
     <script src="../js/api/apiClient.js"></script>
-    <script src="../js/api/reportsApi.js"></script>
+    <script src="../js/api/analyticsApi.js"></script>
     <script src="../js/main.js"></script>
     <script src="../js/pages/reports.js"></script>
 </body>
