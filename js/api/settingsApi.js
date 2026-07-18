@@ -1,10 +1,12 @@
 // Settings API hooks using centralized apiClient
+
+// Admin profile uses the shared /users/me endpoint (no separate /admin/profile exists)
 async function fetchAdminProfile() {
-    return await apiClient.get('/admin/profile');
+    return await apiClient.get('/users/me');
 }
 
 async function updateAdminProfile(data) {
-    return await apiClient.put('/admin/profile', data);
+    return await apiClient.put('/users/me', data);
 }
 
 async function fetchSettings() {

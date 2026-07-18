@@ -1,10 +1,13 @@
-// File Review API (Handling non-v1 admin endpoints)
-const FILE_REVIEW_BASE = 'http://148.230.114.124:8080/api/admin/files';
+// File Review API
+// Route: /api/admin/files  (NOT versioned — no /v1 segment, same server as the main API)
+// NOTE: This uses a direct fetch (not apiClient) because the path is outside /api/v1
+
+const FILE_REVIEW_BASE = 'http://204.168.149.185/api/admin/files';
 
 async function fileReviewRequest(endpoint, options = {}) {
     const token = await apiClient.getAuthToken();
     const url = `${FILE_REVIEW_BASE}${endpoint}`;
-    
+
     const headers = {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
@@ -16,23 +19,15 @@ async function fileReviewRequest(endpoint, options = {}) {
     return res.json();
 }
 
-/**
- * Fetch all pending pharmacist application files
- */
 async function fetchPendingFiles() {
     return fileReviewRequest('/pending');
 }
 
-/**
- * Approve a file
- */
 async function approveFile(fileId) {
     return fileReviewRequest(`/${fileId}/approve`, { method: 'POST' });
 }
 
-/**
- * Reject a file with reason
- */
+// reason: required, min 3 chars, max 1000 chars
 async function rejectFile(fileId, reason) {
     return fileReviewRequest(`/${fileId}/reject`, {
         method: 'POST',

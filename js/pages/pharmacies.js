@@ -46,11 +46,18 @@ function initCreatePharmacyForm() {
                 }
 
                 submitBtn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Registering...';
-                await createPharmacy(data);
-                
-                alert('Pharmacy registered successfully!');
+                const result = await createPharmacy(data);
+
+                // Backend auto-generates owner credentials — display ONCE, never retrievable again
+                const creds = result?.data || result;
                 closeCreateModal();
                 loadPharmacyRequests(1);
+
+                if (creds.generatedEmail || creds.generatedPassword) {
+                    showPharmacyCredentials(creds);
+                } else {
+                    alert('Pharmacy registered successfully!');
+                }
 
             } catch (error) {
                 console.error('[Create Pharmacy] Failed:', error);
@@ -368,3 +375,65 @@ async function suspendPharmacyAction(id) {
     }
 }
 
+// Shows the auto-generated pharmacy owner credentials.
+// These are returned ONCE from the backend and are never stored or re-retrievable.
+function showPharmacyCredentials(creds) {
+    const existing = document.getElementById('pharmacy-credentials-modal');
+    if (existing) existing.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'pharmacy-credentials-modal';
+    modal.style.cssText = `
+        position:fixed; inset:0; background:rgba(0,0,0,0.6);
+        display:flex; align-items:center; justify-content:center; z-index:9999;
+    `;
+
+    modal.innerHTML = `
+        <div style="background:#fff; border-radius:16px; padding:36px; max-width:480px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+            <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+                <div style="width:44px;height:44px;border-radius:12px;background:#FEF3C7;display:flex;align-items:center;justify-content:center;">
+                    <i class='bx bx-key' style="font-size:22px;color:#D97706;"></i>
+                </div>
+                <div>
+                    <h3 style="margin:0;font-size:18px;color:#0f172a;">Pharmacy Created Successfully</h3>
+                    <p style="margin:4px 0 0;font-size:13px;color:#64748b;">Save these credentials — they will <strong>never</strong> be shown again.</p>
+                </div>
+            </div>
+
+            <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;padding:20px;margin-bottom:20px;">
+                <div style="margin-bottom:14px;">
+                    <label style="font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.5px;font-weight:700;display:block;margin-bottom:6px;">Owner Login Email</label>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <code id="cred-email" style="flex:1;background:#fff;border:1px solid #E2E8F0;border-radius:6px;padding:8px 12px;font-size:13px;color:#0f172a;word-break:break-all;">${creds.generatedEmail || 'N/A'}</code>
+                        <button onclick="navigator.clipboard.writeText('${creds.generatedEmail || ''}');this.innerHTML='<i class=\\'bx bx-check\\'></i>';setTimeout(()=>this.innerHTML='<i class=\\'bx bx-copy\\'></i>',1500);"
+                            style="padding:8px;border:1px solid #E2E8F0;border-radius:6px;background:#fff;cursor:pointer;color:#64748b;">
+                            <i class='bx bx-copy'></i>
+                        </button>
+                    </div>
+                </div>
+                <div>
+                    <label style="font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.5px;font-weight:700;display:block;margin-bottom:6px;">Owner Password</label>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <code id="cred-pass" style="flex:1;background:#fff;border:1px solid #E2E8F0;border-radius:6px;padding:8px 12px;font-size:13px;color:#0f172a;word-break:break-all;">${creds.generatedPassword || 'N/A'}</code>
+                        <button onclick="navigator.clipboard.writeText('${creds.generatedPassword || ''}');this.innerHTML='<i class=\\'bx bx-check\\'></i>';setTimeout(()=>this.innerHTML='<i class=\\'bx bx-copy\\'></i>',1500);"
+                            style="padding:8px;border:1px solid #E2E8F0;border-radius:6px;background:#fff;cursor:pointer;color:#64748b;">
+                            <i class='bx bx-copy'></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div style="background:#FEF3C7;border-radius:8px;padding:12px 16px;margin-bottom:20px;display:flex;gap:8px;align-items:flex-start;">
+                <i class='bx bx-error' style="color:#D97706;font-size:18px;margin-top:1px;"></i>
+                <p style="margin:0;font-size:13px;color:#92400E;line-height:1.5;">Share these credentials with the pharmacy owner immediately. Once you close this dialog, <strong>they cannot be recovered</strong>.</p>
+            </div>
+
+            <button onclick="document.getElementById('pharmacy-credentials-modal').remove();"
+                style="width:100%;padding:12px;background:#0057d1;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;">
+                I have saved the credentials
+            </button>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+}

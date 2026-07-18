@@ -1,7 +1,5 @@
 const apiClient = {
-    baseUrl: (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-             ? 'http://localhost:3000/api/v1' 
-             : 'http://148.230.114.124:8080/api/v1',
+    baseUrl: 'http://204.168.149.185/api/v1',
 
     async getAuthToken() {
         return localStorage.getItem('idToken');
@@ -25,7 +23,7 @@ const apiClient = {
     async request(endpoint, options = {}) {
         const token = await this.getAuthToken();
         const url = endpoint.startsWith('http') ? endpoint : `${this.baseUrl}${endpoint}`;
-        
+
         const isFormData = options.body instanceof FormData;
         const headers = { ...options.headers };
         if (!isFormData) {
@@ -37,7 +35,7 @@ const apiClient = {
         }
 
         const response = await fetch(url, { ...options, headers });
-        
+
         if (response.status === 401) {
             window.location.href = '/login.html';
             throw new Error('Unauthorized');
