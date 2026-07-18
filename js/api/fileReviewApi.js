@@ -2,7 +2,7 @@
 // Route: /api/admin/files  (NOT versioned — no /v1 segment, same server as the main API)
 // NOTE: This uses a direct fetch (not apiClient) because the path is outside /api/v1
 
-const FILE_REVIEW_BASE = 'http://204.168.149.185/api/admin/files';
+const FILE_REVIEW_BASE = '/api/admin/files';
 
 async function fileReviewRequest(endpoint, options = {}) {
     const token = await apiClient.getAuthToken();

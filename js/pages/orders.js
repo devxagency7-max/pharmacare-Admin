@@ -178,7 +178,10 @@ async function viewOrderDetails(id) {
                 <div style="display: flex; flex-direction: column; gap: 8px;">
                     ${items.map(item => `
                         <div style="display: flex; align-items: center; gap: 12px; background: #fff; border: 1px solid #f1f5f9; padding: 10px; border-radius: 8px;">
-                            <img src="${item.imageUrl || 'https://via.placeholder.com/40?text=Med'}" style="width: 40px; height: 40px; border-radius: 6px; object-fit: cover;">
+                            ${item.imageUrl
+                                ? `<img src="${item.imageUrl}" style="width: 40px; height: 40px; border-radius: 6px; object-fit: cover;">`
+                                : `<div style="width:40px;height:40px;border-radius:6px;background:#EAF2FE;display:flex;align-items:center;justify-content:center;"><i class='bx bx-capsule' style="font-size:20px;color:#0057d1;"></i></div>`
+                            }
                             <div style="flex: 1;">
                                 <div style="display: flex; justify-content: space-between;">
                                     <span style="font-weight: 500;">${item.name || 'Medicine'}</span>

@@ -1,5 +1,5 @@
 const apiClient = {
-    baseUrl: 'http://204.168.149.185/api/v1',
+    baseUrl: '/api/v1',
 
     async getAuthToken() {
         return localStorage.getItem('idToken');
