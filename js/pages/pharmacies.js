@@ -96,7 +96,7 @@ async function uploadLogoFile(file) {
     formData.append('file', file);
 
     const token = await apiClient.getAuthToken();
-    const response = await fetch(`${apiClient.baseUrl}/files/upload`, {
+    const response = await fetch('/api/files/upload', {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${token}`

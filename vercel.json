@@ -7,6 +7,10 @@
     {
       "source": "/api/admin/files/:path*",
       "destination": "http://204.168.149.185/api/admin/files/:path*"
+    },
+    {
+      "source": "/api/files/:path*",
+      "destination": "http://204.168.149.185/api/files/:path*"
     }
   ],
   "redirects": [
