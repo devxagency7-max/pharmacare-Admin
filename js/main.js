@@ -61,6 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
             navLinks.forEach(l => l.classList.remove('active'));
             // Add active to current
             link.classList.add('active');
+        }
     });
 
     // Clean local token on logout button click
