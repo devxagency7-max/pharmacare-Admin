@@ -34,9 +34,20 @@ async function loadDashboardData() {
 
         if (statPatients)    statPatients.textContent    = (data.totalPatients    || 0).toLocaleString();
         if (statPharmacists) statPharmacists.textContent = (data.totalPharmacists || 0).toLocaleString();
-        if (statInterns)     statInterns.textContent     = (data.totalInterns     || 0).toLocaleString();
         if (statPharmacies)  statPharmacies.textContent  = (data.totalPharmacies  || 0).toLocaleString();
         if (statOrders)      statOrders.textContent      = (data.totalOrders      || 0).toLocaleString();
+
+        // totalInterns is not returned by /admin/stats — fetch separately
+        if (statInterns) {
+            if (data.totalInterns) {
+                statInterns.textContent = data.totalInterns.toLocaleString();
+            } else {
+                apiClient.get('/admin/interns?pageSize=1').then(res => {
+                    const total = res?.data?.totalCount || res?.data?.total || 0;
+                    statInterns.textContent = total.toLocaleString();
+                }).catch(() => { statInterns.textContent = '0'; });
+            }
+        }
 
         if (!data.totalPatients && !data.totalPharmacists) {
             runStatsDiscovery();
