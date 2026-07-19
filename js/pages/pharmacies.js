@@ -157,13 +157,13 @@ async function loadPharmacyRequests(page = 1) {
         tableBody.innerHTML = pharmacies.map(ph => {
             const email = ph.email || (ph.ownerName && ph.ownerName.includes('@') ? ph.ownerName.split('/').pop() : 'N/A');
             const status = ph.status || 'Active';
-            const logo = ph.logoUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(ph.name || 'P')}&background=EAF2FE&color=0057d1`;
+            const logo = getLogoUrl(ph);
             
             return `
                 <tr>
                     <td>
                         <div class="user-info" style="display: flex; align-items: center; gap: 12px;">
-                            <img src="${logo}" alt="Logo" style="width: 36px; height: 36px; border-radius: 8px; object-fit: cover; border: 1px solid rgba(0,0,0,0.05);">
+                            <img src="${logo}" onerror="this.onerror=null; this.src='${getFallbackSvg(ph.name)}';" alt="Logo" style="width: 36px; height: 36px; border-radius: 8px; object-fit: cover; border: 1px solid rgba(0,0,0,0.05);">
                             <div class="info">
                                 <span class="name" style="font-weight: 600; display: block;">${ph.name || 'Unnamed Pharmacy'}</span>
                                 <span class="email" style="font-size:12px; opacity:0.7; display: block;">${email}</span>
@@ -278,11 +278,11 @@ function viewPharmacyDetails(id) {
 
     fetchPharmacyById(id).then(response => {
         const ph = response?.data || response;
-        const logo = ph.logoUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(ph.name || 'P')}&background=EAF2FE&color=0057d1`;
+        const logo = getLogoUrl(ph);
         
         content.innerHTML = `
             <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid rgba(0,0,0,0.05);">
-                <img src="${logo}" alt="Logo" style="width: 80px; height: 80px; border-radius: 12px; object-fit: cover; border: 1px solid rgba(0,0,0,0.1); box-shadow: var(--shadow-sm);">
+                <img src="${logo}" onerror="this.onerror=null; this.src='${getFallbackSvg(ph.name)}';" alt="Logo" style="width: 80px; height: 80px; border-radius: 12px; object-fit: cover; border: 1px solid rgba(0,0,0,0.1); box-shadow: var(--shadow-sm);">
                 <div>
                     <h3 style="margin: 0; font-size: 20px; color: var(--primary);">${ph.name || 'Unnamed'}</h3>
                     <p style="margin: 5px 0 0; font-size: 14px; color: var(--text-muted);">${ph.governorate || 'Location not specified'}</p>
@@ -445,4 +445,37 @@ function showPharmacyCredentials(creds) {
     `;
 
     document.body.appendChild(modal);
+}
+
+function getLogoUrl(ph) {
+    const defaultFallback = getFallbackSvg(ph?.name);
+    
+    if (!ph || !ph.logoUrl) {
+        return defaultFallback;
+    }
+    
+    let url = ph.logoUrl.trim();
+    if (url === '' || url === 'string') {
+        return defaultFallback;
+    }
+    
+    // Replace old server IP with the new one if present
+    if (url.includes('148.230.114.124:8080')) {
+        url = url.replace('148.230.114.124:8080', '204.168.149.185');
+    }
+    
+    // Convert relative URLs to absolute using new backend server base
+    const backendHost = 'http://204.168.149.185';
+    if (url.startsWith('/')) {
+        url = `${backendHost}${url}`;
+    } else if (!url.startsWith('http://') && !url.startsWith('https://') && !url.startsWith('data:')) {
+        url = `${backendHost}/${url}`;
+    }
+    
+    return url;
+}
+
+function getFallbackSvg(name) {
+    const char = (name || 'P').charAt(0).toUpperCase();
+    return `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='100' height='100'><rect width='100%25' height='100%25' fill='%23EAF2FE'/><text x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='14' font-weight='bold' fill='%230057d1'>${encodeURIComponent(char)}</text></svg>`;
 }

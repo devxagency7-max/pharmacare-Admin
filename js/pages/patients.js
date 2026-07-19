@@ -79,6 +79,7 @@ async function loadPatients(page = 1) {
                 <td>
                     <div class="table-person">
                         <img src="${patient.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=E1F0F8&color=0D8ABC`}"
+                            onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=E1F0F8&color=0D8ABC';"
                             alt="${displayName}">
                         <div class="info">
                             <span class="name" style="font-weight: 600;">${displayName}</span>
@@ -209,7 +210,7 @@ async function viewPatientDetails(id) {
         content.innerHTML = `
             <div style="display: flex; align-items: center; gap: 24px; margin-bottom: 30px; padding: 20px; background: linear-gradient(to right, #F8FAFD, #FFFFFF); border-radius: 16px; border: 1px solid #E2E8F0;">
                 <div style="width: 90px; height: 90px; border-radius: 50%; background: #EAF2FE; color: #0057d1; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 32px; border: 2px solid white; box-shadow: var(--shadow-sm); overflow: hidden;">
-                    <img src="${p.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=EAF2FE&color=0057d1`}" style="width: 100%; height: 100%; object-fit: cover;">
+                    <img src="${p.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=EAF2FE&color=0057d1`}" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=EAF2FE&color=0057d1';" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
                 <div>
                     <h3 style="margin: 0; font-size: 24px; color: var(--primary); font-weight: 700;">${displayName}</h3>
