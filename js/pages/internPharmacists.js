@@ -57,45 +57,21 @@ async function loadInternPharmacists(page = 1) {
     if (paginationContainer) paginationContainer.style.opacity = '0.5';
 
     try {
-        let response;
+        let interns = [];
+        let total = 0;
+
         if (currentTab === 'requests') {
-            // Fetch both and merge to ensure we see everything without duplicates
-            const [internRes, appRes] = await Promise.all([
-                fetchInternPharmacists(1, 100, currentSearch, 'Pending'),
-                fetchInternPharmacistApplications(1, 100)
-            ]);
-
-            const list1 = Array.isArray(internRes?.data || internRes) ? (internRes?.data || internRes) : (internRes?.data?.items || []);
-            const list2 = Array.isArray(appRes?.data || appRes) ? (appRes?.data || appRes) : (appRes?.data?.items || []);
-
-            const merged = [];
-            const seen = new Set();
-
-            [...list1, ...list2].forEach(item => {
-                const key = (item.userEmail || item.email || item.userId || item.id || '').toLowerCase();
-                if (key && !seen.has(key)) {
-                    seen.add(key);
-                    merged.push(item);
-                }
-            });
-
-            interns = merged;
-            total = merged.length;
+            // Pending applications only — dedicated endpoint, unchanged by backend
+            const response = await fetchInternPharmacistApplications(page, PAGE_SIZE);
+            const dataRoot = response?.data || response;
+            interns = Array.isArray(dataRoot) ? dataRoot : (dataRoot.items || []);
+            total = dataRoot.totalCount || dataRoot.total || interns.length;
         } else {
+            // All interns — now paginated + searchable + filterable (same shape as Patients/Pharmacists)
             const response = await fetchInternPharmacists(page, PAGE_SIZE, currentSearch, currentStatus);
             const dataRoot = response?.data || response;
-            let rawInterns = Array.isArray(dataRoot) ? dataRoot : (dataRoot.items || dataRoot.users || dataRoot.content || dataRoot.data || []);
-
-            // STRICT FILTER: In the "All" tab, hide anyone with a Pending status
-            interns = rawInterns.filter(i => {
-                const s = String(i.status || '').toLowerCase().trim();
-                return s !== 'pending';
-            });
-
+            interns = Array.isArray(dataRoot) ? dataRoot : (dataRoot.items || dataRoot.users || []);
             total = dataRoot.totalCount || dataRoot.total || interns.length;
-            if (rawInterns.length !== interns.length) {
-                total = interns.length;
-            }
         }
 
         if (!interns || interns.length === 0) {
@@ -178,32 +154,13 @@ async function updateRequestsBadge() {
     if (!badge) return;
 
     try {
-        // Fetch both to deduplicate
-        const [appRes, internRes] = await Promise.all([
-            fetchInternPharmacistApplications(1, 50),
-            fetchInternPharmacists(1, 50, '', 'Pending')
-        ]);
-
-        const apps = Array.isArray(appRes?.data || appRes) ? (appRes?.data || appRes) : (appRes?.data?.items || []);
-        const interns = Array.isArray(internRes?.data || internRes) ? (internRes?.data || internRes) : (internRes?.data?.items || []);
-
-        // Use Set for deduplication by Email or ID
-        const seen = new Set();
-        let total = 0;
-
-        [...interns, ...apps].forEach(item => {
-            const key = (item.userEmail || item.email || item.userId || item.id || '').toLowerCase();
-            if (key && !seen.has(key)) {
-                seen.add(key);
-                total++;
-            }
-        });
+        const response = await fetchInternPharmacistApplications(1, 1);
+        const dataRoot = response?.data || response;
+        const total = dataRoot.totalCount || dataRoot.total || 0;
 
         if (total > 0) {
             badge.textContent = total;
             badge.style.display = 'inline-block';
-            badge.classList.add('pulse-animation'); // Ensure CSS has .pulse-animation { animation: pulse 2s infinite; }
-            badge.style.animation = 'pulse 2s infinite';
         } else {
             badge.style.display = 'none';
         }
@@ -261,7 +218,14 @@ async function viewInternDetails(id) {
     `;
 
     try {
-        const intern = currentInternPharmacistsData.find(x => String(x.id || x.userId) === String(id));
+        let intern;
+        try {
+            const res = await fetchInternPharmacistById(id);
+            intern = res?.data || res;
+        } catch (fetchErr) {
+            console.warn('[Interns] Detail fetch failed, using cache:', fetchErr.message);
+            intern = currentInternPharmacistsData.find(x => String(x.id || x.userId) === String(id));
+        }
         if (!intern) throw new Error('Intern not found.');
 
         // Priority: userName from API, then other fields, no email fallback
