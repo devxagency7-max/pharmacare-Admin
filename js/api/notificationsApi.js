@@ -1,48 +1,82 @@
-// Notifications API hooks using centralized apiClient
-//
-// IMPORTANT — Backend does NOT have a notification approval workflow.
-// Notifications are sent immediately. There is no pending/approve/reject queue.
-// The functions below that are marked [NOT IMPLEMENTED] will 404 and are kept
-// only as placeholders pending a backend decision.
+// Notifications Campaign API services using centralized apiClient
 
-// [NOT IMPLEMENTED] — No notification history endpoint exists yet in the backend.
-// Returns an empty list silently so the page doesn't break.
-async function fetchNotificationRequests(page = 1, pageSize = 20) {
+// Fetch notification campaign history with filters and pagination
+async function fetchNotificationRequests(page = 1, pageSize = 20, filters = {}) {
     try {
-        return await apiClient.get(`/admin/notification-requests?page=${page}&pageSize=${pageSize}`);
+        const queryParams = new URLSearchParams();
+        queryParams.append('page', page);
+        queryParams.append('pageSize', pageSize);
+        
+        if (filters.search) queryParams.append('search', filters.search);
+        if (filters.status) queryParams.append('status', filters.status);
+        if (filters.targetType) queryParams.append('targetType', filters.targetType);
+        if (filters.category) queryParams.append('category', filters.category);
+
+        return await apiClient.get(`/admin/notifications/campaigns?${queryParams.toString()}`);
     } catch (e) {
-        console.warn('[Notifications] History endpoint not available yet:', e.message);
-        return { data: { items: [], totalCount: 0 } };
+        console.error('[Notifications] Failed to fetch campaign history:', e.message);
+        throw e;
     }
 }
 
-// Sends to all users of a given role immediately.
-// role must be a valid UserRole: Admin | Patient | Pharmacist | PharmacyIntern | PharmacyOwner
-// NOTE: "All" is NOT a valid role value — backend will reject it. Ask backend for a broadcast-all option.
+// Submit compose form: Save Draft, Schedule, Send Now.
+// Action determines behavior: 'draft' | 'schedule' | 'send'
+async function createNotificationCampaign(campaignData) {
+    try {
+        return await apiClient.post('/admin/notifications/campaigns', campaignData);
+    } catch (e) {
+        console.error('[Notifications] Failed to create campaign:', e.message);
+        throw e;
+    }
+}
+
+// Get details of a specific campaign
+async function getNotificationCampaignDetails(id) {
+    try {
+        return await apiClient.get(`/admin/notifications/campaigns/${id}`);
+    } catch (e) {
+        console.error(`[Notifications] Failed to fetch details for campaign ${id}:`, e.message);
+        throw e;
+    }
+}
+
+// Cancel a scheduled campaign
+async function cancelNotificationCampaign(id) {
+    try {
+        return await apiClient.post(`/admin/notifications/campaigns/${id}/cancel`, {});
+    } catch (e) {
+        console.error(`[Notifications] Failed to cancel campaign ${id}:`, e.message);
+        throw e;
+    }
+}
+
+// Resend an existing campaign immediately
+async function resendNotificationCampaign(id) {
+    try {
+        return await apiClient.post(`/admin/notifications/campaigns/${id}/resend`, {});
+    } catch (e) {
+        console.error(`[Notifications] Failed to resend campaign ${id}:`, e.message);
+        throw e;
+    }
+}
+
+// Delete a campaign (Draft/Cancelled status only)
+async function deleteNotificationCampaign(id) {
+    try {
+        return await apiClient.delete(`/admin/notifications/campaigns/${id}`);
+    } catch (e) {
+        console.error(`[Notifications] Failed to delete campaign ${id}:`, e.message);
+        throw e;
+    }
+}
+
+// --- LEGACY ENDPOINTS (kept for backward compatibility) ---
 async function createBroadcastNotification(notificationData) {
+    console.warn('[Notifications] Using legacy broadcast endpoint');
     return await apiClient.post('/admin/notifications/broadcast', notificationData);
 }
 
-// Sends to one specific user by userId (Guid).
-// Backend does NOT validate that userId exists — validate on the frontend before calling.
 async function sendDirectNotification(notificationData) {
+    console.warn('[Notifications] Using legacy direct send endpoint');
     return await apiClient.post('/admin/notifications/send', notificationData);
-}
-
-// [NOT IMPLEMENTED] — No notification request approval workflow exists in the backend.
-async function approveNotificationRequest(id) {
-    console.warn('[Notifications] approveNotificationRequest: endpoint not implemented by backend.');
-    return await apiClient.put(`/admin/notification-requests/${id}/approve`);
-}
-
-// [NOT IMPLEMENTED] — No notification request rejection workflow exists in the backend.
-async function rejectNotificationRequest(id, reason) {
-    console.warn('[Notifications] rejectNotificationRequest: endpoint not implemented by backend.');
-    return await apiClient.put(`/admin/notification-requests/${id}/reject`, { reason });
-}
-
-// [NOT IMPLEMENTED] — No delete notification endpoint exists in the backend.
-async function deleteNotificationApi(id) {
-    console.warn('[Notifications] deleteNotificationApi: endpoint not implemented by backend.');
-    return await apiClient.delete(`/admin/notifications/${id}`);
 }
