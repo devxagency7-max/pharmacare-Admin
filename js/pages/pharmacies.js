@@ -477,5 +477,5 @@ function getLogoUrl(ph) {
 
 function getFallbackSvg(name) {
     const char = (name || 'P').charAt(0).toUpperCase();
-    return `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='100' height='100'><rect width='100%25' height='100%25' fill='%23EAF2FE'/><text x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='14' font-weight='bold' fill='%230057d1'>${encodeURIComponent(char)}</text></svg>`;
+    return `data:image/svg+xml;utf8,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 width=%27100%27 height=%27100%27><rect width=%27100%25%27 height=%27100%25%27 fill=%27%23EAF2FE%27/><text x=%2750%25%27 y=%2750%25%27 dominant-baseline=%27middle%27 text-anchor=%27middle%27 font-family=%27sans-serif%27 font-size=%2714%27 font-weight=%27bold%27 fill=%27%230057d1%27>${encodeURIComponent(char)}</text></svg>`;
 }
