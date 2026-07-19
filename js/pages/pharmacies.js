@@ -329,6 +329,15 @@ function viewPharmacyDetails(id) {
                     <label style="display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">Created At</label>
                     <div style="font-weight: 500;">${ph.createdAt ? new Date(ph.createdAt).toLocaleString() : 'N/A'}</div>
                 </div>
+                <div class="detail-item">
+                    <label style="display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">Currently Open</label>
+                    <div><span class="status-badge ${ph.isOpen ? 'success' : 'danger'}">${ph.isOpen ? 'Open' : 'Closed'}</span></div>
+                </div>
+                ${ph.workingHoursDescription ? `
+                <div class="detail-item" style="grid-column: span 2;">
+                    <label style="display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">Working Hours</label>
+                    <div style="font-weight: 500; background: var(--bg-main); padding: 10px; border-radius: 8px;">${ph.workingHoursDescription}</div>
+                </div>` : ''}
             </div>
         `;
     }).catch(err => {
