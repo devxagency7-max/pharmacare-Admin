@@ -2,7 +2,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const sidebar = document.getElementById('sidebar');
     const toggleBtn = document.getElementById('sidebar-toggle');
-    const searchBtn = document.querySelector('.search-box i'); // Sometimes used as toggle on mobile
+
 
     // Toggle sidebar collapse state
     if (toggleBtn) {
@@ -74,6 +74,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Notification Bell
     initNotificationBell();
+
+    // Load real admin profile in topbar
+    loadTopbarProfile();
 
 });
 
@@ -193,6 +196,38 @@ async function loadBellNotifications() {
         }).join('');
     } catch {
         list.innerHTML = '<div style="padding:24px; text-align:center; color:#ef4444; font-size:13px;">Failed to load.</div>';
+    }
+}
+
+// ─── Topbar Profile ───────────────────────────────────────────────────────────
+
+async function loadTopbarProfile() {
+    const nameEl  = document.querySelector('.topbar .profile .name');
+    const roleEl  = document.querySelector('.topbar .profile .role');
+    const imgEl   = document.querySelector('.topbar .profile img');
+    if (!nameEl || !window.apiClient) return;
+
+    try {
+        const res  = await apiClient.get('/users/me');
+        const user = res?.data || res;
+
+        const fullName = user.fullName || user.name || user.displayName || 'Admin';
+        const role     = user.role || user.roles || 'Admin';
+
+        if (nameEl) nameEl.textContent = fullName;
+        if (roleEl) roleEl.textContent = role;
+        if (imgEl) {
+            if (user.profilePhotoUrl || user.photoUrl || user.avatarUrl) {
+                imgEl.src = user.profilePhotoUrl || user.photoUrl || user.avatarUrl;
+                imgEl.onerror = () => {
+                    imgEl.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=0057d1&color=fff`;
+                };
+            } else {
+                imgEl.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=0057d1&color=fff`;
+            }
+        }
+    } catch {
+        // Silently fail — keep the default placeholder
     }
 }
 
