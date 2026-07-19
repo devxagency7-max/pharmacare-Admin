@@ -2,6 +2,22 @@ const FIREBASE_API_KEY = 'AIzaSyCXMY-UDoD36xHZEpBUxstflXHzkA2EAe8';
 const FIREBASE_LOGIN_URL = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${FIREBASE_API_KEY}`;
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Check for auth error redirect
+    const authError = sessionStorage.getItem('authError');
+    if (authError) {
+        sessionStorage.removeItem('authError');
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: 'Access Denied',
+                text: authError,
+                icon: 'error',
+                confirmButtonColor: '#0057d1'
+            });
+        } else {
+            alert(authError);
+        }
+    }
+
     const loginForm = document.getElementById('login-form');
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
