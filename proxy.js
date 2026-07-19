@@ -3,7 +3,7 @@ const https = require('https');
 const url = require('url');
 
 const PORT = 3000;
-const TARGET_BASE = 'http://148.230.114.124:8080';
+const TARGET_BASE = 'http://204.168.149.185';
 
 http.createServer((req, res) => {
     // CORS headers
