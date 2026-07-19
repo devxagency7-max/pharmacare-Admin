@@ -37,6 +37,14 @@ const apiClient = {
         const response = await fetch(url, { ...options, headers });
 
         if (response.status === 401) {
+            console.error('[Auth] 401 Unauthorized on:', url);
+            // If user just logged in, don't redirect — backend may have a flaky endpoint
+            const justLoggedIn = sessionStorage.getItem('justLoggedIn');
+            if (justLoggedIn) {
+                sessionStorage.removeItem('justLoggedIn');
+                throw new Error('Unauthorized');
+            }
+            localStorage.removeItem('idToken');
             window.location.href = '/login.html';
             throw new Error('Unauthorized');
         }

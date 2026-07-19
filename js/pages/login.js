@@ -43,6 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!token) throw new Error('No token received from Firebase.');
 
                 apiClient.setToken(token);
+                sessionStorage.setItem('justLoggedIn', '1');
                 console.log('[Login] Firebase auth successful. Redirecting...');
 
                 // Redirect to dashboard
