@@ -167,6 +167,12 @@ async function requestBellPermission() {
     }
 }
 
+function extractCount(settled) {
+    if (settled.status !== 'fulfilled') return 0;
+    const v = settled.value;
+    return v?.data?.totalCount ?? v?.totalCount ?? v?.data?.total ?? v?.total ?? 0;
+}
+
 async function loadBellBadge() {
     const badge = document.querySelector('.notification-icon .badge');
     if (!badge) return;
@@ -176,10 +182,7 @@ async function loadBellBadge() {
             apiClient.get('/admin/applications?type=Intern&status=Pending&pageSize=1'),
             apiClient.get('/admin/orders?status=Pending&pageSize=1'),
         ]);
-        const pharmCount  = pharmRes.status  === 'fulfilled' ? (pharmRes.value?.data?.totalCount  || 0) : 0;
-        const internCount = internRes.status === 'fulfilled' ? (internRes.value?.data?.totalCount || 0) : 0;
-        const ordersCount = ordersRes.status === 'fulfilled' ? (ordersRes.value?.data?.totalCount || 0) : 0;
-        const total = pharmCount + internCount + ordersCount;
+        const total = extractCount(pharmRes) + extractCount(internRes) + extractCount(ordersRes);
         badge.textContent = total > 99 ? '99+' : String(total);
         badge.style.display = total === 0 ? 'none' : '';
     } catch {
@@ -200,9 +203,14 @@ async function loadBellNotifications() {
             apiClient.get('/admin/orders?pageSize=10'),
         ]);
 
-        const pharmItems  = pharmRes.status  === 'fulfilled' ? (pharmRes.value?.data?.items  || []) : [];
-        const internItems = internRes.status === 'fulfilled' ? (internRes.value?.data?.items || []) : [];
-        const orderItems  = ordersRes.status === 'fulfilled' ? (ordersRes.value?.data?.items || []) : [];
+        const extractItems = (res) => {
+            if (res.status !== 'fulfilled') return [];
+            const v = res.value;
+            return v?.data?.items ?? v?.items ?? v?.data ?? [];
+        };
+        const pharmItems  = extractItems(pharmRes);
+        const internItems = extractItems(internRes);
+        const orderItems  = extractItems(ordersRes);
 
         const entries = [];
 
@@ -326,8 +334,8 @@ async function loadSidebarPendingDots() {
             apiClient.get('/admin/applications?type=Intern&status=Pending&pageSize=1'),
         ]);
 
-        const pharmCount  = pharmRes.status  === 'fulfilled' ? (pharmRes.value?.data?.totalCount  || 0) : 0;
-        const internCount = internRes.status === 'fulfilled' ? (internRes.value?.data?.totalCount || 0) : 0;
+        const pharmCount  = extractCount(pharmRes);
+        const internCount = extractCount(internRes);
 
         // Map: page filename → pending count (intern checked first to avoid substring collision)
         const dotMap = [
