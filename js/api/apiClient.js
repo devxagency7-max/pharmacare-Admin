@@ -107,3 +107,5 @@ const apiClient = {
         return this.put(`/admin/users/${id}/activate`, {});
     }
 };
+
+window.apiClient = apiClient;
