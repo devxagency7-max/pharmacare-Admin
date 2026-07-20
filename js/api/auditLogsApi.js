@@ -40,11 +40,32 @@ async function archiveAuditLogs(retentionDays) {
     return apiClient.post(`/admin/audit-logs/archive${qs}`, {});
 }
 
-// Export — triggers a file download (not a JSON response)
-function exportAuditLogs(format = 'csv', filters = {}) {
+// Export — fetches with Authorization header and triggers browser download
+async function exportAuditLogs(format = 'csv', filters = {}) {
     const params = new URLSearchParams(buildAuditQuery(filters));
     params.set('format', format);
     const token = localStorage.getItem('idToken');
-    if (token) params.set('token', token);
-    window.location.href = `/api/v1/admin/audit-logs/export?${params.toString()}`;
+
+    const url = `/api/v1/admin/audit-logs/export?${params.toString()}`;
+    const headers = { 'Accept': '*/*' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
+    try {
+        const res = await fetch(url, { headers });
+        if (!res.ok) throw new Error(`Export failed: ${res.status}`);
+
+        const blob = await res.blob();
+        const ext = format === 'excel' ? 'xlsx' : format;
+        const filename = `audit-logs-${new Date().toISOString().slice(0,10)}.${ext}`;
+
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(a.href);
+    } catch (e) {
+        alert('Export failed: ' + e.message);
+    }
 }
