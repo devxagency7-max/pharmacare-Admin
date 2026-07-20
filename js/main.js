@@ -81,9 +81,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // Show SuperAdmin nav items if the logged-in user is a SuperAdmin
     showSuperAdminNav();
 
-    // Delay sidebar dots + bell badge — longer on dashboard (most API calls) shorter elsewhere
+    // Delay sidebar dots + bell badge after all scripts have loaded
     const isDashboard = window.location.pathname.endsWith('index.html') || window.location.pathname.endsWith('/');
-    setTimeout(() => loadPendingCounts(), isDashboard ? 3000 : 500);
+    setTimeout(() => {
+        if (window.apiClient) {
+            loadPendingCounts();
+        } else {
+            // apiClient not ready yet — wait a bit more
+            setTimeout(() => loadPendingCounts(), 1000);
+        }
+    }, isDashboard ? 3000 : 500);
 
 });
 
@@ -174,7 +181,6 @@ function extractCount(settled) {
 
 // Single shared fetch — used by both bell badge and sidebar dots
 async function loadPendingCounts(retryCount = 0) {
-    console.log('[PendingCounts] STARTED, apiClient:', !!window.apiClient);
     if (!window.apiClient) return;
     try {
         const [pharmRes, internRes] = await Promise.allSettled([
