@@ -128,6 +128,8 @@ async function loadNotifications() {
     try {
         const res = await fetchNotificationSettings();
         const d = res?.data || res;
+        console.log('[Settings] notifications response:', res);
+        console.log('[Settings] notifications data:', d);
         document.getElementById('notif-email').checked = !!d.emailNotifications;
         document.getElementById('notif-push').checked = !!d.pushNotifications;
         document.getElementById('notif-broadcast').checked = !!d.broadcastNotifications;
@@ -135,7 +137,7 @@ async function loadNotifications() {
         document.getElementById('notif-order').checked = !!d.orderNotifications;
         document.getElementById('notif-system').checked = !!d.systemAlerts;
     } catch (err) {
-        // Non-fatal
+        console.error('[Settings] notifications error:', err);
     }
 }
 
