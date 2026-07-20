@@ -129,7 +129,7 @@ function initNotificationBell() {
     `;
     dropdown.innerHTML = `
         <div style="padding: 16px 20px; border-bottom: 1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-weight:700; font-size:15px; color:#0f172a;">Notifications</span>
+            <span style="font-weight:700; font-size:15px; color:#0f172a;" data-i18n="notif_title">Notifications</span>
         </div>
         <div id="notif-permission-bar" style="padding:10px 16px; background:#eff6ff; border-bottom:1px solid #dbeafe; font-size:12px; color:#1d4ed8; align-items:center; gap:8px; display:none;">
             <i class='bx bx-bell-plus' style="font-size:16px;"></i>
@@ -316,7 +316,7 @@ async function loadBellNotifications() {
         entries.sort((a, b) => (b.time && a.time) ? new Date(b.time) - new Date(a.time) : 0);
 
         if (entries.length === 0) {
-            list.innerHTML = '<div style="padding:36px; text-align:center; color:#94a3b8; font-size:13px;">No new notifications.</div>';
+            list.innerHTML = `<div style="padding:36px; text-align:center; color:#94a3b8; font-size:13px;">${typeof t === 'function' ? t('notif_empty') : 'No new notifications.'}</div>`;
             return;
         }
 

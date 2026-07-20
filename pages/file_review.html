@@ -6,10 +6,14 @@
     <title>File Review - Tamenny</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="icon" href="../logo.jpeg" type="image/jpeg"><link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/theme.css">
     <link rel="stylesheet" href="../css/modals.css">
+    <script src="../js/i18n.js"></script>
+    <script src="../js/theme.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         /* Type tabs */
@@ -66,34 +70,34 @@
             <i class='bx bx-menu' id="sidebar-toggle"></i>
         </div>
         <ul class="nav-links">
-            <li><a href="../index.html"><i class='bx bx-grid-alt'></i><span class="link-name">Dashboard</span></a></li>
-            <li><a href="patients.html"><i class='bx bx-user'></i><span class="link-name">Patients</span></a></li>
-            <li><a href="pharmacists.html"><i class='bx bx-plus-medical'></i><span class="link-name">Pharmacists</span></a></li>
-            <li><a href="intern_pharmacists.html"><i class='bx bx-book-reader'></i><span class="link-name">Intern Pharmacists</span></a></li>
-            <li><a href="pharmacies.html"><i class='bx bx-store-alt'></i><span class="link-name">Pharmacies</span></a></li>
-            <li><a href="orders.html"><i class='bx bx-cart'></i><span class="link-name">Orders</span></a></li>
-            <li><a href="medications.html"><i class='bx bx-capsule'></i><span class="link-name">Medications</span></a></li>
-            <li><a href="reports.html"><i class='bx bx-pie-chart-alt-2'></i><span class="link-name">Reports</span></a></li>
-            <li><a href="audit_logs.html"><i class='bx bx-file'></i><span class="link-name">Audit Logs</span></a></li>
+            <li><a href="../index.html"><i class='bx bx-grid-alt'></i><span class="link-name" data-i18n="nav_dashboard">Dashboard</span></a></li>
+            <li><a href="patients.html"><i class='bx bx-user'></i><span class="link-name" data-i18n="nav_patients">Patients</span></a></li>
+            <li><a href="pharmacists.html"><i class='bx bx-plus-medical'></i><span class="link-name" data-i18n="nav_pharmacists">Pharmacists</span></a></li>
+            <li><a href="intern_pharmacists.html"><i class='bx bx-book-reader'></i><span class="link-name" data-i18n="nav_interns">Intern Pharmacists</span></a></li>
+            <li><a href="pharmacies.html"><i class='bx bx-store-alt'></i><span class="link-name" data-i18n="nav_pharmacies">Pharmacies</span></a></li>
+            <li><a href="orders.html"><i class='bx bx-cart'></i><span class="link-name" data-i18n="nav_orders">Orders</span></a></li>
+            <li><a href="medications.html"><i class='bx bx-capsule'></i><span class="link-name" data-i18n="nav_medications">Medications</span></a></li>
+            <li><a href="reports.html"><i class='bx bx-pie-chart-alt-2'></i><span class="link-name" data-i18n="nav_reports">Reports</span></a></li>
+            <li><a href="audit_logs.html"><i class='bx bx-file'></i><span class="link-name" data-i18n="nav_audit">Audit Logs</span></a></li>
             <li><a href="file_review.html" class="active"><i class='bx bx-file-find'></i><span class="link-name">File Review</span></a></li>
-            <li><a href="notifications.html"><i class='bx bx-bell'></i><span class="link-name">Global Notifications</span></a></li>
-            <li><a href="settings.html"><i class='bx bx-cog'></i><span class="link-name">Settings</span></a></li>
+            <li><a href="notifications.html"><i class='bx bx-bell'></i><span class="link-name" data-i18n="nav_notifications">Global Notifications</span></a></li>
+            <li><a href="settings.html"><i class='bx bx-cog'></i><span class="link-name" data-i18n="nav_settings">Settings</span></a></li>
             <!-- SuperAdmin Section -->
-            <li class="superadmin-section" style="display:none; padding: 6px 20px 2px; pointer-events:none;"><span style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#94a3b8;">SuperAdmin</span></li>
-            <li class="superadmin-section" style="display:none"><a href="admin_management.html"><i class='bx bx-shield-quarter'></i><span class="link-name">Admin Management</span></a></li>
-            <li class="superadmin-section" style="display:none"><a href="platform_config.html"><i class='bx bx-slider-alt'></i><span class="link-name">Platform Config</span></a></li>
-            <li class="superadmin-section" style="display:none"><a href="system_health.html"><i class='bx bx-pulse'></i><span class="link-name">System Health</span></a></li>
-            <li class="superadmin-section" style="display:none"><a href="backups.html"><i class='bx bx-data'></i><span class="link-name">Backups</span></a></li>
-            <li class="superadmin-section" style="display:none"><a href="integrations.html"><i class='bx bx-plug'></i><span class="link-name">Integrations</span></a></li>
+            <li class="superadmin-section" style="display:none; padding: 6px 20px 2px; pointer-events:none;"><span style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#94a3b8;" data-i18n="nav_superadmin">SuperAdmin</span></li>
+            <li class="superadmin-section" style="display:none"><a href="admin_management.html"><i class='bx bx-shield-quarter'></i><span class="link-name" data-i18n="nav_admin_mgmt">Admin Management</span></a></li>
+            <li class="superadmin-section" style="display:none"><a href="platform_config.html"><i class='bx bx-slider-alt'></i><span class="link-name" data-i18n="nav_platform">Platform Config</span></a></li>
+            <li class="superadmin-section" style="display:none"><a href="system_health.html"><i class='bx bx-pulse'></i><span class="link-name" data-i18n="nav_health">System Health</span></a></li>
+            <li class="superadmin-section" style="display:none"><a href="backups.html"><i class='bx bx-data'></i><span class="link-name" data-i18n="nav_backups">Backups</span></a></li>
+            <li class="superadmin-section" style="display:none"><a href="integrations.html"><i class='bx bx-plug'></i><span class="link-name" data-i18n="nav_integrations">Integrations</span></a></li>
         </ul>
         <div class="sidebar-footer">
-            <a href="../login.html" class="logout-btn"><i class='bx bx-log-out'></i><span class="link-name">Logout</span></a>
+            <a href="../login.html" class="logout-btn"><i class='bx bx-log-out'></i><span class="link-name" data-i18n="nav_logout">Logout</span></a>
         </div>
     </aside>
 
     <main class="main-content" id="main-content">
         <header class="topbar">
-            <div class="search-box"><i class='bx bx-search'></i><input type="text" placeholder="Search everywhere..."></div>
+            <div class="search-box"><i class='bx bx-search'></i><input type="text" placeholder="Search everywhere..." data-i18n-attr="placeholder" data-i18n="search_placeholder"></div>
             <div class="topbar-right">
                 <div class="notification-icon"><i class='bx bx-bell'></i><span class="badge">0</span></div>
                 <div class="profile">
@@ -194,7 +198,6 @@
     <script src="../js/api/apiClient.js"></script>
     <script src="../js/api/fileReviewApi.js"></script>
     <script src="../js/main.js?v=2"></script>
-    <script src="../js/pages/fileReview.js"></script>
-</body>
+    <script src="../js/pages/fileReview.js"></script></body>
 </html>
 

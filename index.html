@@ -8,12 +8,16 @@
     <!-- Google Fonts for modern typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Boxicons for icons -->
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/theme.css">
     <!-- Chart.js -->
+    <script src="js/i18n.js"></script>
+    <script src="js/theme.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
@@ -35,88 +39,88 @@
             <li>
                 <a href="index.html" class="active">
                     <i class='bx bx-grid-alt'></i>
-                    <span class="link-name">Dashboard</span>
+                    <span class="link-name" data-i18n="nav_dashboard">Dashboard</span>
                 </a>
             </li>
             <li>
                 <a href="pages/patients.html">
                     <i class='bx bx-user'></i>
-                    <span class="link-name">Patients</span>
+                    <span class="link-name" data-i18n="nav_patients">Patients</span>
                 </a>
             </li>
             <li>
                 <a href="pages/pharmacists.html">
                     <i class='bx bx-plus-medical'></i>
-                    <span class="link-name">Pharmacists</span>
+                    <span class="link-name" data-i18n="nav_pharmacists">Pharmacists</span>
                 </a>
             </li>
             <li>
                 <a href="pages/intern_pharmacists.html">
                     <i class='bx bx-book-reader'></i>
-                    <span class="link-name">Intern Pharmacists</span>
+                    <span class="link-name" data-i18n="nav_interns">Intern Pharmacists</span>
                 </a>
             </li>
             <li>
                 <a href="pages/pharmacies.html">
                     <i class='bx bx-store-alt'></i>
-                    <span class="link-name">Pharmacies</span>
+                    <span class="link-name" data-i18n="nav_pharmacies">Pharmacies</span>
                 </a>
             </li>
             <li>
                 <a href="pages/orders.html">
                     <i class='bx bx-cart'></i>
-                    <span class="link-name">Orders</span>
+                    <span class="link-name" data-i18n="nav_orders">Orders</span>
                 </a>
             </li>
             <li>
                 <a href="pages/medications.html">
                     <i class='bx bx-capsule'></i>
-                    <span class="link-name">Medications</span>
+                    <span class="link-name" data-i18n="nav_medications">Medications</span>
                 </a>
             </li>
             <li>
                 <a href="pages/reports.html">
                     <i class='bx bx-pie-chart-alt-2'></i>
-                    <span class="link-name">Reports</span>
+                    <span class="link-name" data-i18n="nav_reports">Reports</span>
                 </a>
             </li>
             <li>
                 <a href="pages/audit_logs.html">
                     <i class='bx bx-file'></i>
-                    <span class="link-name">Audit Logs</span>
+                    <span class="link-name" data-i18n="nav_audit">Audit Logs</span>
                 </a>
             </li>
             <li>
                 <a href="pages/file_review.html">
                     <i class='bx bx-file-find'></i>
-                    <span class="link-name">File Review</span>
+                    <span class="link-name" data-i18n="nav_file_review">File Review</span>
                 </a>
             </li>
             <li>
                 <a href="pages/notifications.html">
                     <i class='bx bx-bell'></i>
-                    <span class="link-name">Global Notifications</span>
+                    <span class="link-name" data-i18n="nav_notifications">Global Notifications</span>
                 </a>
             </li>
             <li>
                 <a href="pages/settings.html">
                     <i class='bx bx-cog'></i>
-                    <span class="link-name">Settings</span>
+                    <span class="link-name" data-i18n="nav_settings">Settings</span>
                 </a>
             </li>
             <!-- SuperAdmin Section -->
-            <li class="superadmin-section" style="display:none; padding: 6px 20px 2px; pointer-events:none;"><span style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#94a3b8;">SuperAdmin</span></li>
-            <li class="superadmin-section" style="display:none"><a href="pages/admin_management.html"><i class='bx bx-shield-quarter'></i><span class="link-name">Admin Management</span></a></li>
-            <li class="superadmin-section" style="display:none"><a href="pages/platform_config.html"><i class='bx bx-slider-alt'></i><span class="link-name">Platform Config</span></a></li>
-            <li class="superadmin-section" style="display:none"><a href="pages/system_health.html"><i class='bx bx-pulse'></i><span class="link-name">System Health</span></a></li>
-            <li class="superadmin-section" style="display:none"><a href="pages/backups.html"><i class='bx bx-data'></i><span class="link-name">Backups</span></a></li>
-            <li class="superadmin-section" style="display:none"><a href="pages/integrations.html"><i class='bx bx-plug'></i><span class="link-name">Integrations</span></a></li>
+            <li class="superadmin-section" style="display:none; padding: 6px 20px 2px; pointer-events:none;"><span style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#94a3b8;" data-i18n="nav_superadmin">SuperAdmin</span></li>
+            <li class="superadmin-section" style="display:none"><a href="pages/admin_management.html"><i class='bx bx-shield-quarter'></i><span class="link-name" data-i18n="nav_admin_mgmt">Admin Management</span></a></li>
+            <li class="superadmin-section" style="display:none"><a href="pages/platform_config.html"><i class='bx bx-slider-alt'></i><span class="link-name" data-i18n="nav_platform">Platform Config</span></a></li>
+            <li class="superadmin-section" style="display:none"><a href="pages/system_health.html"><i class='bx bx-pulse'></i><span class="link-name" data-i18n="nav_health">System Health</span></a></li>
+            <li class="superadmin-section" style="display:none"><a href="pages/backups.html"><i class='bx bx-data'></i><span class="link-name" data-i18n="nav_backups">Backups</span></a></li>
+            <li class="superadmin-section" style="display:none"><a href="pages/integrations.html"><i class='bx bx-plug'></i><span class="link-name" data-i18n="nav_integrations">Integrations</span></a></li>
         </ul>
 
         <div class="sidebar-footer">
             <a href="login.html" class="logout-btn">
                 <i class='bx bx-log-out'></i>
-                <span class="link-name">Logout</span>
+                <span class="link-name" data-i18n="nav_logout">Logout</span>
             </a>
         </div>
     </aside>
@@ -127,7 +131,7 @@
         <header class="topbar">
             <div class="search-box">
                 <i class='bx bx-search'></i>
-                <input type="text" placeholder="Search everywhere...">
+                <input type="text" placeholder="Search everywhere..." data-i18n-attr="placeholder" data-i18n="search_placeholder">
             </div>
 
             <div class="topbar-right">
@@ -149,8 +153,8 @@
         <!-- Page Content -->
         <div class="page-content">
             <div class="page-header">
-                <h1>Dashboard Overview</h1>
-                <p>Welcome back, here's what's happening today.</p>
+                <h1 data-i18n="dash_title">Dashboard Overview</h1>
+                <p data-i18n="dash_sub">Welcome back, here's what's happening today.</p>
             </div>
 
             <!-- Statistic Cards -->
@@ -160,9 +164,9 @@
                         <i class='bx bx-user'></i>
                     </div>
                     <div class="stat-details">
-                        <h3>Total Patients</h3>
+                        <h3 data-i18n="dash_total_patients">Total Patients</h3>
                         <h2 id="stat-total-patients">...</h2>
-                        <span class="trend positive"><i class='bx bx-up-arrow-alt'></i> Active</span>
+                        <span class="trend positive"><i class='bx bx-up-arrow-alt'></i> <span data-i18n="status_active">Active</span></span>
                     </div>
                 </div>
 
@@ -171,9 +175,9 @@
                         <i class='bx bx-plus-medical'></i>
                     </div>
                     <div class="stat-details">
-                        <h3>Pharmacists</h3>
+                        <h3 data-i18n="dash_pharmacists">Pharmacists</h3>
                         <h2 id="stat-total-pharmacists">...</h2>
-                        <span class="trend positive"><i class='bx bx-up-arrow-alt'></i> Active</span>
+                        <span class="trend positive"><i class='bx bx-up-arrow-alt'></i> <span data-i18n="status_active">Active</span></span>
                     </div>
                 </div>
 
@@ -182,9 +186,9 @@
                         <i class='bx bx-book-reader'></i>
                     </div>
                     <div class="stat-details">
-                        <h3>Intern Pharmacists</h3>
+                        <h3 data-i18n="dash_interns">Intern Pharmacists</h3>
                         <h2 id="stat-total-interns">...</h2>
-                        <span class="trend positive"><i class='bx bx-up-arrow-alt'></i> Active</span>
+                        <span class="trend positive"><i class='bx bx-up-arrow-alt'></i> <span data-i18n="status_active">Active</span></span>
                     </div>
                 </div>
 
@@ -193,9 +197,9 @@
                         <i class='bx bx-store-alt'></i>
                     </div>
                     <div class="stat-details">
-                        <h3>Pharmacies</h3>
+                        <h3 data-i18n="dash_pharmacies">Pharmacies</h3>
                         <h2 id="stat-total-pharmacies">...</h2>
-                        <span class="trend positive"><i class='bx bx-up-arrow-alt'></i> Registered</span>
+                        <span class="trend positive"><i class='bx bx-up-arrow-alt'></i> <span data-i18n="status_approved">Registered</span></span>
                     </div>
                 </div>
 
@@ -204,9 +208,9 @@
                         <i class='bx bx-cart'></i>
                     </div>
                     <div class="stat-details">
-                        <h3>Total Orders</h3>
+                        <h3 data-i18n="dash_orders">Total Orders</h3>
                         <h2 id="stat-total-orders">...</h2>
-                        <span class="trend text-muted">All Requests</span>
+                        <span class="trend text-muted" data-i18n="tab_all">All Requests</span>
                     </div>
                 </div>
             </div>
@@ -306,7 +310,6 @@
     <script src="js/api/apiClient.js"></script>
     <script src="js/api/dashboardApi.js"></script>
     <script src="js/main.js?v=2"></script>
-    <script src="js/pages/dashboard.js"></script>
-</body>
+    <script src="js/pages/dashboard.js"></script></body>
 
 </html>
