@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="icon" href="../logo.jpeg" type="image/jpeg"><link rel="stylesheet" href="../css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         .settings-grid {
@@ -226,7 +226,7 @@
 
                 <!-- Right panels -->
                 <div>
-                    <!-- ── Panel 1: Profile ── -->
+                    <!-- â”€â”€ Panel 1: Profile â”€â”€ -->
                     <div class="settings-panel active" id="panel-profile">
                         <div class="settings-card">
                             <div class="settings-card-header">
@@ -252,7 +252,7 @@
                                 </div>
                                 <div class="form-field">
                                     <label>Email Address <span style="color:var(--text-muted); font-weight:400;">(read-only)</span></label>
-                                    <div class="read-only-value" id="p-email">—</div>
+                                    <div class="read-only-value" id="p-email">â€”</div>
                                 </div>
                                 <div class="form-field">
                                     <label>Phone Number</label>
@@ -265,11 +265,11 @@
                                 </div>
                                 <div class="form-field">
                                     <label>Current Role(s)</label>
-                                    <div class="role-badges" id="p-roles">—</div>
+                                    <div class="role-badges" id="p-roles">â€”</div>
                                 </div>
                                 <div class="form-field">
                                     <label>Member Since</label>
-                                    <div class="read-only-value" id="p-createdDate">—</div>
+                                    <div class="read-only-value" id="p-createdDate">â€”</div>
                                 </div>
                             </div>
                             <div class="save-bar">
@@ -281,7 +281,7 @@
                         </div>
                     </div>
 
-                    <!-- ── Panel 2: Security ── -->
+                    <!-- â”€â”€ Panel 2: Security â”€â”€ -->
                     <div class="settings-panel" id="panel-security">
                         <div class="settings-card">
                             <div class="settings-card-header">
@@ -305,7 +305,7 @@
                                 </div>
                                 <div class="security-row">
                                     <div class="security-row-label">Last Login</div>
-                                    <div class="security-row-value" id="sec-lastLogin">—</div>
+                                    <div class="security-row-value" id="sec-lastLogin">â€”</div>
                                 </div>
                                 <div class="security-row">
                                     <div class="security-row-label">Password Last Changed</div>
@@ -313,13 +313,13 @@
                                 </div>
                                 <div class="security-row">
                                     <div class="security-row-label">Active Sessions</div>
-                                    <div class="security-row-value" id="sec-sessions">—</div>
+                                    <div class="security-row-value" id="sec-sessions">â€”</div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- ── Panel 3: Notifications ── -->
+                    <!-- â”€â”€ Panel 3: Notifications â”€â”€ -->
                     <div class="settings-panel" id="panel-notifications">
                         <div class="settings-card">
                             <div class="settings-card-header">
@@ -365,7 +365,7 @@
                         </div>
                     </div>
 
-                    <!-- ── Panel 4: Regional ── -->
+                    <!-- â”€â”€ Panel 4: Regional â”€â”€ -->
                     <div class="settings-panel" id="panel-regional">
                         <div class="settings-card">
                             <div class="settings-card-header">
@@ -375,7 +375,7 @@
                             <div class="settings-card-body">
                                 <div class="warn-note">
                                     <i class='bx bx-info-circle'></i>
-                                    <span>These settings affect only your own dashboard view — not what other users see or what patients are charged.</span>
+                                    <span>These settings affect only your own dashboard view â€” not what other users see or what patients are charged.</span>
                                 </div>
                                 <div class="form-row">
                                     <div class="form-field">
@@ -388,12 +388,12 @@
                                     <div class="form-field">
                                         <label>Currency <span style="color:var(--text-muted); font-weight:400;">(display only)</span></label>
                                         <select id="reg-currency">
-                                            <option value="EGP">EGP — Egyptian Pound</option>
-                                            <option value="USD">USD — US Dollar</option>
-                                            <option value="EUR">EUR — Euro</option>
-                                            <option value="GBP">GBP — British Pound</option>
-                                            <option value="SAR">SAR — Saudi Riyal</option>
-                                            <option value="AED">AED — UAE Dirham</option>
+                                            <option value="EGP">EGP â€” Egyptian Pound</option>
+                                            <option value="USD">USD â€” US Dollar</option>
+                                            <option value="EUR">EUR â€” Euro</option>
+                                            <option value="GBP">GBP â€” British Pound</option>
+                                            <option value="SAR">SAR â€” Saudi Riyal</option>
+                                            <option value="AED">AED â€” UAE Dirham</option>
                                         </select>
                                     </div>
                                 </div>
@@ -439,11 +439,11 @@
                         </div>
                     </div>
 
-                    <!-- ── Panel 5: Storage (SuperAdmin) ── -->
+                    <!-- â”€â”€ Panel 5: Storage (SuperAdmin) â”€â”€ -->
                     <div class="settings-panel" id="panel-storage">
                         <div class="settings-card">
                             <div class="settings-card-header">
-                                <h3>Storage — Cloudflare R2</h3>
+                                <h3>Storage â€” Cloudflare R2</h3>
                                 <p>Read-only view of file storage status and current usage.</p>
                             </div>
                             <div class="settings-card-body" id="storage-body">
@@ -466,3 +466,4 @@
     <script src="../js/pages/settings.js"></script>
 </body>
 </html>
+
