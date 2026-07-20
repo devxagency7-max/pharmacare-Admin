@@ -24,10 +24,19 @@ async function fetchInternApplicationById(id) {
 }
 
 async function fetchInternApplicationByUserId(userId) {
-    const res = await apiClient.get(`/admin/applications?type=Intern&userId=${userId}&pageSize=1`);
-    const dataRoot = res?.data || res;
-    const items = Array.isArray(dataRoot) ? dataRoot : (dataRoot.items || []);
-    return items[0] || null;
+    for (const status of ['Approved', 'Pending', 'Rejected']) {
+        try {
+            const res = await apiClient.get(`/admin/applications?type=Intern&status=${status}&pageSize=50`);
+            const dataRoot = res?.data || res;
+            const items = Array.isArray(dataRoot) ? dataRoot : (dataRoot.items || []);
+            const match = items.find(a =>
+                String(a.userId || a.applicantId) === String(userId) ||
+                String(a.id) === String(userId)
+            );
+            if (match) return match;
+        } catch { /* try next status */ }
+    }
+    return null;
 }
 
 // id here is the APPLICATION ID, not the user ID

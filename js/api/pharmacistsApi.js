@@ -24,11 +24,20 @@ async function fetchPharmacistApplicationById(id) {
 }
 
 async function fetchPharmacistApplicationByUserId(userId) {
-    // Search approved applications by userId to get documents
-    const res = await apiClient.get(`/admin/applications?type=Pharmacist&userId=${userId}&pageSize=1`);
-    const dataRoot = res?.data || res;
-    const items = Array.isArray(dataRoot) ? dataRoot : (dataRoot.items || []);
-    return items[0] || null;
+    for (const status of ['Approved', 'Pending', 'Rejected']) {
+        try {
+            const res = await apiClient.get(`/admin/applications?type=Pharmacist&status=${status}&pageSize=50`);
+            const dataRoot = res?.data || res;
+            const items = Array.isArray(dataRoot) ? dataRoot : (dataRoot.items || []);
+            console.log(`[Docs] status=${status} items:`, items.map(a => ({ id: a.id, userId: a.userId, applicantId: a.applicantId })));
+            const match = items.find(a =>
+                String(a.userId || a.applicantId) === String(userId) ||
+                String(a.id) === String(userId)
+            );
+            if (match) return match;
+        } catch { /* try next status */ }
+    }
+    return null;
 }
 
 // Approve/reject use /admin/applications/:id — NOT /admin/pharmacist/:id
