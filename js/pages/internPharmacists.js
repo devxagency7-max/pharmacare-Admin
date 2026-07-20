@@ -321,6 +321,17 @@ async function viewInternDetails(id) {
         }
         if (!intern) throw new Error('Intern not found.');
 
+        // Fetch approved application to get documents (interns endpoint may not include documents)
+        if (!intern.documents || intern.documents.length === 0) {
+            try {
+                const appRes = await fetchInternApplicationById(id);
+                const appData = appRes?.data || appRes;
+                if (appData && Array.isArray(appData.documents) && appData.documents.length > 0) {
+                    intern.documents = appData.documents;
+                }
+            } catch { /* silent — documents just won't show */ }
+        }
+
         // Priority: userName from API, then other fields, no email fallback
         let displayName = intern.userName || intern.fullName || intern.name || intern.displayName || 'Unnamed Intern';
 
@@ -396,6 +407,19 @@ async function viewInternDetails(id) {
                     <p style="font-size: 13px; color: #92400E; margin: 0;">No verification documents have been uploaded yet.</p>
                 </div>
             `}
+
+            <div style="display:flex;gap:12px;padding-top:16px;margin-top:16px;border-top:1px solid #e2e8f0;">
+                ${status.toLowerCase() === 'suspended' ? `
+                <button onclick="activateInternAction('${intern.id || intern.userId}')" style="flex:1;padding:12px;background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
+                    <i class='bx bx-play-circle'></i> Activate
+                </button>` : `
+                <button onclick="suspendInternAction('${intern.id || intern.userId}')" style="flex:1;padding:12px;background:#fff7ed;color:#ea580c;border:1px solid #fed7aa;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
+                    <i class='bx bx-pause-circle'></i> Suspend
+                </button>`}
+                <button onclick="banInternAction('${intern.id || intern.userId}')" style="flex:1;padding:12px;background:#fef2f2;color:#e11d48;border:1px solid #fecaca;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
+                    <i class='bx bx-block'></i> Ban User
+                </button>
+            </div>
         `;
     } catch (err) {
         console.error('[Interns] Failed to load profile:', err);
@@ -494,6 +518,28 @@ async function activateInternAction(id) {
             Swal.showLoading();
             await activateInternPharmacistApi(id);
             Swal.fire('Activated', 'Intern has been reactivated.', 'success');
+            loadInternPharmacists(currentPage);
+        } catch (err) {
+            Swal.fire('Failed', err.message, 'error');
+        }
+    }
+}
+
+async function banInternAction(id) {
+    const result = await Swal.fire({
+        title: 'Ban User?',
+        text: 'This user will permanently lose access to the platform.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#e11d48',
+        confirmButtonText: 'Yes, Ban'
+    });
+
+    if (result.isConfirmed) {
+        try {
+            Swal.showLoading();
+            await apiClient.banUser(id);
+            Swal.fire('Banned', 'User has been banned.', 'success');
             loadInternPharmacists(currentPage);
         } catch (err) {
             Swal.fire('Failed', err.message, 'error');

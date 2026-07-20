@@ -334,6 +334,17 @@ async function viewPharmacistProfile(id, content) {
     }
     if (!p) throw new Error('Pharmacist not found.');
 
+    // Fetch approved application to get documents (pharmacists endpoint may not include documents)
+    if (!p.documents || p.documents.length === 0) {
+        try {
+            const appRes = await fetchPharmacistApplicationById(id);
+            const appData = appRes?.data || appRes;
+            if (appData && Array.isArray(appData.documents) && appData.documents.length > 0) {
+                p.documents = appData.documents;
+            }
+        } catch { /* silent */ }
+    }
+
     const pIndex = currentPharmacistsData.findIndex(x => String(x.id) === String(id));
     if (pIndex > -1) currentPharmacistsData[pIndex] = { ...currentPharmacistsData[pIndex], ...p };
 
@@ -369,13 +380,49 @@ async function viewPharmacistProfile(id, content) {
                 </div>`).join('')}
         </div>
 
-        <div style="padding:18px 20px;background:#F0FDFA;border-radius:12px;border:1px solid #CCFBF1;display:flex;align-items:center;justify-content:space-between;">
+        ${p.documents && p.documents.length > 0 ? `
+        <div style="margin-bottom:20px;">
+            <div style="font-size:13px;font-weight:700;color:#0f172a;margin-bottom:12px;display:flex;align-items:center;gap:6px;"><i class='bx bx-folder'></i> Uploaded Documents (${p.documents.length})</div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;">
+                ${p.documents.map(doc => {
+                    const url = doc.url || doc.fileUrl || doc.downloadUrl || '';
+                    const docName = doc.documentType || doc.type || doc.name || 'Document';
+                    const isImage = url && /\.(jpg|jpeg|png|gif|webp)$/i.test(url);
+                    return `
+                    <div style="border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;background:#fff;">
+                        ${isImage
+                            ? `<a href="${url}" target="_blank"><img src="${url}" alt="${docName}" style="width:100%;height:140px;object-fit:cover;display:block;" onerror="this.style.display='none'"></a>`
+                            : `<div style="height:90px;background:#f8fafc;display:flex;align-items:center;justify-content:center;"><i class='bx bx-file' style="font-size:36px;color:#94a3b8;"></i></div>`
+                        }
+                        <div style="padding:8px 12px;">
+                            <div style="font-size:12px;font-weight:600;color:#0f172a;">${docName}</div>
+                            ${url ? `<a href="${url}" target="_blank" style="font-size:11px;color:#0057d1;text-decoration:none;"><i class='bx bx-link-external'></i> View / Download</a>` : ''}
+                        </div>
+                    </div>`;
+                }).join('')}
+            </div>
+        </div>` : ''}
+
+        <div style="padding:18px 20px;background:#F0FDFA;border-radius:12px;border:1px solid #CCFBF1;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
             <div>
                 <div style="font-size:14px;font-weight:600;color:#0f172a;">Update Patient Limit</div>
                 <div style="font-size:12px;color:#0d9488;margin-top:2px;">Current limit: ${maxLimit !== null ? maxLimit : 'Not Set'}</div>
             </div>
             <button class="btn btn-primary" onclick="promptMaxPatients('${p.id}')" style="font-size:13px;padding:10px 20px;">
                 <i class='bx bx-edit-alt'></i> Update Limit
+            </button>
+        </div>
+
+        <div style="display:flex;gap:12px;padding-top:16px;border-top:1px solid #e2e8f0;">
+            ${status.toLowerCase() === 'suspended' ? `
+            <button onclick="activatePharmacistAction('${p.id}')" style="flex:1;padding:12px;background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
+                <i class='bx bx-play-circle'></i> Activate
+            </button>` : `
+            <button onclick="suspendPharmacistAction('${p.id}')" style="flex:1;padding:12px;background:#fff7ed;color:#ea580c;border:1px solid #fed7aa;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
+                <i class='bx bx-pause-circle'></i> Suspend
+            </button>`}
+            <button onclick="banUserAction('${p.id}')" style="flex:1;padding:12px;background:#fef2f2;color:#e11d48;border:1px solid #fecaca;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
+                <i class='bx bx-block'></i> Ban User
             </button>
         </div>
     `;
