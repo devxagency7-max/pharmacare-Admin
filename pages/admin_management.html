@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Management - Tamenny</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/modals.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        /* Role badges */
+        .role-badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 3px 10px; border-radius: 20px;
+            font-size: 11px; font-weight: 700; margin-right: 4px;
+        }
+        .role-badge.admin      { background: #eff6ff; color: #3b82f6; }
+        .role-badge.superadmin { background: linear-gradient(135deg, #fef3c7, #fde68a); color: #92400e; border: 1px solid #fcd34d; }
+
+        /* Lock badge */
+        .lock-badge { display:inline-flex; align-items:center; gap:3px; padding:2px 8px; border-radius:6px; font-size:11px; font-weight:700; background:#fef2f2; color:var(--danger); }
+
+        /* Stats grid */
+        .admin-stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; margin-bottom: 28px; }
+        .admin-stat-card { background: var(--bg-card); border-radius: var(--radius-md); padding: 20px; box-shadow: var(--shadow-sm); }
+        .admin-stat-card .stat-num { font-size: 28px; font-weight: 800; color: var(--text-primary); }
+        .admin-stat-card .stat-lbl { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+
+        /* Action bar */
+        .filter-bar { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 20px; }
+        .filter-bar select { padding: 9px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 13px; font-family: inherit; color: var(--text-primary); background: #fff; cursor: pointer; }
+        .filter-bar select:focus { outline: none; border-color: var(--primary); }
+
+        /* Detail drawer */
+        .drawer-overlay {
+            position: fixed; inset: 0; background: rgba(15,23,42,0.35);
+            z-index: 1000; display: none; backdrop-filter: blur(4px);
+        }
+        .drawer-overlay.active { display: block; }
+        .drawer {
+            position: fixed; top: 0; right: 0; bottom: 0; width: 440px;
+            background: #fff; box-shadow: -8px 0 40px rgba(0,0,0,0.12);
+            z-index: 1001; overflow-y: auto;
+            transform: translateX(100%); transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .drawer.active { transform: translateX(0); }
+        .drawer-header { padding: 24px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; }
+        .drawer-header h3 { font-size: 18px; font-weight: 700; margin: 0; }
+        .drawer-close { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-muted); padding: 4px; }
+        .drawer-body { padding: 24px; }
+        .drawer-section { margin-bottom: 24px; }
+        .drawer-section h4 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 12px; }
+        .drawer-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid #f8fafc; font-size: 14px; }
+        .drawer-row:last-child { border-bottom: none; }
+        .drawer-row .dr-label { color: var(--text-muted); font-weight: 500; }
+        .drawer-row .dr-value { font-weight: 600; color: var(--text-primary); text-align: right; max-width: 220px; word-break: break-word; }
+        .perm-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+        .perm-chip { padding: 5px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; background: #f0fdf4; color: #15803d; display: flex; align-items: center; gap: 5px; }
+        .activity-item { padding: 10px 0; border-bottom: 1px solid #f8fafc; font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+        .activity-item:last-child { border-bottom: none; }
+        .activity-item strong { color: var(--text-primary); }
+
+        /* Promote modal */
+        #promote-email-input {
+            width: 100%; padding: 12px 16px; border: 1.5px solid #e2e8f0; border-radius: 10px;
+            font-size: 14px; font-family: inherit; box-sizing: border-box;
+            transition: border-color 0.2s; margin-bottom: 8px;
+        }
+        #promote-email-input:focus { outline: none; border-color: var(--primary); }
+    </style>
+</head>
+<body>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo"><img src="../logo.jpeg" alt="Logo"><span>Tamenny</span></div>
+            <i class='bx bx-menu' id="sidebar-toggle"></i>
+        </div>
+        <ul class="nav-links">
+            <li><a href="../index.html"><i class='bx bx-grid-alt'></i><span class="link-name">Dashboard</span></a></li>
+            <li><a href="patients.html"><i class='bx bx-user'></i><span class="link-name">Patients</span></a></li>
+            <li><a href="pharmacists.html"><i class='bx bx-plus-medical'></i><span class="link-name">Pharmacists</span></a></li>
+            <li><a href="intern_pharmacists.html"><i class='bx bx-book-reader'></i><span class="link-name">Intern Pharmacists</span></a></li>
+            <li><a href="pharmacies.html"><i class='bx bx-store-alt'></i><span class="link-name">Pharmacies</span></a></li>
+            <li><a href="orders.html"><i class='bx bx-cart'></i><span class="link-name">Orders</span></a></li>
+            <li><a href="medications.html"><i class='bx bx-capsule'></i><span class="link-name">Medications</span></a></li>
+            <li><a href="reports.html"><i class='bx bx-pie-chart-alt-2'></i><span class="link-name">Reports</span></a></li>
+            <li><a href="audit_logs.html"><i class='bx bx-file'></i><span class="link-name">Audit Logs</span></a></li>
+            <li><a href="file_review.html"><i class='bx bx-file-find'></i><span class="link-name">File Review</span></a></li>
+            <li><a href="notifications.html"><i class='bx bx-bell'></i><span class="link-name">Global Notifications</span></a></li>
+            <li><a href="settings.html"><i class='bx bx-cog'></i><span class="link-name">Settings</span></a></li>
+            <!-- SuperAdmin Section -->
+            <li class="superadmin-section" style="display:none; padding: 6px 20px 2px; pointer-events:none;"><span style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#94a3b8;">SuperAdmin</span></li>
+            <li class="superadmin-section" style="display:none"><a href="admin_management.html" class="active"><i class='bx bx-shield-quarter'></i><span class="link-name">Admin Management</span></a></li>
+            <li class="superadmin-section" style="display:none"><a href="platform_config.html"><i class='bx bx-slider-alt'></i><span class="link-name">Platform Config</span></a></li>
+            <li class="superadmin-section" style="display:none"><a href="system_health.html"><i class='bx bx-pulse'></i><span class="link-name">System Health</span></a></li>
+            <li class="superadmin-section" style="display:none"><a href="backups.html"><i class='bx bx-data'></i><span class="link-name">Backups</span></a></li>
+            <li class="superadmin-section" style="display:none"><a href="integrations.html"><i class='bx bx-plug'></i><span class="link-name">Integrations</span></a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <a href="../login.html" class="logout-btn"><i class='bx bx-log-out'></i><span class="link-name">Logout</span></a>
+        </div>
+    </aside>
+
+    <main class="main-content" id="main-content">
+        <header class="topbar">
+            <div class="search-box"><i class='bx bx-search'></i><input type="text" placeholder="Search everywhere..."></div>
+            <div class="topbar-right">
+                <div class="notification-icon"><i class='bx bx-bell'></i><span class="badge">0</span></div>
+                <div class="profile">
+                    <img src="https://ui-avatars.com/api/?name=Admin+User&background=0057d1&color=fff" alt="Admin Profile">
+                    <div class="profile-info"><span class="name">Admin User</span><span class="role">SuperAdmin</span></div>
+                </div>
+            </div>
+        </header>
+
+        <div class="page-content">
+            <div class="page-header">
+                <div>
+                    <h1>Admin Management</h1>
+                    <p>Manage platform administrators and their roles.</p>
+                </div>
+                <button class="btn btn-primary" onclick="openPromoteModal()">
+                    <i class='bx bx-user-plus'></i> Promote to Admin
+                </button>
+            </div>
+
+            <!-- Stats -->
+            <div class="admin-stats" id="admin-stats">
+                <div class="admin-stat-card"><div class="stat-num" id="stat-total-admins">—</div><div class="stat-lbl">Total Admins</div></div>
+                <div class="admin-stat-card"><div class="stat-num" id="stat-total-super">—</div><div class="stat-lbl">SuperAdmins</div></div>
+                <div class="admin-stat-card"><div class="stat-num" id="stat-locked">—</div><div class="stat-lbl">Locked</div></div>
+                <div class="admin-stat-card"><div class="stat-num" id="stat-active">—</div><div class="stat-lbl">Active</div></div>
+            </div>
+
+            <!-- Filter Bar -->
+            <div class="filter-bar">
+                <div class="search-box" style="width:280px;">
+                    <i class='bx bx-search'></i>
+                    <input type="text" id="admin-search" placeholder="Search by name or email...">
+                </div>
+                <select id="filter-role" onchange="applyFilters()">
+                    <option value="">All Roles</option>
+                    <option value="Admin">Admin</option>
+                    <option value="SuperAdmin">SuperAdmin</option>
+                </select>
+                <select id="filter-status" onchange="applyFilters()">
+                    <option value="">All Statuses</option>
+                    <option value="Active">Active</option>
+                    <option value="Suspended">Suspended</option>
+                </select>
+                <select id="filter-locked" onchange="applyFilters()">
+                    <option value="">Lock Status</option>
+                    <option value="false">Not Locked</option>
+                    <option value="true">Locked</option>
+                </select>
+            </div>
+
+            <!-- Table -->
+            <div class="card">
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Admin</th>
+                                <th>Role(s)</th>
+                                <th>Status</th>
+                                <th>Last Login</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admins-table-body">
+                            <tr><td colspan="5" style="text-align:center; padding:40px;"><i class="bx bx-loader-alt bx-spin"></i> Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination" id="pagination-container" style="margin-top:20px;">
+                <span class="page-info" id="page-info"></span>
+                <div class="pagination-buttons" id="pagination-buttons"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Detail Drawer -->
+    <div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()">
+        <div class="drawer" id="admin-drawer" onclick="event.stopPropagation()">
+            <div class="drawer-header">
+                <h3>Admin Details</h3>
+                <button class="drawer-close" onclick="closeDrawer()"><i class='bx bx-x'></i></button>
+            </div>
+            <div class="drawer-body" id="drawer-body">
+                <div style="text-align:center; padding:40px; color:var(--text-muted);"><i class="bx bx-loader-alt bx-spin" style="font-size:28px;"></i></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Promote Modal -->
+    <div class="modal-overlay" id="promote-modal">
+        <div class="modal-content" style="max-width:460px;">
+            <div class="modal-header">
+                <h2><i class='bx bx-user-plus'></i> Promote to Admin</h2>
+                <i class='bx bx-x close-modal' onclick="closePromoteModal()"></i>
+            </div>
+            <div style="padding:24px;">
+                <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">
+                    The user must have already signed in at least once. Enter their email address below.
+                </p>
+                <label style="display:block; font-size:14px; font-weight:600; margin-bottom:8px;">Email Address</label>
+                <input type="email" id="promote-email-input" placeholder="user@example.com">
+                <div class="modal-actions" style="margin-top:20px;">
+                    <button class="btn btn-outline" onclick="closePromoteModal()">Cancel</button>
+                    <button class="btn btn-primary" onclick="doPromote()" id="promote-btn">
+                        <i class='bx bx-user-check'></i> Promote to Admin
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/api/apiClient.js"></script>
+    <script src="../js/api/superAdminApi.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/pages/adminManagement.js"></script>
+</body>
+</html>

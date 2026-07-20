@@ -1,36 +1,34 @@
-// File Review API
-// Route: /api/admin/files  (NOT versioned — no /v1 segment, same server as the main API)
-// NOTE: This uses a direct fetch (not apiClient) because the path is outside /api/v1
+// ──────────────────────────────────────────────
+// Application Review API
+// Route: /api/v1/admin/applications
+// ──────────────────────────────────────────────
 
-const FILE_REVIEW_BASE = '/api/admin/files';
-
-async function fileReviewRequest(endpoint, options = {}) {
-    const token = await apiClient.getAuthToken();
-    const url = `${FILE_REVIEW_BASE}${endpoint}`;
-
-    const headers = {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-        ...options.headers
-    };
-
-    const res = await fetch(url, { ...options, headers });
-    if (!res.ok) throw new Error('File review API error');
-    return res.json();
+async function fetchPendingApplications(type = 'Pharmacist') {
+    return apiClient.get(`/admin/applications?type=${type}&status=Pending`);
 }
 
-async function fetchPendingFiles() {
-    return fileReviewRequest('/pending');
+async function fetchApplicationById(id) {
+    return apiClient.get(`/admin/applications/${id}`);
 }
 
-async function approveFile(fileId) {
-    return fileReviewRequest(`/${fileId}/approve`, { method: 'POST' });
+async function approveApplication(id) {
+    return apiClient.post(`/admin/applications/${id}/approve`, {});
 }
 
-// reason: required, min 3 chars, max 1000 chars
-async function rejectFile(fileId, reason) {
-    return fileReviewRequest(`/${fileId}/reject`, {
-        method: 'POST',
-        body: JSON.stringify({ reason })
-    });
+// reason is required (3–500 chars)
+async function rejectApplication(id, reason) {
+    return apiClient.post(`/admin/applications/${id}/reject`, { reason });
+}
+
+// Intern routes (same logic, different path)
+async function fetchPendingInterns() {
+    return apiClient.get('/admin/applications?type=Intern&status=Pending');
+}
+
+async function approveIntern(id) {
+    return apiClient.put(`/admin/interns/${id}/approve`, {});
+}
+
+async function rejectIntern(id, reason) {
+    return apiClient.put(`/admin/interns/${id}/reject`, { reason });
 }

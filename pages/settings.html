@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,339 +9,460 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="../css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         .settings-grid {
             display: grid;
-            grid-template-columns: 280px 1fr;
-            gap: 30px;
+            grid-template-columns: 240px 1fr;
+            gap: 24px;
+            align-items: start;
         }
-
         .settings-nav {
             background: var(--bg-card);
             border-radius: var(--radius-xl);
-            padding: 20px 0;
+            padding: 12px 0;
             box-shadow: var(--shadow-md);
-            height: fit-content;
+            position: sticky;
+            top: 20px;
         }
-
-        .settings-nav li {
-            padding: 12px 25px;
+        .settings-nav-item {
             display: flex;
             align-items: center;
             gap: 12px;
+            padding: 12px 20px;
             color: var(--text-muted);
+            font-size: 14px;
             font-weight: 500;
             cursor: pointer;
             transition: var(--transition);
+            border-right: 3px solid transparent;
         }
+        .settings-nav-item:hover { color: var(--primary); background: #f8fafd; }
+        .settings-nav-item.active { color: var(--primary); background: #eaf2fe; border-right-color: var(--primary); font-weight: 600; }
+        .settings-nav-item i { font-size: 18px; }
+        .settings-nav-divider { height: 1px; background: #f1f5f9; margin: 8px 16px; }
+        .settings-nav-label { padding: 8px 20px 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8; }
 
-        .settings-nav li:hover {
-            color: var(--primary);
-            background: #F8FAFD;
-        }
-
-        .settings-nav li.active {
-            color: var(--primary);
-            background: #EAF2FE;
-            border-right: 3px solid var(--primary);
-        }
-
-        .settings-nav li i {
-            font-size: 20px;
-        }
-
-        .settings-content {
+        /* Content panel */
+        .settings-panel { display: none; }
+        .settings-panel.active { display: block; }
+        .settings-card {
             background: var(--bg-card);
             border-radius: var(--radius-xl);
-            padding: 35px;
             box-shadow: var(--shadow-md);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        .settings-card-header {
+            padding: 20px 28px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .settings-card-header h3 { font-size: 16px; font-weight: 700; color: var(--text-primary); margin: 0 0 4px; }
+        .settings-card-header p { font-size: 13px; color: var(--text-muted); margin: 0; }
+        .settings-card-body { padding: 24px 28px; }
+
+        /* Form */
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .form-field { margin-bottom: 20px; }
+        .form-field:last-child { margin-bottom: 0; }
+        .form-field label { display: block; font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px; }
+        .form-field input, .form-field select, .form-field textarea {
+            width: 100%; padding: 10px 14px; border: 1.5px solid #e2e8f0;
+            border-radius: 10px; font-size: 14px; font-family: inherit;
+            color: var(--text-primary); background: #fff; box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+        .form-field input:focus, .form-field select:focus, .form-field textarea:focus { outline: none; border-color: var(--primary); }
+        .form-field input[readonly] { background: #f8fafc; color: var(--text-muted); cursor: not-allowed; }
+        .form-field .field-hint { font-size: 12px; color: var(--text-muted); margin-top: 5px; }
+        .read-only-value {
+            padding: 10px 14px; background: #f8fafc; border-radius: 10px;
+            font-size: 14px; color: var(--text-muted); border: 1.5px solid #f1f5f9;
         }
 
-        .settings-section-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--text-main);
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid rgba(79, 143, 234, 0.08);
+        /* Avatar */
+        .avatar-upload-row { display: flex; align-items: center; gap: 20px; margin-bottom: 24px; }
+        .avatar-preview {
+            width: 72px; height: 72px; border-radius: 50%; object-fit: cover;
+            border: 3px solid #e2e8f0;
+        }
+        .avatar-actions { display: flex; flex-direction: column; gap: 8px; }
+        .avatar-actions .btn { font-size: 13px; padding: 7px 16px; }
+
+        /* Role badges */
+        .role-badges { display: flex; flex-wrap: wrap; gap: 8px; }
+        .role-badge-pill {
+            padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;
+            background: #eff6ff; color: #3b82f6;
+        }
+        .role-badge-pill.super { background: linear-gradient(135deg,#fef3c7,#fde68a); color:#92400e; }
+
+        /* Toggle rows */
+        .toggle-row {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            padding: 14px 0; border-bottom: 1px solid #f8fafc;
+        }
+        .toggle-row:last-child { border-bottom: none; }
+        .toggle-row-info { flex: 1; padding-right: 20px; }
+        .toggle-row-info strong { display: block; font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
+        .toggle-row-info span { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; inset: 0; background: #cbd5e1; transition: .3s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background: #fff; transition: .3s; border-radius: 50%; }
+        input:checked + .slider { background: var(--primary); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        /* Security info rows */
+        .security-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 14px 0; border-bottom: 1px solid #f8fafc;
+        }
+        .security-row:last-child { border-bottom: none; }
+        .security-row-label { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+        .security-row-value { font-size: 13px; color: var(--text-muted); }
+
+        /* Info note */
+        .info-note {
+            background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px;
+            padding: 12px 16px; font-size: 13px; color: #1d4ed8;
+            display: flex; gap: 10px; align-items: flex-start; margin-bottom: 16px;
+        }
+        .info-note i { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+        /* Warning note */
+        .warn-note {
+            background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px;
+            padding: 12px 16px; font-size: 13px; color: #92400e;
+            display: flex; gap: 10px; align-items: flex-start; margin-bottom: 16px;
+        }
+        .warn-note i { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+        /* Storage stats */
+        .storage-stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; margin-bottom: 20px; }
+        .storage-stat { background: #f8fafc; border-radius: 10px; padding: 16px; }
+        .storage-stat .lbl { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 6px; }
+        .storage-stat .val { font-size: 20px; font-weight: 800; color: var(--text-primary); }
+        .storage-stat .sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+        /* Save bar */
+        .save-bar {
+            position: sticky; bottom: 0; background: #fff; border-top: 1px solid #e2e8f0;
+            padding: 14px 28px; display: flex; justify-content: flex-end; gap: 12px;
+            box-shadow: 0 -4px 16px rgba(0,0,0,0.06);
         }
 
-        .form-group {
-            margin-bottom: 25px;
-        }
+        /* Skeleton */
+        .skeleton { background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 8px; }
+        @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 
-        .form-group label {
-            display: block;
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--text-main);
-            margin-bottom: 8px;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #E2E8F0;
-            border-radius: var(--radius-md);
-            background: #F8FAFC;
-            font-size: 14px;
-            color: var(--text-main);
-            transition: var(--transition);
-            outline: none;
-        }
-
-        .form-control:focus {
-            border-color: var(--primary);
-            background: #FFFFFF;
-            box-shadow: 0 0 0 3px rgba(79, 143, 234, 0.1);
-        }
-
-        .toggle-switch {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 15px;
-            background: #F8FAFC;
-            border-radius: var(--radius-md);
-            margin-bottom: 15px;
-            border: 1px solid #E2E8F0;
-        }
-
-        .toggle-switch label {
-            margin: 0;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 44px;
-            height: 24px;
-        }
-
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #cbd5e1;
-            transition: .4s;
-            border-radius: 34px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 18px;
-            width: 18px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-
-        input:checked+.slider {
-            background-color: var(--primary);
-        }
-
-        input:checked+.slider:before {
-            transform: translateX(20px);
-        }
-
-        @media (max-width: 768px) {
-            .settings-grid {
-                grid-template-columns: 1fr;
-            }
-        }
+        @media (max-width: 768px) { .settings-grid { grid-template-columns: 1fr; } .form-row { grid-template-columns: 1fr; } }
     </style>
 </head>
-
 <body>
-
-    <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            
-            
-            <div class="logo">
-                <img src="../logo.jpeg" alt="Logo">
-                <span>Tamenny</span>
-            </div>
+            <div class="logo"><img src="../logo.jpeg" alt="Logo"><span>Tamenny</span></div>
             <i class='bx bx-menu' id="sidebar-toggle"></i>
         </div>
-
         <ul class="nav-links">
             <li><a href="../index.html"><i class='bx bx-grid-alt'></i><span class="link-name">Dashboard</span></a></li>
             <li><a href="patients.html"><i class='bx bx-user'></i><span class="link-name">Patients</span></a></li>
-            <li><a href="pharmacists.html"><i class='bx bx-plus-medical'></i><span
-                        class="link-name">Pharmacists</span></a></li>
-            <li><a href="intern_pharmacists.html"><i class='bx bx-book-reader'></i><span class="link-name">Intern
-                        Pharmacists</span></a></li>
-            <li><a href="pharmacies.html"><i class='bx bx-store-alt'></i><span class="link-name">Pharmacies</span></a>
-            </li>
-            <li>
-                <a href="orders.html">
-                    <i class='bx bx-cart'></i>
-                    <span class="link-name">Orders</span>
-                </a>
-            </li>
-            <li>
-                <a href="medications.html">
-                    <i class='bx bx-capsule'></i>
-                    <span class="link-name">Medications</span>
-                </a>
-            </li>
-            <li><a href="reports.html"><i class='bx bx-pie-chart-alt-2'></i><span class="link-name">Reports</span></a>
-            </li>
-            <li>
-                <a href="audit_logs.html">
-                    <i class='bx bx-file'></i>
-                    <span class="link-name">Audit Logs</span>
-                </a>
-            </li>
-            <li>
-                <a href="file_review.html">
-                    <i class='bx bx-file'></i>
-                    <span class="link-name">File Reviews</span>
-                </a>
-            </li>
-            <li>
-                <a href="notifications.html">
-                    <i class='bx bx-bell'></i>
-                    <span class="link-name">Global Notifications</span>
-                </a>
-            </li>
-            <li><a href="settings.html" class="active"><i class='bx bx-cog'></i><span
-                        class="link-name">Settings</span></a></li>
+            <li><a href="pharmacists.html"><i class='bx bx-plus-medical'></i><span class="link-name">Pharmacists</span></a></li>
+            <li><a href="intern_pharmacists.html"><i class='bx bx-book-reader'></i><span class="link-name">Intern Pharmacists</span></a></li>
+            <li><a href="pharmacies.html"><i class='bx bx-store-alt'></i><span class="link-name">Pharmacies</span></a></li>
+            <li><a href="orders.html"><i class='bx bx-cart'></i><span class="link-name">Orders</span></a></li>
+            <li><a href="medications.html"><i class='bx bx-capsule'></i><span class="link-name">Medications</span></a></li>
+            <li><a href="reports.html"><i class='bx bx-pie-chart-alt-2'></i><span class="link-name">Reports</span></a></li>
+            <li><a href="audit_logs.html"><i class='bx bx-file'></i><span class="link-name">Audit Logs</span></a></li>
+            <li><a href="file_review.html"><i class='bx bx-file-find'></i><span class="link-name">File Review</span></a></li>
+            <li><a href="notifications.html"><i class='bx bx-bell'></i><span class="link-name">Global Notifications</span></a></li>
+            <li><a href="settings.html" class="active"><i class='bx bx-cog'></i><span class="link-name">Settings</span></a></li>
+            <!-- SuperAdmin Section -->
+            <li class="superadmin-section" style="display:none; padding: 6px 20px 2px; pointer-events:none;"><span style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#94a3b8;">SuperAdmin</span></li>
+            <li class="superadmin-section" style="display:none"><a href="admin_management.html"><i class='bx bx-shield-quarter'></i><span class="link-name">Admin Management</span></a></li>
+            <li class="superadmin-section" style="display:none"><a href="platform_config.html"><i class='bx bx-slider-alt'></i><span class="link-name">Platform Config</span></a></li>
+            <li class="superadmin-section" style="display:none"><a href="system_health.html"><i class='bx bx-pulse'></i><span class="link-name">System Health</span></a></li>
+            <li class="superadmin-section" style="display:none"><a href="backups.html"><i class='bx bx-data'></i><span class="link-name">Backups</span></a></li>
+            <li class="superadmin-section" style="display:none"><a href="integrations.html"><i class='bx bx-plug'></i><span class="link-name">Integrations</span></a></li>
         </ul>
-
         <div class="sidebar-footer">
-            <a href="../login.html" class="logout-btn">
-                <i class='bx bx-log-out'></i>
-                <span class="link-name">Logout</span>
-            </a>
+            <a href="../login.html" class="logout-btn"><i class='bx bx-log-out'></i><span class="link-name">Logout</span></a>
         </div>
     </aside>
 
-    <!-- Main Content -->
     <main class="main-content" id="main-content">
-        <!-- Topbar -->
         <header class="topbar">
-            <div class="search-box">
-                <i class='bx bx-search'></i>
-                <input type="text" placeholder="Search everywhere...">
-            </div>
-
+            <div class="search-box"><i class='bx bx-search'></i><input type="text" placeholder="Search everywhere..."></div>
             <div class="topbar-right">
-                <div class="notification-icon">
-                    <i class='bx bx-bell'></i>
-                    <span class="badge">3</span>
-                </div>
+                <div class="notification-icon"><i class='bx bx-bell'></i><span class="badge">0</span></div>
                 <div class="profile">
-                    <img src="https://ui-avatars.com/api/?name=Admin+User&background=0057d1&color=fff"
-                        alt="Admin Profile">
-                    <div class="profile-info">
-                        <span class="name">Admin User</span>
-                        <span class="role">Super Admin</span>
-                    </div>
+                    <img src="https://ui-avatars.com/api/?name=Admin+User&background=0057d1&color=fff" alt="Admin Profile">
+                    <div class="profile-info"><span class="name">Admin User</span><span class="role">Admin</span></div>
                 </div>
             </div>
         </header>
 
-        <!-- Page Content -->
         <div class="page-content">
             <div class="page-header">
-                <h1>System Settings</h1>
-                <p>Manage your account settings and globally configure the system preferences.</p>
-            </div>
-
-            <div class="settings-grid">
-                <!-- Settings Navigation -->
-                <ul class="settings-nav">
-                    <li class="active"><i class='bx bx-user-circle'></i> Profile Settings</li>
-                    <li><i class='bx bx-shield-quarter'></i> Security</li>
-                    <li><i class='bx bx-bell'></i> Notifications</li>
-                    <li><i class='bx bx-globe'></i> Regional Settings</li>
-                    <li><i class='bx bx-data'></i> Database Backups</li>
-                </ul>
-
-                <!-- Settings Content -->
-                <div class="settings-content">
-                    <h3 class="settings-section-title">Profile Information</h3>
-
-                    <div style="display: flex; gap: 20px;">
-                        <div class="form-group" style="flex: 1;">
-                            <label>First Name</label>
-                            <input type="text" id="settings-first-name" class="form-control" value="Admin">
-                        </div>
-                        <div class="form-group" style="flex: 1;">
-                            <label>Last Name</label>
-                            <input type="text" id="settings-last-name" class="form-control" value="User">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Email Address</label>
-                        <input type="email" id="settings-email" class="form-control" value="admin@pharmacare.com" readonly
-                            style="opacity: 0.7; cursor: not-allowed;">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Phone Number</label>
-                        <input type="text" id="settings-phone" class="form-control" value="+1 (555) 123-4567">
-                    </div>
-
-                    <h3 class="settings-section-title" style="margin-top: 40px;">System Preferences</h3>
-
-                    <div class="toggle-switch">
-                        <label>Email Notifications for New Orders</label>
-                        <label class="switch">
-                            <input type="checkbox" checked>
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-
-                    <div class="toggle-switch">
-                        <label>Require Admin Approval for new Pharmacists</label>
-                        <label class="switch">
-                            <input type="checkbox" checked>
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-
-                    <div class="toggle-switch">
-                        <label>Two-Factor Authentication (2FA)</label>
-                        <label class="switch">
-                            <input type="checkbox">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-
-                    <div style="margin-top: 30px; display: flex; gap: 15px; justify-content: flex-end;">
-                        <button class="btn btn-outline">Cancel</button>
-                        <button class="btn btn-primary">Save Changes</button>
-                    </div>
+                <div>
+                    <h1>Settings</h1>
+                    <p>Manage your account and preferences.</p>
                 </div>
             </div>
 
+            <div class="settings-grid">
+                <!-- Left nav -->
+                <nav class="settings-nav">
+                    <div class="settings-nav-label">Personal</div>
+                    <div class="settings-nav-item active" data-panel="profile"><i class='bx bx-user-circle'></i> My Profile</div>
+                    <div class="settings-nav-item" data-panel="security"><i class='bx bx-shield-quarter'></i> Security</div>
+                    <div class="settings-nav-item" data-panel="notifications"><i class='bx bx-bell'></i> Notifications</div>
+                    <div class="settings-nav-item" data-panel="regional"><i class='bx bx-globe'></i> Regional</div>
+                    <div class="settings-nav-divider"></div>
+                    <div class="settings-nav-label superadmin-section" style="display:none;">Platform</div>
+                    <div class="settings-nav-item superadmin-section" style="display:none;" data-panel="storage"><i class='bx bx-server'></i> Storage</div>
+                </nav>
+
+                <!-- Right panels -->
+                <div>
+                    <!-- ── Panel 1: Profile ── -->
+                    <div class="settings-panel active" id="panel-profile">
+                        <div class="settings-card">
+                            <div class="settings-card-header">
+                                <h3>My Profile</h3>
+                                <p>Update your name, phone number, and avatar.</p>
+                            </div>
+                            <div class="settings-card-body">
+                                <div class="avatar-upload-row">
+                                    <img id="profile-avatar" class="avatar-preview" src="https://ui-avatars.com/api/?name=Admin&background=0057d1&color=fff" alt="Avatar">
+                                    <div class="avatar-actions">
+                                        <p style="font-size:12px; color:var(--text-muted); margin:0 0 6px;">Upload via <code>/api/files/upload</code> then paste the URL below.</p>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-field">
+                                        <label>First Name</label>
+                                        <input type="text" id="p-firstName" placeholder="First name" maxlength="100">
+                                    </div>
+                                    <div class="form-field">
+                                        <label>Last Name</label>
+                                        <input type="text" id="p-lastName" placeholder="Last name" maxlength="100">
+                                    </div>
+                                </div>
+                                <div class="form-field">
+                                    <label>Email Address <span style="color:var(--text-muted); font-weight:400;">(read-only)</span></label>
+                                    <div class="read-only-value" id="p-email">—</div>
+                                </div>
+                                <div class="form-field">
+                                    <label>Phone Number</label>
+                                    <input type="tel" id="p-phone" placeholder="+20..." maxlength="20">
+                                </div>
+                                <div class="form-field">
+                                    <label>Avatar URL</label>
+                                    <input type="url" id="p-avatarUrl" placeholder="https://..." maxlength="1000" oninput="previewAvatar(this.value)">
+                                    <div class="field-hint">Paste the URL returned after uploading your image.</div>
+                                </div>
+                                <div class="form-field">
+                                    <label>Current Role(s)</label>
+                                    <div class="role-badges" id="p-roles">—</div>
+                                </div>
+                                <div class="form-field">
+                                    <label>Member Since</label>
+                                    <div class="read-only-value" id="p-createdDate">—</div>
+                                </div>
+                            </div>
+                            <div class="save-bar">
+                                <button class="btn btn-outline" onclick="loadProfile()">Reset</button>
+                                <button class="btn btn-primary" id="save-profile-btn" onclick="saveProfile()">
+                                    <i class='bx bx-save'></i> Save Profile
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ── Panel 2: Security ── -->
+                    <div class="settings-panel" id="panel-security">
+                        <div class="settings-card">
+                            <div class="settings-card-header">
+                                <h3>Security</h3>
+                                <p>Two-factor authentication and session information.</p>
+                            </div>
+                            <div class="settings-card-body">
+                                <div class="info-note">
+                                    <i class='bx bx-info-circle'></i>
+                                    <span>The 2FA toggle stores an app-level policy flag. Real MFA enrollment still requires completing the process via the Firebase SDK on a supported client.</span>
+                                </div>
+                                <div class="toggle-row">
+                                    <div class="toggle-row-info">
+                                        <strong>Two-Factor Authentication (2FA)</strong>
+                                        <span>Enable this policy flag on your account.</span>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" id="sec-2fa" onchange="saveSecurity()">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="security-row">
+                                    <div class="security-row-label">Last Login</div>
+                                    <div class="security-row-value" id="sec-lastLogin">—</div>
+                                </div>
+                                <div class="security-row">
+                                    <div class="security-row-label">Password Last Changed</div>
+                                    <div class="security-row-value" id="sec-passwordChanged">Never recorded</div>
+                                </div>
+                                <div class="security-row">
+                                    <div class="security-row-label">Active Sessions</div>
+                                    <div class="security-row-value" id="sec-sessions">—</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ── Panel 3: Notifications ── -->
+                    <div class="settings-panel" id="panel-notifications">
+                        <div class="settings-card">
+                            <div class="settings-card-header">
+                                <h3>Notification Preferences</h3>
+                                <p>Choose which notifications you receive on your account.</p>
+                            </div>
+                            <div class="settings-card-body">
+                                <div class="info-note">
+                                    <i class='bx bx-info-circle'></i>
+                                    <span>These are personal preferences saved for a future per-admin filter. The platform-wide switch that actually gates all outbound notifications is <strong>Enable Notifications</strong> in Platform Configuration.</span>
+                                </div>
+                                <div class="toggle-row">
+                                    <div class="toggle-row-info"><strong>Email Notifications</strong><span>Receive important updates by email (no live email integration yet).</span></div>
+                                    <label class="switch"><input type="checkbox" id="notif-email"><span class="slider"></span></label>
+                                </div>
+                                <div class="toggle-row">
+                                    <div class="toggle-row-info"><strong>Push Notifications</strong><span>Receive push alerts on registered devices.</span></div>
+                                    <label class="switch"><input type="checkbox" id="notif-push"><span class="slider"></span></label>
+                                </div>
+                                <div class="toggle-row">
+                                    <div class="toggle-row-info"><strong>Broadcast Notifications</strong><span>Platform-wide broadcast messages.</span></div>
+                                    <label class="switch"><input type="checkbox" id="notif-broadcast"><span class="slider"></span></label>
+                                </div>
+                                <div class="toggle-row">
+                                    <div class="toggle-row-info"><strong>Application Notifications</strong><span>Pharmacist application status updates.</span></div>
+                                    <label class="switch"><input type="checkbox" id="notif-application"><span class="slider"></span></label>
+                                </div>
+                                <div class="toggle-row">
+                                    <div class="toggle-row-info"><strong>Order Notifications</strong><span>New and updated order alerts.</span></div>
+                                    <label class="switch"><input type="checkbox" id="notif-order"><span class="slider"></span></label>
+                                </div>
+                                <div class="toggle-row">
+                                    <div class="toggle-row-info"><strong>System Alerts</strong><span>Critical system-level notifications.</span></div>
+                                    <label class="switch"><input type="checkbox" id="notif-system"><span class="slider"></span></label>
+                                </div>
+                            </div>
+                            <div class="save-bar">
+                                <button class="btn btn-outline" onclick="loadNotifications()">Reset</button>
+                                <button class="btn btn-primary" id="save-notif-btn" onclick="saveNotifications()">
+                                    <i class='bx bx-save'></i> Save Preferences
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ── Panel 4: Regional ── -->
+                    <div class="settings-panel" id="panel-regional">
+                        <div class="settings-card">
+                            <div class="settings-card-header">
+                                <h3>Regional Settings</h3>
+                                <p>Adjust how dates, times, and numbers display in your dashboard.</p>
+                            </div>
+                            <div class="settings-card-body">
+                                <div class="warn-note">
+                                    <i class='bx bx-info-circle'></i>
+                                    <span>These settings affect only your own dashboard view — not what other users see or what patients are charged.</span>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-field">
+                                        <label>Language</label>
+                                        <select id="reg-language">
+                                            <option value="en">English</option>
+                                            <option value="ar">Arabic</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-field">
+                                        <label>Currency <span style="color:var(--text-muted); font-weight:400;">(display only)</span></label>
+                                        <select id="reg-currency">
+                                            <option value="EGP">EGP — Egyptian Pound</option>
+                                            <option value="USD">USD — US Dollar</option>
+                                            <option value="EUR">EUR — Euro</option>
+                                            <option value="GBP">GBP — British Pound</option>
+                                            <option value="SAR">SAR — Saudi Riyal</option>
+                                            <option value="AED">AED — UAE Dirham</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-field">
+                                    <label>Timezone (IANA)</label>
+                                    <select id="reg-timezone">
+                                        <option value="Africa/Cairo">Africa/Cairo (UTC+2/+3)</option>
+                                        <option value="UTC">UTC</option>
+                                        <option value="America/New_York">America/New_York (UTC-5/-4)</option>
+                                        <option value="America/Los_Angeles">America/Los_Angeles (UTC-8/-7)</option>
+                                        <option value="Europe/London">Europe/London (UTC+0/+1)</option>
+                                        <option value="Europe/Paris">Europe/Paris (UTC+1/+2)</option>
+                                        <option value="Asia/Dubai">Asia/Dubai (UTC+4)</option>
+                                        <option value="Asia/Riyadh">Asia/Riyadh (UTC+3)</option>
+                                        <option value="Asia/Tokyo">Asia/Tokyo (UTC+9)</option>
+                                    </select>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-field">
+                                        <label>Date Format</label>
+                                        <select id="reg-dateFormat">
+                                            <option value="yyyy-MM-dd">yyyy-MM-dd (2026-07-20)</option>
+                                            <option value="dd/MM/yyyy">dd/MM/yyyy (20/07/2026)</option>
+                                            <option value="MM/dd/yyyy">MM/dd/yyyy (07/20/2026)</option>
+                                            <option value="dd-MM-yyyy">dd-MM-yyyy (20-07-2026)</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-field">
+                                        <label>Time Format</label>
+                                        <select id="reg-timeFormat">
+                                            <option value="12h">12-hour (3:00 PM)</option>
+                                            <option value="24h">24-hour (15:00)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="save-bar">
+                                <button class="btn btn-outline" onclick="loadRegional()">Reset</button>
+                                <button class="btn btn-primary" id="save-regional-btn" onclick="saveRegional()">
+                                    <i class='bx bx-save'></i> Save Regional
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ── Panel 5: Storage (SuperAdmin) ── -->
+                    <div class="settings-panel" id="panel-storage">
+                        <div class="settings-card">
+                            <div class="settings-card-header">
+                                <h3>Storage — Cloudflare R2</h3>
+                                <p>Read-only view of file storage status and current usage.</p>
+                            </div>
+                            <div class="settings-card-body" id="storage-body">
+                                <div style="text-align:center; padding:40px; color:var(--text-muted);">
+                                    <i class="bx bx-loader-alt bx-spin" style="font-size:28px;"></i>
+                                    <p style="margin-top:12px;">Loading storage info...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../js/api/apiClient.js"></script>
     <script src="../js/api/settingsApi.js"></script>
+    <script src="../js/api/superAdminApi.js"></script>
     <script src="../js/main.js"></script>
     <script src="../js/pages/settings.js"></script>
 </body>
-
 </html>

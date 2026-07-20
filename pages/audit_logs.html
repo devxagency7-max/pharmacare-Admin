@@ -1,233 +1,256 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Audit Logs - Tamenny</title>
-    <!-- Google Fonts for modern typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Boxicons for icons -->
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="../css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        /* Stat cards */
+        .audit-stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .audit-stat { background: var(--bg-card); border-radius: var(--radius-md); padding: 18px 20px; box-shadow: var(--shadow-sm); }
+        .audit-stat .num { font-size: 26px; font-weight: 800; color: var(--text-primary); }
+        .audit-stat .lbl { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-top: 4px; }
+        .audit-stat.critical .num { color: var(--danger); }
+        .audit-stat.warn .num { color: #d97706; }
+
+        /* Filter bar */
+        .audit-filters {
+            display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+            background: var(--bg-card); border-radius: var(--radius-md);
+            padding: 14px 20px; margin-bottom: 20px; box-shadow: var(--shadow-sm);
+        }
+        .audit-filters select, .audit-filters input[type="date"], .audit-filters input[type="text"] {
+            padding: 8px 12px; border: 1.5px solid #e2e8f0; border-radius: 8px;
+            font-size: 13px; font-family: inherit; color: var(--text-primary);
+            background: #fff; cursor: pointer;
+        }
+        .audit-filters select:focus, .audit-filters input:focus { outline: none; border-color: var(--primary); }
+        .audit-filters .search-input { width: 240px; }
+        .audit-filters .filter-sep { width: 1px; height: 28px; background: #e2e8f0; margin: 0 4px; }
+
+        /* Table */
+        .severity-badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700;
+        }
+        .severity-badge.Information { background: #eff6ff; color: #3b82f6; }
+        .severity-badge.Warning     { background: #fffbeb; color: #d97706; }
+        .severity-badge.Error       { background: #fff7ed; color: #ea580c; }
+        .severity-badge.Critical    { background: #fef2f2; color: #dc2626; font-weight: 800; }
+
+        .status-dot { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; }
+        .status-dot.ok   { color: var(--success); }
+        .status-dot.fail { color: var(--danger); }
+        .status-dot::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+
+        .critical-row { border-left: 3px solid var(--danger) !important; background: #fff5f5 !important; }
+
+        /* Drawer */
+        .drawer-overlay { position:fixed; inset:0; background:rgba(15,23,42,0.35); z-index:1000; display:none; backdrop-filter:blur(4px); }
+        .drawer-overlay.active { display:block; }
+        .drawer {
+            position:fixed; top:0; right:0; bottom:0; width:520px;
+            background:#fff; box-shadow:-8px 0 40px rgba(0,0,0,0.12);
+            z-index:1001; overflow-y:auto;
+            transform:translateX(100%); transition:transform 0.35s cubic-bezier(0.4,0,0.2,1);
+        }
+        .drawer.active { transform:translateX(0); }
+        .drawer-header { padding:20px 24px; border-bottom:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center; }
+        .drawer-header h3 { font-size:17px; font-weight:700; margin:0; }
+        .drawer-close { background:none; border:none; font-size:22px; cursor:pointer; color:var(--text-muted); }
+        .drawer-body { padding:24px; }
+        .drawer-section { margin-bottom:20px; }
+        .drawer-section h4 { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted); margin-bottom:10px; }
+        .drawer-row { display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid #f8fafc; font-size:13px; }
+        .drawer-row:last-child { border-bottom:none; }
+        .drawer-row .dr-l { color:var(--text-muted); font-weight:500; }
+        .drawer-row .dr-v { font-weight:600; color:var(--text-primary); text-align:right; max-width:300px; word-break:break-all; }
+        .json-block { background:#f8fafc; border-radius:8px; padding:12px; font-size:12px; font-family:'Courier New',monospace; color:#334155; white-space:pre-wrap; overflow-x:auto; max-height:200px; overflow-y:auto; border:1px solid #e2e8f0; }
+
+        /* Export dropdown */
+        .export-wrap { position:relative; }
+        .export-menu { position:absolute; right:0; top:calc(100% + 6px); background:#fff; border:1px solid #e2e8f0; border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,0.1); z-index:100; display:none; min-width:140px; }
+        .export-menu.open { display:block; }
+        .export-menu button { display:flex; align-items:center; gap:8px; width:100%; padding:10px 16px; border:none; background:none; font-size:13px; font-family:inherit; color:var(--text-primary); cursor:pointer; }
+        .export-menu button:hover { background:#f8fafc; }
+
+        /* Pagination */
+        .pagination { display:flex; align-items:center; justify-content:space-between; padding:16px 0; flex-wrap:wrap; gap:10px; }
+        .pagination-buttons { display:flex; gap:6px; }
+        .page-btn { padding:6px 12px; border:1.5px solid #e2e8f0; border-radius:8px; background:#fff; font-size:13px; font-family:inherit; cursor:pointer; color:var(--text-primary); }
+        .page-btn:hover { border-color:var(--primary); color:var(--primary); }
+        .page-btn.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+        .page-btn:disabled { opacity:.4; cursor:not-allowed; }
+        .page-info { font-size:13px; color:var(--text-muted); }
+    </style>
 </head>
-
 <body>
-
-    <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            
-            
-            <div class="logo">
-                <img src="../logo.jpeg" alt="Logo">
-                <span>Tamenny</span>
-            </div>
+            <div class="logo"><img src="../logo.jpeg" alt="Logo"><span>Tamenny</span></div>
             <i class='bx bx-menu' id="sidebar-toggle"></i>
         </div>
-
         <ul class="nav-links">
-            <li>
-                <a href="../index.html">
-                    <i class='bx bx-grid-alt'></i>
-                    <span class="link-name">Dashboard</span>
-                </a>
-            </li>
-            <li>
-                <a href="patients.html">
-                    <i class='bx bx-user'></i>
-                    <span class="link-name">Patients</span>
-                </a>
-            </li>
-            <li>
-                <a href="pharmacists.html">
-                    <i class='bx bx-plus-medical'></i>
-                    <span class="link-name">Pharmacists</span>
-                </a>
-            </li>
-            <li>
-                <a href="intern_pharmacists.html">
-                    <i class='bx bx-book-reader'></i>
-                    <span class="link-name">Intern Pharmacists</span>
-                </a>
-            </li>
-            <li>
-                <a href="pharmacies.html">
-                    <i class='bx bx-store-alt'></i>
-                    <span class="link-name">Pharmacies</span>
-                </a>
-            </li>
-            <li>
-                <a href="orders.html">
-                    <i class='bx bx-cart'></i>
-                    <span class="link-name">Orders</span>
-                </a>
-            </li>
-            <li>
-                <a href="medications.html">
-                    <i class='bx bx-capsule'></i>
-                    <span class="link-name">Medications</span>
-                </a>
-            </li>
-            <li>
-                <a href="reports.html">
-                    <i class='bx bx-pie-chart-alt-2'></i>
-                    <span class="link-name">Reports</span>
-                </a>
-            </li>
-            <li>
-                <a href="audit_logs.html" class="active">
-                    <i class='bx bx-file'></i>
-                    <span class="link-name">Audit Logs</span>
-                </a>
-            </li>
-            <li>
-                <a href="file_review.html">
-                    <i class='bx bx-file-find'></i>
-                    <span class="link-name">File Review</span>
-                </a>
-            </li>
-            <li>
-                <a href="notifications.html">
-                    <i class='bx bx-bell'></i>
-                    <span class="link-name">Global Notifications</span>
-                </a>
-            </li>
-            <li>
-                <a href="settings.html">
-                    <i class='bx bx-cog'></i>
-                    <span class="link-name">Settings</span>
-                </a>
-            </li>
+            <li><a href="../index.html"><i class='bx bx-grid-alt'></i><span class="link-name">Dashboard</span></a></li>
+            <li><a href="patients.html"><i class='bx bx-user'></i><span class="link-name">Patients</span></a></li>
+            <li><a href="pharmacists.html"><i class='bx bx-plus-medical'></i><span class="link-name">Pharmacists</span></a></li>
+            <li><a href="intern_pharmacists.html"><i class='bx bx-book-reader'></i><span class="link-name">Intern Pharmacists</span></a></li>
+            <li><a href="pharmacies.html"><i class='bx bx-store-alt'></i><span class="link-name">Pharmacies</span></a></li>
+            <li><a href="orders.html"><i class='bx bx-cart'></i><span class="link-name">Orders</span></a></li>
+            <li><a href="medications.html"><i class='bx bx-capsule'></i><span class="link-name">Medications</span></a></li>
+            <li><a href="reports.html"><i class='bx bx-pie-chart-alt-2'></i><span class="link-name">Reports</span></a></li>
+            <li><a href="audit_logs.html" class="active"><i class='bx bx-file'></i><span class="link-name">Audit Logs</span></a></li>
+            <li><a href="file_review.html"><i class='bx bx-file-find'></i><span class="link-name">File Review</span></a></li>
+            <li><a href="notifications.html"><i class='bx bx-bell'></i><span class="link-name">Global Notifications</span></a></li>
+            <li><a href="settings.html"><i class='bx bx-cog'></i><span class="link-name">Settings</span></a></li>
+            <!-- SuperAdmin Section -->
+            <li class="superadmin-section" style="display:none; padding: 6px 20px 2px; pointer-events:none;"><span style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#94a3b8;">SuperAdmin</span></li>
+            <li class="superadmin-section" style="display:none"><a href="admin_management.html"><i class='bx bx-shield-quarter'></i><span class="link-name">Admin Management</span></a></li>
+            <li class="superadmin-section" style="display:none"><a href="platform_config.html"><i class='bx bx-slider-alt'></i><span class="link-name">Platform Config</span></a></li>
+            <li class="superadmin-section" style="display:none"><a href="system_health.html"><i class='bx bx-pulse'></i><span class="link-name">System Health</span></a></li>
+            <li class="superadmin-section" style="display:none"><a href="backups.html"><i class='bx bx-data'></i><span class="link-name">Backups</span></a></li>
+            <li class="superadmin-section" style="display:none"><a href="integrations.html"><i class='bx bx-plug'></i><span class="link-name">Integrations</span></a></li>
         </ul>
-
         <div class="sidebar-footer">
-            <a href="login.html" class="logout-btn">
-                <i class='bx bx-log-out'></i>
-                <span class="link-name">Logout</span>
-            </a>
+            <a href="../login.html" class="logout-btn"><i class='bx bx-log-out'></i><span class="link-name">Logout</span></a>
         </div>
     </aside>
 
-    <!-- Main Content -->
     <main class="main-content" id="main-content">
-        <!-- Topbar -->
         <header class="topbar">
-            <!-- Search & Profile -->
-            <div class="search-box">
-                <i class='bx bx-search'></i>
-                <input type="text" placeholder="Search everywhere...">
-            </div>
-
+            <div class="search-box"><i class='bx bx-search'></i><input type="text" placeholder="Search everywhere..."></div>
             <div class="topbar-right">
-                <div class="notification-icon">
-                    <i class='bx bx-bell'></i>
-                    <span class="badge">3</span>
-                </div>
+                <div class="notification-icon"><i class='bx bx-bell'></i><span class="badge">0</span></div>
                 <div class="profile">
-                    <img src="https://ui-avatars.com/api/?name=Admin+User&background=0D8ABC&color=fff"
-                        alt="Admin Profile">
-                    <div class="profile-info">
-                        <span class="name">Admin User</span>
-                        <span class="role">Super Admin</span>
-                    </div>
+                    <img src="https://ui-avatars.com/api/?name=Admin+User&background=0057d1&color=fff" alt="Admin Profile">
+                    <div class="profile-info"><span class="name">Admin User</span><span class="role">Admin</span></div>
                 </div>
             </div>
         </header>
 
-        <!-- Page Content -->
         <div class="page-content">
             <div class="page-header">
-                <h1>System Activity Logs</h1>
-                <p>Track all important actions performed in the platform.</p>
-            </div>
-
-            <!-- Stats Grid for Audit Logs -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon primary">
-                        <i class='bx bx-list-ul'></i>
-                    </div>
-                    <div class="stat-details">
-                        <h3>Total Events</h3>
-                        <h2 id="audit-total"><i class='bx bx-loader-alt bx-spin'></i></h2>
-                        <span class="trend neutral"><i class='bx bx-minus'></i> All time</span>
-                    </div>
+                <div>
+                    <h1>Audit Logs</h1>
+                    <p>Tamper-evident record of all platform activity — who did what, when, and from where.</p>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon success">
-                        <i class='bx bx-check-shield'></i>
-                    </div>
-                    <div class="stat-details">
-                        <h3>Unique Actors</h3>
-                        <h2 id="audit-actors"><i class='bx bx-loader-alt bx-spin'></i></h2>
-                        <span class="trend positive"><i class='bx bx-user'></i> Users & Systems</span>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon warning">
-                        <i class='bx bx-error'></i>
-                    </div>
-                    <div class="stat-details">
-                        <h3>Actions Today</h3>
-                        <h2 id="audit-today"><i class='bx bx-loader-alt bx-spin'></i></h2>
-                        <span class="trend warning" style="color:#F59E0B; background:#FEF3C7;"><i
-                                class='bx bx-time'></i> Last 24 hours</span>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon danger">
-                        <i class='bx bx-shield-quarter'></i>
-                    </div>
-                    <div class="stat-details">
-                        <h3>Admin Actions</h3>
-                        <h2 id="audit-admin"><i class='bx bx-loader-alt bx-spin'></i></h2>
-                        <span class="trend negative"><i class='bx bx-shield'></i> By admins</span>
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <button class="btn btn-outline" onclick="loadMetrics(); loadLogs(1);" style="font-size:13px; padding:8px 14px;">
+                        <i class='bx bx-refresh'></i> Refresh
+                    </button>
+                    <div class="export-wrap">
+                        <button class="btn btn-outline" id="export-btn" onclick="toggleExportMenu()" style="font-size:13px; padding:8px 14px;">
+                            <i class='bx bx-download'></i> Export <i class='bx bx-chevron-down'></i>
+                        </button>
+                        <div class="export-menu" id="export-menu">
+                            <button onclick="doExport('csv')"><i class='bx bx-spreadsheet'></i> CSV</button>
+                            <button onclick="doExport('excel')"><i class='bx bx-table'></i> Excel</button>
+                            <button onclick="doExport('json')"><i class='bx bx-code-alt'></i> JSON</button>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Action Bar Removed -->
+            <!-- Stat cards -->
+            <div class="audit-stats" id="audit-stats">
+                <div class="audit-stat"><div class="num" id="m-total"><i class="bx bx-loader-alt bx-spin"></i></div><div class="lbl">Total Logs</div></div>
+                <div class="audit-stat"><div class="num" id="m-today"><i class="bx bx-loader-alt bx-spin"></i></div><div class="lbl">Today</div></div>
+                <div class="audit-stat"><div class="num" id="m-users"><i class="bx bx-loader-alt bx-spin"></i></div><div class="lbl">Unique Users</div></div>
+                <div class="audit-stat warn"><div class="num" id="m-failed"><i class="bx bx-loader-alt bx-spin"></i></div><div class="lbl">Failed Ops</div></div>
+                <div class="audit-stat critical"><div class="num" id="m-critical"><i class="bx bx-loader-alt bx-spin"></i></div><div class="lbl">Critical Events</div></div>
+            </div>
 
-            <!-- Table Card -->
+            <!-- Filters -->
+            <div class="audit-filters">
+                <input type="text" class="search-input" id="f-search" placeholder="Search action, actor, resource..." oninput="debounceSearch()">
+                <div class="filter-sep"></div>
+                <input type="date" id="f-from" onchange="applyFilters()">
+                <input type="date" id="f-to" onchange="applyFilters()">
+                <div class="filter-sep"></div>
+                <select id="f-severity" onchange="applyFilters()">
+                    <option value="">All Severities</option>
+                    <option value="Information">Information</option>
+                    <option value="Warning">Warning</option>
+                    <option value="Error">Error</option>
+                    <option value="Critical">Critical</option>
+                </select>
+                <select id="f-category" onchange="applyFilters()">
+                    <option value="">All Modules</option>
+                    <option value="Authentication">Authentication</option>
+                    <option value="Authorization">Authorization</option>
+                    <option value="UserManagement">User Management</option>
+                    <option value="PharmacyManagement">Pharmacy Management</option>
+                    <option value="MedicationManagement">Medication Management</option>
+                    <option value="Orders">Orders</option>
+                    <option value="Prescriptions">Prescriptions</option>
+                    <option value="Notifications">Notifications</option>
+                    <option value="System">System</option>
+                    <option value="Security">Security</option>
+                    <option value="Configuration">Configuration</option>
+                </select>
+                <select id="f-succeeded" onchange="applyFilters()">
+                    <option value="">All Statuses</option>
+                    <option value="true">Succeeded</option>
+                    <option value="false">Failed</option>
+                </select>
+                <button class="btn btn-outline" onclick="clearFilters()" style="font-size:13px; padding:7px 12px;">
+                    <i class='bx bx-x'></i> Clear
+                </button>
+            </div>
+
+            <!-- Table -->
             <div class="card">
                 <div class="table-container">
-                    <table class="data-table" id="audit-logs-table">
+                    <table class="data-table">
                         <thead>
                             <tr>
                                 <th>Timestamp</th>
-                                <th>Admin</th>
+                                <th>Actor</th>
                                 <th>Action</th>
+                                <th>Module</th>
                                 <th>Resource</th>
-                                <th>Entity ID</th>
-                                <th>Log ID</th>
-                                <th>Details</th>
+                                <th>Status</th>
+                                <th>Severity</th>
+                                <th></th>
                             </tr>
                         </thead>
-                        <tbody id="audit-logs-body">
-                            <!-- Loaded via admin api -->
+                        <tbody id="audit-body">
+                            <tr><td colspan="8" style="text-align:center;padding:40px;"><i class="bx bx-loader-alt bx-spin"></i> Loading...</td></tr>
                         </tbody>
                     </table>
                 </div>
-
-                <div class="pagination" id="audit-pagination">
-                    <span class="page-info" id="audit-page-info">Loading...</span>
-                    <button class="page-btn" id="audit-prev-btn" onclick="changePage(-1)"><i class='bx bx-chevron-left'></i></button>
-                    <span id="audit-page-buttons"></span>
-                    <button class="page-btn" id="audit-next-btn" onclick="changePage(1)"><i class='bx bx-chevron-right'></i></button>
-                </div>
             </div>
 
+            <!-- Pagination -->
+            <div class="pagination">
+                <span class="page-info" id="page-info"></span>
+                <div class="pagination-buttons" id="pagination-buttons"></div>
+            </div>
         </div>
     </main>
+
+    <!-- Detail Drawer -->
+    <div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()">
+        <div class="drawer" id="audit-drawer" onclick="event.stopPropagation()">
+            <div class="drawer-header">
+                <h3>Audit Log Detail</h3>
+                <button class="drawer-close" onclick="closeDrawer()"><i class='bx bx-x'></i></button>
+            </div>
+            <div class="drawer-body" id="drawer-body">
+                <div style="text-align:center;padding:40px;color:var(--text-muted);"><i class="bx bx-loader-alt bx-spin" style="font-size:28px;"></i></div>
+            </div>
+        </div>
+    </div>
 
     <script src="../js/api/apiClient.js"></script>
     <script src="../js/api/auditLogsApi.js"></script>
     <script src="../js/main.js"></script>
     <script src="../js/pages/auditLogs.js"></script>
 </body>
-
 </html>

@@ -10,16 +10,59 @@
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/modals.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        /* Type tabs */
+        .type-tabs { display:flex; gap:8px; margin-bottom:20px; }
+        .type-tab {
+            padding:8px 20px; border-radius:20px; font-size:13px; font-weight:600;
+            border:1.5px solid #e2e8f0; background:#fff; color:var(--text-muted);
+            cursor:pointer; transition:var(--transition);
+        }
+        .type-tab.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+
+        /* Application card in drawer */
+        .doc-grid { display:grid; gap:12px; }
+        .doc-card {
+            border:1.5px solid #e2e8f0; border-radius:12px; padding:14px;
+            display:flex; justify-content:space-between; align-items:center; gap:12px;
+        }
+        .doc-card-info { flex:1; }
+        .doc-card-info .doc-type { font-size:13px; font-weight:700; color:var(--text-primary); margin-bottom:3px; }
+        .doc-card-info .doc-meta { font-size:12px; color:var(--text-muted); }
+        .doc-status-badge { padding:3px 10px; border-radius:6px; font-size:11px; font-weight:700; }
+        .doc-status-badge.Pending  { background:#fffbeb; color:#d97706; }
+        .doc-status-badge.Approved { background:#ecfdf5; color:#059669; }
+        .doc-status-badge.Rejected { background:#fef2f2; color:#ef4444; }
+
+        /* Drawer */
+        .drawer-overlay { position:fixed; inset:0; background:rgba(15,23,42,0.35); z-index:1000; display:none; backdrop-filter:blur(4px); }
+        .drawer-overlay.active { display:block; }
+        .drawer {
+            position:fixed; top:0; right:0; bottom:0; width:520px;
+            background:#fff; box-shadow:-8px 0 40px rgba(0,0,0,0.12);
+            z-index:1001; overflow-y:auto;
+            transform:translateX(100%); transition:transform 0.35s cubic-bezier(0.4,0,0.2,1);
+        }
+        .drawer.active { transform:translateX(0); }
+        .drawer-header { padding:20px 24px; border-bottom:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center; }
+        .drawer-header h3 { font-size:17px; font-weight:700; margin:0; }
+        .drawer-close { background:none; border:none; font-size:22px; cursor:pointer; color:var(--text-muted); }
+        .drawer-body { padding:24px; }
+        .drawer-section { margin-bottom:20px; }
+        .drawer-section h4 { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted); margin-bottom:10px; }
+        .drawer-row { display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid #f8fafc; font-size:13px; }
+        .drawer-row:last-child { border-bottom:none; }
+        .drawer-row .dl { color:var(--text-muted); font-weight:500; }
+        .drawer-row .dv { font-weight:600; color:var(--text-primary); }
+
+        .approve-bar { position:sticky; bottom:0; background:#fff; border-top:1px solid #e2e8f0; padding:14px 24px; display:flex; gap:12px; justify-content:flex-end; box-shadow:0 -4px 16px rgba(0,0,0,0.06); }
+    </style>
 </head>
 <body>
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            
-            
-            <div class="logo">
-                <img src="../logo.jpeg" alt="Logo">
-                <span>Tamenny</span>
-            </div>
+            <div class="logo"><img src="../logo.jpeg" alt="Logo"><span>Tamenny</span></div>
             <i class='bx bx-menu' id="sidebar-toggle"></i>
         </div>
         <ul class="nav-links">
@@ -35,39 +78,68 @@
             <li><a href="file_review.html" class="active"><i class='bx bx-file-find'></i><span class="link-name">File Review</span></a></li>
             <li><a href="notifications.html"><i class='bx bx-bell'></i><span class="link-name">Global Notifications</span></a></li>
             <li><a href="settings.html"><i class='bx bx-cog'></i><span class="link-name">Settings</span></a></li>
+            <!-- SuperAdmin Section -->
+            <li class="superadmin-section" style="display:none; padding: 6px 20px 2px; pointer-events:none;"><span style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#94a3b8;">SuperAdmin</span></li>
+            <li class="superadmin-section" style="display:none"><a href="admin_management.html"><i class='bx bx-shield-quarter'></i><span class="link-name">Admin Management</span></a></li>
+            <li class="superadmin-section" style="display:none"><a href="platform_config.html"><i class='bx bx-slider-alt'></i><span class="link-name">Platform Config</span></a></li>
+            <li class="superadmin-section" style="display:none"><a href="system_health.html"><i class='bx bx-pulse'></i><span class="link-name">System Health</span></a></li>
+            <li class="superadmin-section" style="display:none"><a href="backups.html"><i class='bx bx-data'></i><span class="link-name">Backups</span></a></li>
+            <li class="superadmin-section" style="display:none"><a href="integrations.html"><i class='bx bx-plug'></i><span class="link-name">Integrations</span></a></li>
         </ul>
+        <div class="sidebar-footer">
+            <a href="../login.html" class="logout-btn"><i class='bx bx-log-out'></i><span class="link-name">Logout</span></a>
+        </div>
     </aside>
 
     <main class="main-content" id="main-content">
         <header class="topbar">
             <div class="search-box"><i class='bx bx-search'></i><input type="text" placeholder="Search everywhere..."></div>
             <div class="topbar-right">
+                <div class="notification-icon"><i class='bx bx-bell'></i><span class="badge">0</span></div>
                 <div class="profile">
-                    <img src="https://ui-avatars.com/api/?name=Admin+User&background=0D8ABC&color=fff" alt="Admin Profile">
-                    <div class="profile-info"><span class="name">Admin User</span><span class="role">Super Admin</span></div>
+                    <img src="https://ui-avatars.com/api/?name=Admin+User&background=0057d1&color=fff" alt="Admin Profile">
+                    <div class="profile-info"><span class="name">Admin User</span><span class="role">Admin</span></div>
                 </div>
             </div>
         </header>
 
         <div class="page-content">
             <div class="page-header">
-                <h1>Document Review Queue</h1>
-                <p>Verify and approve pharmacist license and application documents.</p>
+                <div>
+                    <h1>Application Review Queue</h1>
+                    <p>Verify and approve pharmacist applications and their documents.</p>
+                </div>
+                <button class="btn btn-outline" onclick="loadQueue()" style="font-size:13px;padding:8px 14px;">
+                    <i class='bx bx-refresh'></i> Refresh
+                </button>
             </div>
 
+            <!-- Type tabs -->
+            <div class="type-tabs">
+                <button class="type-tab active" id="tab-Pharmacist" onclick="switchType('Pharmacist')">
+                    <i class='bx bx-plus-medical'></i> Pharmacists
+                </button>
+                <button class="type-tab" id="tab-Intern" onclick="switchType('Intern')">
+                    <i class='bx bx-book-reader'></i> Intern Pharmacists
+                </button>
+            </div>
+
+            <!-- Table -->
             <div class="card">
                 <div class="table-container">
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th>Document Type</th>
-                                <th>Owner Name</th>
-                                <th>Submission Date</th>
+                                <th>Applicant</th>
+                                <th>Type</th>
+                                <th>Submitted</th>
+                                <th>Documents</th>
+                                <th>Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="file-review-body">
-                            <!-- Loaded via API -->
+                        <tbody id="review-body">
+                            <tr><td colspan="6" style="text-align:center;padding:40px;"><i class="bx bx-loader-alt bx-spin"></i> Loading...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -75,19 +147,45 @@
         </div>
     </main>
 
+    <!-- Application Detail Drawer -->
+    <div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()">
+        <div class="drawer" id="app-drawer" onclick="event.stopPropagation()">
+            <div class="drawer-header">
+                <h3>Application Detail</h3>
+                <button class="drawer-close" onclick="closeDrawer()"><i class='bx bx-x'></i></button>
+            </div>
+            <div class="drawer-body" id="drawer-body">
+                <div style="text-align:center;padding:40px;color:var(--text-muted);"><i class="bx bx-loader-alt bx-spin" style="font-size:28px;"></i></div>
+            </div>
+            <div class="approve-bar" id="approve-bar" style="display:none;">
+                <button class="btn btn-outline" onclick="openRejectModal()">
+                    <i class='bx bx-x-circle'></i> Reject
+                </button>
+                <button class="btn btn-primary" onclick="doApprove()">
+                    <i class='bx bx-check-circle'></i> Approve
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Reject Modal -->
     <div class="modal-overlay" id="reject-modal">
-        <div class="modal-content" style="max-width: 450px;">
+        <div class="modal-content" style="max-width:460px;">
             <div class="modal-header">
-                <h2><i class='bx bx-x-circle' style="color: var(--danger);"></i> Reject Document</h2>
+                <h2><i class='bx bx-x-circle' style="color:var(--danger);"></i> Reject Application</h2>
                 <i class='bx bx-x close-modal' onclick="closeRejectModal()"></i>
             </div>
-            <div style="padding: 20px;">
-                <label style="display: block; margin-bottom: 10px; font-weight: 600;">Rejection Reason</label>
-                <textarea id="reject-reason" style="width: 100%; height: 100px; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; font-family: inherit;" placeholder="Why is this document being rejected?"></textarea>
-                <div class="modal-actions" style="margin-top: 20px;">
+            <div style="padding:24px;">
+                <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">
+                    The rejection reason is required and will be sent to the applicant.
+                </p>
+                <label style="display:block;font-size:14px;font-weight:600;margin-bottom:8px;">Reason <span style="color:var(--danger);">*</span></label>
+                <textarea id="reject-reason" style="width:100%;height:100px;padding:12px;border-radius:8px;border:1.5px solid #e2e8f0;font-family:inherit;font-size:14px;box-sizing:border-box;resize:vertical;" placeholder="e.g. License expired, documents unclear..."></textarea>
+                <div class="modal-actions" style="margin-top:20px;">
                     <button class="btn btn-outline" onclick="closeRejectModal()">Cancel</button>
-                    <button class="btn btn-primary" style="background: var(--danger);" onclick="confirmRejection()">Reject File</button>
+                    <button class="btn btn-primary" style="background:var(--danger);border-color:var(--danger);" onclick="doReject()" id="reject-confirm-btn">
+                        <i class='bx bx-x-circle'></i> Reject Application
+                    </button>
                 </div>
             </div>
         </div>

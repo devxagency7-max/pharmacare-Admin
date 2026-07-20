@@ -1,87 +1,243 @@
+let currentType = 'Pharmacist';
+let activeAppId = null;
+let activeAppStatus = null;
+
+const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 3500 });
+
 document.addEventListener('DOMContentLoaded', () => {
-    loadPendingFiles();
+    loadQueue();
 });
 
-let rejectingFileId = null;
+// ── Type switch ───────────────────────────────
+function switchType(type) {
+    currentType = type;
+    document.querySelectorAll('.type-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(`tab-${type}`).classList.add('active');
+    loadQueue();
+}
 
-async function loadPendingFiles() {
-    const tableBody = document.getElementById('file-review-body');
-    if (!tableBody) return;
-
-    tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 30px;"><i class="bx bx-loader-alt bx-spin"></i> Loading queue...</td></tr>';
+// ── Queue list ────────────────────────────────
+async function loadQueue() {
+    const body = document.getElementById('review-body');
+    body.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;"><i class="bx bx-loader-alt bx-spin"></i> Loading queue...</td></tr>';
 
     try {
-        const res = await fetchPendingFiles();
-        const files = res?.data || [];
+        const fetchFn = currentType === 'Intern' ? fetchPendingInterns : fetchPendingApplications;
+        const res = await fetchFn(currentType);
+        const items = res?.data || [];
 
-        if (files.length === 0) {
-            tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 30px;">No pending documents for review.</td></tr>';
+        if (items.length === 0) {
+            body.innerHTML = `
+            <tr><td colspan="6" style="text-align:center;padding:60px;color:var(--text-muted);">
+                <i class='bx bx-check-shield' style="font-size:40px;color:var(--success);display:block;margin-bottom:12px;"></i>
+                <strong>Queue is empty</strong><br>
+                <span style="font-size:13px;">No pending ${currentType === 'Intern' ? 'intern pharmacist' : 'pharmacist'} applications.</span>
+            </td></tr>`;
             return;
         }
 
-        tableBody.innerHTML = files.map(file => `
-            <tr>
-                <td>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <i class='bx bxs-file-pdf' style="font-size: 24px; color: var(--danger);"></i>
-                        <strong>${file.type || 'Document'}</strong>
-                    </div>
-                </td>
-                <td>${file.ownerName || 'Unknown Pharmacist'}</td>
-                <td>${file.createdAt ? new Date(file.createdAt).toLocaleDateString() : 'N/A'}</td>
-                <td>
-                    <div class="table-actions">
-                        <button class="action-btn edit" onclick="window.open('${file.url}', '_blank')" title="View File">
-                            <i class='bx bx-show'></i>
-                        </button>
-                        <button class="action-btn success" onclick="handleApprove('${file.id}')" title="Approve" style="color: #10b981; background: #ecfdf5;">
-                            <i class='bx bx-check'></i>
-                        </button>
-                        <button class="action-btn delete" onclick="openRejectModal('${file.id}')" title="Reject">
-                            <i class='bx bx-x'></i>
-                        </button>
-                    </div>
-                </td>
-            </tr>
-        `).join('');
-
+        body.innerHTML = items.map(app => buildRow(app)).join('');
     } catch (err) {
-        console.error('Failed to load files:', err);
-        tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; color: var(--danger);">Error loading queue.</td></tr>';
+        body.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--danger);">
+            <i class='bx bx-error-circle' style="font-size:28px;display:block;margin-bottom:8px;"></i>
+            ${err.message || 'Failed to load queue.'}
+        </td></tr>`;
     }
 }
 
-async function handleApprove(id) {
-    if (!confirm('Are you sure you want to approve this document?')) return;
+function buildRow(app) {
+    const docs = app.documents || [];
+    const submitted = app.submittedAt ? new Date(app.submittedAt).toLocaleDateString() : '—';
+    const statusClass = app.status === 'Approved' ? 'success' : app.status === 'Rejected' ? 'danger' : 'warning';
+
+    return `<tr>
+        <td>
+            <div style="font-weight:700;font-size:13px;">${escHtml(app.userName || '—')}</div>
+            <div style="font-size:11px;color:var(--text-muted);">${escHtml(app.userEmail || '')}</div>
+        </td>
+        <td><span style="font-size:12px;font-weight:600;">${escHtml(app.applicationType || currentType)}</span></td>
+        <td style="font-size:13px;color:var(--text-muted);">${submitted}</td>
+        <td style="font-size:13px;">${docs.length} document${docs.length !== 1 ? 's' : ''}</td>
+        <td><span class="status-badge ${statusClass}">${app.status || 'Pending'}</span></td>
+        <td>
+            <button class="action-btn view" onclick="openDrawer('${app.id}')" title="Review">
+                <i class='bx bx-folder-open'></i>
+            </button>
+        </td>
+    </tr>`;
+}
+
+// ── Application drawer ────────────────────────
+async function openDrawer(appId) {
+    activeAppId = appId;
+    const overlay = document.getElementById('drawer-overlay');
+    const drawer = document.getElementById('app-drawer');
+    const body = document.getElementById('drawer-body');
+    const bar = document.getElementById('approve-bar');
+
+    overlay.classList.add('active');
+    drawer.classList.add('active');
+    bar.style.display = 'none';
+    body.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);"><i class="bx bx-loader-alt bx-spin" style="font-size:28px;"></i></div>';
+
     try {
-        await approveFile(id);
-        alert('File approved successfully');
-        loadPendingFiles();
+        const res = await fetchApplicationById(appId);
+        const app = res?.data || res;
+        activeAppStatus = app.status;
+        body.innerHTML = renderAppDetail(app);
+        if (app.status === 'Pending') bar.style.display = 'flex';
     } catch (err) {
-        alert('Failed to approve file');
+        body.innerHTML = `<div style="padding:24px;color:var(--danger);">${err.message}</div>`;
     }
 }
 
-function openRejectModal(id) {
-    rejectingFileId = id;
+function closeDrawer() {
+    activeAppId = null;
+    document.getElementById('drawer-overlay').classList.remove('active');
+    document.getElementById('app-drawer').classList.remove('active');
+    document.getElementById('approve-bar').style.display = 'none';
+}
+
+function renderAppDetail(app) {
+    const docs = app.documents || [];
+    const submitted = app.submittedAt ? new Date(app.submittedAt).toLocaleString() : '—';
+    const reviewed = app.reviewedAt ? new Date(app.reviewedAt).toLocaleString() : null;
+
+    const drawerRow = (label, value) =>
+        `<div class="drawer-row"><span class="dl">${label}</span><span class="dv">${value || '—'}</span></div>`;
+
+    let html = `
+    <div class="drawer-section">
+        <h4>Applicant</h4>
+        ${drawerRow('Name', escHtml(app.userName || '—'))}
+        ${drawerRow('Email', escHtml(app.userEmail || '—'))}
+        ${drawerRow('Membership #', escHtml(app.membershipNumber || 'Not yet assigned'))}
+        ${app.universityName ? drawerRow('University', escHtml(app.universityName)) : ''}
+    </div>
+    <div class="drawer-section">
+        <h4>Application</h4>
+        ${drawerRow('Type', escHtml(app.applicationType || '—'))}
+        ${drawerRow('Status', `<span class="status-badge ${app.status === 'Approved' ? 'success' : app.status === 'Rejected' ? 'danger' : 'warning'}">${app.status || '—'}</span>`)}
+        ${drawerRow('Submitted', submitted)}
+        ${reviewed ? drawerRow('Reviewed', reviewed) : ''}
+        ${app.reviewerName ? drawerRow('Reviewed By', escHtml(app.reviewerName)) : ''}
+        ${app.rejectionReason ? drawerRow('Rejection Reason', `<span style="color:var(--danger);">${escHtml(app.rejectionReason)}</span>`) : ''}
+    </div>`;
+
+    if (docs.length > 0) {
+        html += `<div class="drawer-section">
+            <h4>Documents (${docs.length})</h4>
+            <div class="doc-grid">
+                ${docs.map(doc => {
+                    const sizeMB = doc.fileSize ? (doc.fileSize / (1024 * 1024)).toFixed(2) + ' MB' : '';
+                    const uploadDate = doc.uploadedAt ? new Date(doc.uploadedAt).toLocaleDateString() : '';
+                    return `<div class="doc-card">
+                        <div class="doc-card-info">
+                            <div class="doc-type">${escHtml(doc.documentType || 'Document')}</div>
+                            <div class="doc-meta">${escHtml(doc.originalFileName || '')} ${sizeMB ? '· ' + sizeMB : ''} ${uploadDate ? '· ' + uploadDate : ''}</div>
+                            ${doc.notes ? `<div style="font-size:12px;color:var(--danger);margin-top:4px;">${escHtml(doc.notes)}</div>` : ''}
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
+                            <span class="doc-status-badge ${doc.status || 'Pending'}">${doc.status || 'Pending'}</span>
+                            ${doc.downloadUrl || doc.previewUrl
+                                ? `<a href="${doc.downloadUrl || doc.previewUrl}" target="_blank" class="btn btn-outline" style="font-size:11px;padding:4px 10px;">
+                                    <i class='bx bx-link-external'></i> View
+                                   </a>`
+                                : ''}
+                        </div>
+                    </div>`;
+                }).join('')}
+            </div>
+        </div>`;
+    }
+
+    return html;
+}
+
+// ── Approve ───────────────────────────────────
+async function doApprove() {
+    if (!activeAppId) return;
+
+    const confirm = await Swal.fire({
+        title: 'Approve Application?',
+        text: 'This will activate the applicant\'s account with the appropriate pharmacist role.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, Approve',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#10b981',
+    });
+    if (!confirm.isConfirmed) return;
+
+    const btn = document.querySelector('#approve-bar .btn-primary');
+    btn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Approving...';
+    btn.disabled = true;
+
+    try {
+        const approveFn = currentType === 'Intern' ? approveIntern : approveApplication;
+        const res = await approveFn(activeAppId);
+        Toast.fire({ icon: 'success', title: res?.message || 'Application approved successfully.' });
+        closeDrawer();
+        loadQueue();
+    } catch (err) {
+        btn.innerHTML = '<i class="bx bx-check-circle"></i> Approve';
+        btn.disabled = false;
+        if (err.status === 409) {
+            Swal.fire('Already Reviewed', 'This application has already been approved or rejected.', 'warning');
+        } else if (err.status === 422) {
+            Swal.fire('Missing Documents', err.message || 'Required documents are missing. Check the document list.', 'error');
+        } else {
+            Swal.fire('Approval Failed', err.message || 'Could not approve application.', 'error');
+        }
+    }
+}
+
+// ── Reject ────────────────────────────────────
+function openRejectModal() {
+    document.getElementById('reject-reason').value = '';
     document.getElementById('reject-modal').classList.add('active');
 }
 
 function closeRejectModal() {
     document.getElementById('reject-modal').classList.remove('active');
-    rejectingFileId = null;
 }
 
-async function confirmRejection() {
-    const reason = document.getElementById('reject-reason').value;
-    if (!reason) return alert('Please provide a reason for rejection');
+async function doReject() {
+    const reason = document.getElementById('reject-reason').value.trim();
+    if (reason.length < 3) {
+        document.getElementById('reject-reason').focus();
+        return;
+    }
+
+    const btn = document.getElementById('reject-confirm-btn');
+    btn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Rejecting...';
+    btn.disabled = true;
 
     try {
-        await rejectFile(rejectingFileId, reason);
-        alert('File rejected');
+        const rejectFn = currentType === 'Intern' ? rejectIntern : rejectApplication;
+        const res = await rejectFn(activeAppId, reason);
+        Toast.fire({ icon: 'success', title: res?.message || 'Application rejected.' });
         closeRejectModal();
-        loadPendingFiles();
+        closeDrawer();
+        loadQueue();
     } catch (err) {
-        alert('Failed to reject file');
+        btn.innerHTML = '<i class="bx bx-x-circle"></i> Reject Application';
+        btn.disabled = false;
+        if (err.status === 409) {
+            Swal.fire('Already Reviewed', 'This application has already been decided.', 'warning');
+        } else {
+            Swal.fire('Rejection Failed', err.message || 'Could not reject application.', 'error');
+        }
     }
+}
+
+// Close reject modal on backdrop
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('reject-modal')?.addEventListener('click', e => {
+        if (e.target === document.getElementById('reject-modal')) closeRejectModal();
+    });
+});
+
+function escHtml(str) {
+    return String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }

@@ -78,6 +78,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Load real admin profile in topbar
     loadTopbarProfile();
 
+    // Show SuperAdmin nav items if the logged-in user is a SuperAdmin
+    showSuperAdminNav();
+
 });
 
 // ─── Notification Bell ────────────────────────────────────────────────────────
@@ -234,4 +237,25 @@ async function loadTopbarProfile() {
 function escapeHtmlBell(str) {
     if (!str) return '';
     return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ─── SuperAdmin Navigation ────────────────────────────────────────────────────
+
+function showSuperAdminNav() {
+    const token = localStorage.getItem('idToken');
+    if (!token) return;
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const roles = payload.role || payload.roles || [];
+        const isSuperAdmin = Array.isArray(roles)
+            ? roles.includes('SuperAdmin')
+            : roles === 'SuperAdmin';
+        if (isSuperAdmin) {
+            document.querySelectorAll('.superadmin-section').forEach(el => {
+                el.style.display = '';
+            });
+        }
+    } catch (e) {
+        // Invalid token — do nothing
+    }
 }

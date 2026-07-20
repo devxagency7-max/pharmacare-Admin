@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Platform Configuration - Tamenny</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/modals.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .config-section {
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+        .config-section-header {
+            padding: 20px 28px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex; align-items: center; gap: 12px;
+        }
+        .config-section-header .section-icon {
+            width: 40px; height: 40px;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; flex-shrink: 0;
+        }
+        .section-icon.blue   { background: #eff6ff; color: #3b82f6; }
+        .section-icon.orange { background: #fff7ed; color: #f97316; }
+        .section-icon.green  { background: #f0fdf4; color: #22c55e; }
+        .section-icon.purple { background: #faf5ff; color: #a855f7; }
+        .config-section-header h3 { font-size: 16px; font-weight: 700; color: var(--text-primary); margin: 0; }
+        .config-section-header p  { font-size: 13px; color: var(--text-muted); margin: 2px 0 0; }
+        .config-body { padding: 24px 28px; display: flex; flex-direction: column; gap: 20px; }
+        .config-row {
+            display: flex; align-items: flex-start; justify-content: space-between;
+            gap: 20px; padding-bottom: 20px; border-bottom: 1px solid #f8fafc;
+        }
+        .config-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .config-row-info { flex: 1; }
+        .config-row-info label { display: block; font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+        .config-row-info .row-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+        .config-row-info .not-enforced-badge {
+            display: inline-block; margin-top: 4px;
+            background: #fffbeb; color: #d97706;
+            font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px;
+        }
+        .config-row-control { flex-shrink: 0; min-width: 160px; display: flex; justify-content: flex-end; }
+
+        /* Toggle switch */
+        .toggle-switch { display: flex; align-items: center; gap: 8px; }
+        .toggle-switch input[type=checkbox] {
+            width: 44px; height: 24px; appearance: none;
+            background: #e2e8f0; border-radius: 12px; cursor: pointer;
+            transition: background 0.2s; position: relative;
+        }
+        .toggle-switch input[type=checkbox]:checked { background: var(--primary); }
+        .toggle-switch input[type=checkbox]::after {
+            content:''; position:absolute; width:20px; height:20px;
+            border-radius:50%; background:#fff; top:2px; left:2px;
+            transition:left 0.2s; box-shadow:0 1px 4px rgba(0,0,0,0.2);
+        }
+        .toggle-switch input[type=checkbox]:checked::after { left:22px; }
+
+        /* Number/text inputs */
+        .config-input {
+            width: 160px; padding: 9px 14px;
+            border: 1.5px solid #e2e8f0; border-radius: 10px;
+            font-size: 14px; font-family: inherit; color: var(--text-primary);
+            transition: border-color 0.2s;
+        }
+        .config-input:focus { outline: none; border-color: var(--primary); }
+
+        /* File types checkboxes */
+        .file-types-row { display: flex; flex-wrap: wrap; gap: 10px; }
+        .file-type-chip {
+            display: flex; align-items: center; gap: 6px;
+            padding: 6px 14px; border: 1.5px solid #e2e8f0; border-radius: 8px;
+            cursor: pointer; font-size: 13px; font-weight: 600; color: var(--text-muted);
+            transition: var(--transition); user-select: none;
+        }
+        .file-type-chip.active { border-color: var(--primary); color: var(--primary); background: #eff6ff; }
+        .file-type-chip input { display: none; }
+
+        .save-bar {
+            position: sticky; bottom: 0; left: 0; right: 0;
+            background: rgba(255,255,255,0.95); backdrop-filter: blur(8px);
+            border-top: 1px solid #e2e8f0;
+            padding: 16px 28px; display: flex; justify-content: flex-end; gap: 12px;
+            margin-top: 8px; z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo"><img src="../logo.jpeg" alt="Logo"><span>Tamenny</span></div>
+            <i class='bx bx-menu' id="sidebar-toggle"></i>
+        </div>
+        <ul class="nav-links">
+            <li><a href="../index.html"><i class='bx bx-grid-alt'></i><span class="link-name">Dashboard</span></a></li>
+            <li><a href="patients.html"><i class='bx bx-user'></i><span class="link-name">Patients</span></a></li>
+            <li><a href="pharmacists.html"><i class='bx bx-plus-medical'></i><span class="link-name">Pharmacists</span></a></li>
+            <li><a href="intern_pharmacists.html"><i class='bx bx-book-reader'></i><span class="link-name">Intern Pharmacists</span></a></li>
+            <li><a href="pharmacies.html"><i class='bx bx-store-alt'></i><span class="link-name">Pharmacies</span></a></li>
+            <li><a href="orders.html"><i class='bx bx-cart'></i><span class="link-name">Orders</span></a></li>
+            <li><a href="medications.html"><i class='bx bx-capsule'></i><span class="link-name">Medications</span></a></li>
+            <li><a href="reports.html"><i class='bx bx-pie-chart-alt-2'></i><span class="link-name">Reports</span></a></li>
+            <li><a href="audit_logs.html"><i class='bx bx-file'></i><span class="link-name">Audit Logs</span></a></li>
+            <li><a href="file_review.html"><i class='bx bx-file-find'></i><span class="link-name">File Review</span></a></li>
+            <li><a href="notifications.html"><i class='bx bx-bell'></i><span class="link-name">Global Notifications</span></a></li>
+            <li><a href="settings.html"><i class='bx bx-cog'></i><span class="link-name">Settings</span></a></li>
+            <!-- SuperAdmin Section -->
+            <li class="superadmin-section" style="display:none; padding: 6px 20px 2px; pointer-events:none;"><span style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#94a3b8;">SuperAdmin</span></li>
+            <li class="superadmin-section" style="display:none"><a href="admin_management.html"><i class='bx bx-shield-quarter'></i><span class="link-name">Admin Management</span></a></li>
+            <li class="superadmin-section" style="display:none"><a href="platform_config.html" class="active"><i class='bx bx-slider-alt'></i><span class="link-name">Platform Config</span></a></li>
+            <li class="superadmin-section" style="display:none"><a href="system_health.html"><i class='bx bx-pulse'></i><span class="link-name">System Health</span></a></li>
+            <li class="superadmin-section" style="display:none"><a href="backups.html"><i class='bx bx-data'></i><span class="link-name">Backups</span></a></li>
+            <li class="superadmin-section" style="display:none"><a href="integrations.html"><i class='bx bx-plug'></i><span class="link-name">Integrations</span></a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <a href="../login.html" class="logout-btn"><i class='bx bx-log-out'></i><span class="link-name">Logout</span></a>
+        </div>
+    </aside>
+
+    <main class="main-content" id="main-content">
+        <header class="topbar">
+            <div class="search-box"><i class='bx bx-search'></i><input type="text" placeholder="Search everywhere..."></div>
+            <div class="topbar-right">
+                <div class="notification-icon"><i class='bx bx-bell'></i><span class="badge">0</span></div>
+                <div class="profile">
+                    <img src="https://ui-avatars.com/api/?name=Admin+User&background=0057d1&color=fff" alt="Admin Profile">
+                    <div class="profile-info"><span class="name">Admin User</span><span class="role">SuperAdmin</span></div>
+                </div>
+            </div>
+        </header>
+
+        <div class="page-content">
+            <div class="page-header">
+                <div>
+                    <h1>Platform Configuration</h1>
+                    <p>Control platform-wide settings. Changes take effect immediately.</p>
+                </div>
+            </div>
+
+            <div id="config-loading" style="text-align:center; padding:60px; color:var(--text-muted);">
+                <i class="bx bx-loader-alt bx-spin" style="font-size:32px;"></i>
+                <p style="margin-top:12px;">Loading configuration...</p>
+            </div>
+
+            <div id="config-form" style="display:none;">
+
+                <!-- 1. Registration Rules -->
+                <div class="config-section">
+                    <div class="config-section-header">
+                        <div class="section-icon blue"><i class='bx bx-user-plus'></i></div>
+                        <div>
+                            <h3>Registration Rules</h3>
+                            <p>Control who can register on the platform.</p>
+                        </div>
+                    </div>
+                    <div class="config-body">
+                        <div class="config-row">
+                            <div class="config-row-info">
+                                <label>Require Admin Approval for Pharmacists</label>
+                                <div class="row-desc">When enabled, pharmacist applications require Admin approval before the account is activated.</div>
+                            </div>
+                            <div class="config-row-control">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="cfg-requireAdminApproval">
+                                </label>
+                            </div>
+                        </div>
+                        <div class="config-row">
+                            <div class="config-row-info">
+                                <label>Allow Patient Registration</label>
+                                <div class="row-desc">Allow new patients to register on the platform.</div>
+                                <span class="not-enforced-badge">⚠ Stored — not yet enforced by backend</span>
+                            </div>
+                            <div class="config-row-control">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="cfg-allowPatientRegistration">
+                                </label>
+                            </div>
+                        </div>
+                        <div class="config-row">
+                            <div class="config-row-info">
+                                <label>Allow Pharmacy Registration</label>
+                                <div class="row-desc">Allow new pharmacies to be registered on the platform.</div>
+                                <span class="not-enforced-badge">⚠ Stored — not yet enforced by backend</span>
+                            </div>
+                            <div class="config-row-control">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="cfg-allowPharmacyRegistration">
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Maintenance Mode -->
+                <div class="config-section">
+                    <div class="config-section-header">
+                        <div class="section-icon orange"><i class='bx bx-wrench'></i></div>
+                        <div>
+                            <h3>Maintenance Mode</h3>
+                            <p>When enabled, all non-admin users receive a 503 response.</p>
+                        </div>
+                    </div>
+                    <div class="config-body">
+                        <div class="config-row">
+                            <div class="config-row-info">
+                                <label>Enable Maintenance Mode</label>
+                                <div class="row-desc">Immediately blocks all patient/pharmacist/pharmacy requests with a 503. Admin and SuperAdmin are not affected.</div>
+                            </div>
+                            <div class="config-row-control">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="cfg-maintenanceMode">
+                                </label>
+                            </div>
+                        </div>
+                        <div class="config-row">
+                            <div class="config-row-info">
+                                <label>Maintenance Message</label>
+                                <div class="row-desc">The message shown to users during maintenance. Leave blank to use the default message.</div>
+                            </div>
+                            <div class="config-row-control">
+                                <input type="text" class="config-input" id="cfg-maintenanceMessage" placeholder="e.g. Back in 30 minutes" style="width:240px;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Feature Toggles -->
+                <div class="config-section">
+                    <div class="config-section-header">
+                        <div class="section-icon green"><i class='bx bx-toggle-left'></i></div>
+                        <div>
+                            <h3>Feature Toggles</h3>
+                            <p>Enable or disable platform-wide features.</p>
+                        </div>
+                    </div>
+                    <div class="config-body">
+                        <div class="config-row">
+                            <div class="config-row-info">
+                                <label>Enable Notifications</label>
+                                <div class="row-desc">Master switch for all push and in-app notifications. Disabling this stops all notification delivery.</div>
+                            </div>
+                            <div class="config-row-control">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="cfg-enableNotifications">
+                                </label>
+                            </div>
+                        </div>
+                        <div class="config-row">
+                            <div class="config-row-info">
+                                <label>Enable Audit Logs</label>
+                                <div class="row-desc">Master switch for audit log recording. Disabling stops new audit entries from being written.</div>
+                            </div>
+                            <div class="config-row-control">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="cfg-enableAuditLogs">
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Upload & Pagination Limits -->
+                <div class="config-section">
+                    <div class="config-section-header">
+                        <div class="section-icon purple"><i class='bx bx-upload'></i></div>
+                        <div>
+                            <h3>Upload & Display Limits</h3>
+                            <p>Control file upload sizes and default pagination.</p>
+                        </div>
+                    </div>
+                    <div class="config-body">
+                        <div class="config-row">
+                            <div class="config-row-info">
+                                <label>Default Pagination Size</label>
+                                <div class="row-desc">Advisory default for list pages (5–200). The frontend applies this value itself.</div>
+                            </div>
+                            <div class="config-row-control">
+                                <input type="number" class="config-input" id="cfg-defaultPaginationSize" min="5" max="200" step="5">
+                            </div>
+                        </div>
+                        <div class="config-row">
+                            <div class="config-row-info">
+                                <label>Maximum Upload Size (bytes)</label>
+                                <div class="row-desc">Max file size for general uploads (1 KB – 100 MB).</div>
+                            </div>
+                            <div class="config-row-control">
+                                <input type="number" class="config-input" id="cfg-maximumUploadSize" min="1024" max="104857600">
+                            </div>
+                        </div>
+                        <div class="config-row">
+                            <div class="config-row-info">
+                                <label>Maximum Image Size (bytes)</label>
+                                <div class="row-desc">Max file size for image uploads (1 KB – 100 MB).</div>
+                            </div>
+                            <div class="config-row-control">
+                                <input type="number" class="config-input" id="cfg-maximumImageSize" min="1024" max="104857600">
+                            </div>
+                        </div>
+                        <div class="config-row">
+                            <div class="config-row-info">
+                                <label>Allowed File Types</label>
+                                <div class="row-desc">File types accepted for upload. At least one must be selected.</div>
+                            </div>
+                            <div class="config-row-control" style="min-width:240px; justify-content:flex-start;">
+                                <div class="file-types-row" id="file-types-row">
+                                    <!-- rendered by JS -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /#config-form -->
+
+            <!-- Sticky save bar -->
+            <div class="save-bar" id="save-bar" style="display:none;">
+                <button class="btn btn-outline" onclick="loadConfig()">Discard Changes</button>
+                <button class="btn btn-primary" onclick="saveConfig()" id="save-btn">
+                    <i class='bx bx-save'></i> Save Configuration
+                </button>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="../js/api/apiClient.js"></script>
+    <script src="../js/api/superAdminApi.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/pages/platformConfig.js"></script>
+</body>
+</html>

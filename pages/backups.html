@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backups - Tamenny</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/modals.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .backup-timeline { display: flex; flex-direction: column; gap: 0; }
+        .backup-entry {
+            display: flex; gap: 20px; padding: 20px 24px;
+            border-bottom: 1px solid #f1f5f9;
+            align-items: flex-start; transition: background 0.15s;
+        }
+        .backup-entry:last-child { border-bottom: none; }
+        .backup-entry:hover { background: #fafbfc; }
+        .timeline-indicator {
+            display: flex; flex-direction: column; align-items: center;
+            flex-shrink: 0; padding-top: 4px;
+        }
+        .timeline-dot {
+            width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0;
+        }
+        .timeline-dot.completed { background: var(--success); box-shadow: 0 0 0 4px rgba(16,185,129,0.15); }
+        .timeline-dot.inprogress { background: #f59e0b; box-shadow: 0 0 0 4px rgba(245,158,11,0.15); animation: pulse 1.5s ease-in-out infinite; }
+        .timeline-dot.failed   { background: var(--danger); box-shadow: 0 0 0 4px rgba(239,68,68,0.15); }
+        .timeline-line { width: 2px; flex: 1; background: #f1f5f9; min-height: 24px; margin-top: 4px; }
+        .backup-meta { flex: 1; }
+        .backup-meta .backup-id {
+            font-size: 13px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;
+            font-family: 'Courier New', monospace;
+        }
+        .backup-meta .backup-detail { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; line-height: 1.6; }
+        .backup-meta .backup-tags { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+        .backup-tag {
+            font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 6px;
+        }
+        .backup-tag.completed  { background: #ecfdf5; color: #059669; }
+        .backup-tag.inprogress { background: #fffbeb; color: #d97706; }
+        .backup-tag.failed     { background: #fef2f2; color: #ef4444; }
+        .backup-tag.restored   { background: #eff6ff; color: #3b82f6; }
+        .backup-actions { flex-shrink: 0; display: flex; gap: 8px; align-items: flex-start; padding-top: 2px; }
+        .btn-restore {
+            padding: 7px 16px; border-radius: 8px; font-size: 13px; font-weight: 600;
+            border: 1.5px solid var(--danger); color: var(--danger); background: transparent;
+            cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: 6px;
+        }
+        .btn-restore:hover { background: var(--danger); color: #fff; }
+
+        /* Restore Confirmation Modal */
+        .restore-modal-content { max-width: 480px; }
+        .restore-warning-box {
+            background: #fef2f2; border: 1.5px solid #fca5a5; border-radius: 12px;
+            padding: 16px; margin-bottom: 20px; display: flex; gap: 12px;
+        }
+        .restore-warning-box i { color: var(--danger); font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+        .restore-warning-box p { font-size: 13px; color: #b91c1c; line-height: 1.6; margin: 0; }
+        #restore-phrase-input {
+            width: 100%; padding: 12px 16px; border: 2px solid #e2e8f0; border-radius: 10px;
+            font-size: 15px; font-family: 'Courier New', monospace; font-weight: 700; letter-spacing: 2px;
+            text-transform: uppercase; transition: border-color 0.2s; box-sizing: border-box;
+        }
+        #restore-phrase-input:focus { outline: none; border-color: var(--danger); }
+        #restore-phrase-input.invalid { border-color: var(--danger); background: #fef2f2; }
+    </style>
+</head>
+<body>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo"><img src="../logo.jpeg" alt="Logo"><span>Tamenny</span></div>
+            <i class='bx bx-menu' id="sidebar-toggle"></i>
+        </div>
+        <ul class="nav-links">
+            <li><a href="../index.html"><i class='bx bx-grid-alt'></i><span class="link-name">Dashboard</span></a></li>
+            <li><a href="patients.html"><i class='bx bx-user'></i><span class="link-name">Patients</span></a></li>
+            <li><a href="pharmacists.html"><i class='bx bx-plus-medical'></i><span class="link-name">Pharmacists</span></a></li>
+            <li><a href="intern_pharmacists.html"><i class='bx bx-book-reader'></i><span class="link-name">Intern Pharmacists</span></a></li>
+            <li><a href="pharmacies.html"><i class='bx bx-store-alt'></i><span class="link-name">Pharmacies</span></a></li>
+            <li><a href="orders.html"><i class='bx bx-cart'></i><span class="link-name">Orders</span></a></li>
+            <li><a href="medications.html"><i class='bx bx-capsule'></i><span class="link-name">Medications</span></a></li>
+            <li><a href="reports.html"><i class='bx bx-pie-chart-alt-2'></i><span class="link-name">Reports</span></a></li>
+            <li><a href="audit_logs.html"><i class='bx bx-file'></i><span class="link-name">Audit Logs</span></a></li>
+            <li><a href="file_review.html"><i class='bx bx-file-find'></i><span class="link-name">File Review</span></a></li>
+            <li><a href="notifications.html"><i class='bx bx-bell'></i><span class="link-name">Global Notifications</span></a></li>
+            <li><a href="settings.html"><i class='bx bx-cog'></i><span class="link-name">Settings</span></a></li>
+            <!-- SuperAdmin Section -->
+            <li class="superadmin-section" style="display:none; padding: 6px 20px 2px; pointer-events:none;"><span style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#94a3b8;">SuperAdmin</span></li>
+            <li class="superadmin-section" style="display:none"><a href="admin_management.html"><i class='bx bx-shield-quarter'></i><span class="link-name">Admin Management</span></a></li>
+            <li class="superadmin-section" style="display:none"><a href="platform_config.html"><i class='bx bx-slider-alt'></i><span class="link-name">Platform Config</span></a></li>
+            <li class="superadmin-section" style="display:none"><a href="system_health.html"><i class='bx bx-pulse'></i><span class="link-name">System Health</span></a></li>
+            <li class="superadmin-section" style="display:none"><a href="backups.html" class="active"><i class='bx bx-data'></i><span class="link-name">Backups</span></a></li>
+            <li class="superadmin-section" style="display:none"><a href="integrations.html"><i class='bx bx-plug'></i><span class="link-name">Integrations</span></a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <a href="../login.html" class="logout-btn"><i class='bx bx-log-out'></i><span class="link-name">Logout</span></a>
+        </div>
+    </aside>
+
+    <main class="main-content" id="main-content">
+        <header class="topbar">
+            <div class="search-box"><i class='bx bx-search'></i><input type="text" placeholder="Search everywhere..."></div>
+            <div class="topbar-right">
+                <div class="notification-icon"><i class='bx bx-bell'></i><span class="badge">0</span></div>
+                <div class="profile">
+                    <img src="https://ui-avatars.com/api/?name=Admin+User&background=0057d1&color=fff" alt="Admin Profile">
+                    <div class="profile-info"><span class="name">Admin User</span><span class="role">SuperAdmin</span></div>
+                </div>
+            </div>
+        </header>
+
+        <div class="page-content">
+            <div class="page-header">
+                <div>
+                    <h1>Database Backups</h1>
+                    <p>Create and manage database backups stored in Cloudflare R2.</p>
+                </div>
+                <button class="btn btn-primary" onclick="doCreateBackup()" id="create-btn">
+                    <i class='bx bx-plus-circle'></i> Create Backup
+                </button>
+            </div>
+
+            <div class="card">
+                <div style="padding: 20px 24px; border-bottom: 1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center;">
+                    <h3 style="font-size:16px; font-weight:700; color:var(--text-primary); margin:0;">Backup History</h3>
+                    <button class="btn btn-outline" style="font-size:13px; padding:7px 14px;" onclick="loadBackups()">
+                        <i class='bx bx-refresh'></i> Refresh
+                    </button>
+                </div>
+                <div class="backup-timeline" id="backup-timeline">
+                    <div style="padding:40px; text-align:center; color:var(--text-muted);">
+                        <i class="bx bx-loader-alt bx-spin" style="font-size:28px;"></i>
+                        <p style="margin-top:12px;">Loading backup history...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Restore Confirmation Modal -->
+    <div class="modal-overlay" id="restore-modal">
+        <div class="modal-content restore-modal-content">
+            <div class="modal-header">
+                <h2><i class='bx bx-error'></i> Restore Database</h2>
+                <i class='bx bx-x close-modal' onclick="closeRestoreModal()"></i>
+            </div>
+            <div style="padding: 24px;">
+                <div class="restore-warning-box">
+                    <i class='bx bx-error-circle'></i>
+                    <p>
+                        <strong>This will permanently overwrite the live database</strong> with the selected backup.
+                        All data created after this backup will be lost. This action cannot be undone
+                        except by restoring another backup.
+                    </p>
+                </div>
+                <p style="font-size:13px; color:var(--text-muted); margin-bottom:12px;">
+                    Backup: <strong id="restore-backup-id-display" style="font-family:monospace; color:var(--text-primary);"></strong>
+                </p>
+                <label style="display:block; font-size:14px; font-weight:700; margin-bottom:10px; color:var(--text-primary);">
+                    Type <span style="color:var(--danger); font-family:monospace; letter-spacing:2px;">RESTORE</span> to confirm:
+                </label>
+                <input type="text" id="restore-phrase-input" placeholder="Type RESTORE here" autocomplete="off">
+                <div class="modal-actions" style="margin-top: 20px;">
+                    <button class="btn btn-outline" onclick="closeRestoreModal()">Cancel</button>
+                    <button class="btn btn-primary" style="background: var(--danger); border-color: var(--danger);"
+                        onclick="confirmRestore()" id="confirm-restore-btn">
+                        <i class='bx bx-shield-x'></i> Restore Database
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/api/apiClient.js"></script>
+    <script src="../js/api/superAdminApi.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/pages/backups.js"></script>
+</body>
+</html>
