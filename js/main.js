@@ -176,7 +176,14 @@ async function requestBellPermission() {
 function extractCount(settled) {
     if (settled.status !== 'fulfilled') return 0;
     const v = settled.value;
-    return v?.data?.totalCount ?? v?.totalCount ?? v?.data?.total ?? v?.total ?? 0;
+    // Handle: {data: {totalCount, items}} or {data: [...]} or {totalCount} or {items: [...]}
+    if (v?.data?.totalCount != null) return v.data.totalCount;
+    if (v?.totalCount != null) return v.totalCount;
+    if (v?.data?.total != null) return v.data.total;
+    if (v?.total != null) return v.total;
+    if (Array.isArray(v?.data)) return v.data.length;
+    if (Array.isArray(v?.items)) return v.items.length;
+    return 0;
 }
 
 // Single shared fetch — used by both bell badge and sidebar dots
@@ -266,7 +273,10 @@ async function loadBellNotifications() {
         const extractItems = (res) => {
             if (res.status !== 'fulfilled') return [];
             const v = res.value;
-            return v?.data?.items ?? v?.items ?? v?.data ?? [];
+            if (Array.isArray(v?.data)) return v.data;
+            if (Array.isArray(v?.data?.items)) return v.data.items;
+            if (Array.isArray(v?.items)) return v.items;
+            return [];
         };
         const pharmItems  = extractItems(pharmRes);
         const internItems = extractItems(internRes);
