@@ -321,10 +321,11 @@ async function viewInternDetails(id) {
         }
         if (!intern) throw new Error('Intern not found.');
 
-        // Fetch application by userId to get uploaded documents
+        // Fetch application by userId/email to get uploaded documents
         if (!intern.documents || intern.documents.length === 0) {
             try {
-                const appData = await fetchInternApplicationByUserId(intern.id || intern.userId);
+                const userEmail = intern.email || intern.userEmail || '';
+                const appData = await fetchInternApplicationByUserId(intern.id || intern.userId, userEmail);
                 if (appData && Array.isArray(appData.documents) && appData.documents.length > 0) {
                     intern.documents = appData.documents;
                 }

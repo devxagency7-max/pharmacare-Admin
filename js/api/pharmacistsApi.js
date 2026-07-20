@@ -23,16 +23,16 @@ async function fetchPharmacistApplicationById(id) {
     return await apiClient.get(`/admin/applications/${id}`);
 }
 
-async function fetchPharmacistApplicationByUserId(userId) {
+async function fetchPharmacistApplicationByUserId(userId, userEmail) {
     for (const status of ['Approved', 'Pending', 'Rejected']) {
         try {
-            const res = await apiClient.get(`/admin/applications?type=Pharmacist&status=${status}&pageSize=50`);
+            const res = await apiClient.get(`/admin/applications?type=Pharmacist&status=${status}&pageSize=100`);
             const dataRoot = res?.data || res;
             const items = Array.isArray(dataRoot) ? dataRoot : (dataRoot.items || []);
-            console.log(`[Docs] status=${status} items:`, items.map(a => ({ id: a.id, userId: a.userId, applicantId: a.applicantId })));
             const match = items.find(a =>
-                String(a.userId || a.applicantId) === String(userId) ||
-                String(a.id) === String(userId)
+                String(a.userId || a.applicantId || '') === String(userId) ||
+                String(a.id) === String(userId) ||
+                (userEmail && (a.userEmail || a.email || '').toLowerCase() === userEmail.toLowerCase())
             );
             if (match) return match;
         } catch { /* try next status */ }

@@ -334,10 +334,11 @@ async function viewPharmacistProfile(id, content) {
     }
     if (!p) throw new Error('Pharmacist not found.');
 
-    // Fetch application by userId to get uploaded documents
+    // Fetch application by userId/email to get uploaded documents
     if (!p.documents || p.documents.length === 0) {
         try {
-            const appData = await fetchPharmacistApplicationByUserId(p.id || p.userId);
+            const userEmail = p.email || p.userEmail || '';
+            const appData = await fetchPharmacistApplicationByUserId(p.id || p.userId, userEmail);
             if (appData && Array.isArray(appData.documents) && appData.documents.length > 0) {
                 p.documents = appData.documents;
             }

@@ -23,15 +23,16 @@ async function fetchInternApplicationById(id) {
     return await apiClient.get(`/admin/applications/${id}`);
 }
 
-async function fetchInternApplicationByUserId(userId) {
+async function fetchInternApplicationByUserId(userId, userEmail) {
     for (const status of ['Approved', 'Pending', 'Rejected']) {
         try {
-            const res = await apiClient.get(`/admin/applications?type=Intern&status=${status}&pageSize=50`);
+            const res = await apiClient.get(`/admin/applications?type=Intern&status=${status}&pageSize=100`);
             const dataRoot = res?.data || res;
             const items = Array.isArray(dataRoot) ? dataRoot : (dataRoot.items || []);
             const match = items.find(a =>
-                String(a.userId || a.applicantId) === String(userId) ||
-                String(a.id) === String(userId)
+                String(a.userId || a.applicantId || '') === String(userId) ||
+                String(a.id) === String(userId) ||
+                (userEmail && (a.userEmail || a.email || '').toLowerCase() === userEmail.toLowerCase())
             );
             if (match) return match;
         } catch { /* try next status */ }
