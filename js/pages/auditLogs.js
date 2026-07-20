@@ -14,7 +14,7 @@ const getFilters = () => ({
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-
+    loadMetrics();
     loadLogs(1);
 });
 

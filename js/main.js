@@ -86,11 +86,20 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
         if (window.apiClient) {
             loadPendingCounts();
+            pollUnreadCount();
+            setInterval(pollUnreadCount, 45000);
         } else {
-            // apiClient not ready yet — wait a bit more
-            setTimeout(() => loadPendingCounts(), 1000);
+            setTimeout(() => {
+                loadPendingCounts();
+                pollUnreadCount();
+                setInterval(pollUnreadCount, 45000);
+            }, 1000);
         }
     }, isDashboard ? 3000 : 500);
+
+    window.addEventListener('focus', () => {
+        if (window.apiClient) pollUnreadCount();
+    });
 
 });
 
@@ -260,85 +269,72 @@ async function loadBellNotifications() {
     list.innerHTML = '<div style="padding:28px; text-align:center; color:#94a3b8;"><i class="bx bx-loader-alt bx-spin" style="font-size:22px;"></i></div>';
 
     try {
-        const [pharmRes, internRes, ordersRes] = await Promise.allSettled([
-            apiClient.get('/admin/applications?type=Pharmacist&status=Pending&pageSize=10'),
-            apiClient.get('/admin/applications?type=Intern&status=Pending&pageSize=10'),
-            apiClient.get('/admin/orders?pageSize=10'),
-        ]);
+        const res = await apiClient.get('/notifications?pageSize=20');
+        const d = res?.data || res;
+        const items = Array.isArray(d) ? d : (d.items || []);
 
-        const extractItems = (res) => {
-            if (res.status !== 'fulfilled') return [];
-            const v = res.value;
-            if (Array.isArray(v?.data)) return v.data;
-            if (Array.isArray(v?.data?.items)) return v.data.items;
-            if (Array.isArray(v?.items)) return v.items;
-            return [];
-        };
-        const pharmItems  = extractItems(pharmRes);
-        const internItems = extractItems(internRes);
-        const orderItems  = extractItems(ordersRes);
-
-        const entries = [];
-
-        pharmItems.forEach(app => entries.push({
-            type: 'pharmacist',
-            icon: 'bx-plus-medical',
-            iconBg: '#eff6ff',
-            iconColor: '#3b82f6',
-            title: `New Pharmacist Application`,
-            subtitle: app.fullName || app.name || app.applicantName || 'Applicant',
-            time: app.createdAt || app.submittedAt || '',
-            href: getRelPath('pharmacists.html'),
-        }));
-
-        internItems.forEach(app => entries.push({
-            type: 'intern',
-            icon: 'bx-book-reader',
-            iconBg: '#f0fdf4',
-            iconColor: '#16a34a',
-            title: `New Intern Application`,
-            subtitle: app.fullName || app.name || app.applicantName || 'Applicant',
-            time: app.createdAt || app.submittedAt || '',
-            href: getRelPath('intern_pharmacists.html'),
-        }));
-
-        orderItems.forEach(order => entries.push({
-            type: 'order',
-            icon: 'bx-cart',
-            iconBg: '#fffbeb',
-            iconColor: '#d97706',
-            title: `New Order`,
-            subtitle: order.patientName || order.customerName || (`#${order.id || order.orderId}`),
-            time: order.createdAt || order.orderDate || '',
-            href: getRelPath('orders.html'),
-        }));
-
-        // Sort newest first
-        entries.sort((a, b) => (b.time && a.time) ? new Date(b.time) - new Date(a.time) : 0);
-
-        if (entries.length === 0) {
-            list.innerHTML = '<div style="padding:36px; text-align:center; color:#94a3b8; font-size:13px;">No new notifications.</div>';
+        if (items.length === 0) {
+            list.innerHTML = '<div style="padding:36px; text-align:center; color:#94a3b8; font-size:13px;">No notifications yet.</div>';
             return;
         }
 
-        list.innerHTML = entries.map(e => {
-            const time = e.time ? new Date(e.time).toLocaleString('en-US', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }) : '';
+        list.innerHTML = items.map(n => {
+            const isRead = !!n.isRead;
+            const time = n.createdAt ? new Date(n.createdAt).toLocaleString('en-US', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }) : '';
+            const iconMap = {
+                'ApplicationApproved': { icon:'bx-check-shield', bg:'#f0fdf4', color:'#16a34a' },
+                'ApplicationRejected': { icon:'bx-x-circle',     bg:'#fef2f2', color:'#ef4444' },
+                'NewOrder':            { icon:'bx-cart',          bg:'#fffbeb', color:'#d97706' },
+                'AdminDirect':         { icon:'bx-bell',          bg:'#eff6ff', color:'#3b82f6' },
+                'SystemAlert':         { icon:'bx-error-circle',  bg:'#fdf4ff', color:'#a855f7' },
+            };
+            const style = iconMap[n.type] || { icon:'bx-bell', bg:'#f1f5f9', color:'#64748b' };
+
             return `
-            <a href="${e.href}" style="padding:14px 18px; border-bottom:1px solid #f8fafc; display:flex; gap:12px; align-items:flex-start; text-decoration:none; background:#fff; transition:background 0.15s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#fff'">
-                <div style="width:38px;height:38px;border-radius:10px;background:${e.iconBg};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                    <i class='bx ${e.icon}' style="color:${e.iconColor};font-size:18px;"></i>
+            <div onclick="markNotifRead('${n.id}', this)" style="padding:14px 18px; border-bottom:1px solid #f8fafc; display:flex; gap:12px; align-items:flex-start; cursor:pointer; background:${isRead ? '#fff' : '#f8faff'}; transition:background 0.15s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='${isRead ? '#fff' : '#f8faff'}'">
+                <div style="width:38px;height:38px;border-radius:10px;background:${style.bg};display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;">
+                    <i class='bx ${style.icon}' style="color:${style.color};font-size:18px;"></i>
+                    ${!isRead ? `<span style="position:absolute;top:-3px;right:-3px;width:9px;height:9px;border-radius:50%;background:#ef4444;border:2px solid #fff;"></span>` : ''}
                 </div>
                 <div style="flex:1;min-width:0;">
-                    <div style="font-size:13px;font-weight:600;color:#0f172a;line-height:1.3;">${escapeHtmlBell(e.title)}</div>
-                    <div style="font-size:12px;color:#64748b;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtmlBell(e.subtitle)}</div>
+                    <div style="font-size:13px;font-weight:${isRead ? '500' : '700'};color:#0f172a;line-height:1.3;">${escapeHtmlBell(n.title || '')}</div>
+                    <div style="font-size:12px;color:#64748b;margin-top:2px;line-height:1.4;">${escapeHtmlBell(n.body || '')}</div>
                 </div>
                 ${time ? `<div style="font-size:10px;color:#cbd5e1;flex-shrink:0;text-align:right;padding-top:2px;white-space:nowrap;">${time}</div>` : ''}
-            </a>`;
+            </div>`;
         }).join('');
 
     } catch {
         list.innerHTML = '<div style="padding:24px; text-align:center; color:#ef4444; font-size:13px;">Failed to load notifications.</div>';
     }
+}
+
+async function markNotifRead(id, el) {
+    if (!id) return;
+    try {
+        await apiClient.put(`/notifications/${id}/read`, {});
+        if (el) {
+            el.style.background = '#fff';
+            const dot = el.querySelector('span[style*="border-radius:50%"]');
+            if (dot) dot.remove();
+            const title = el.querySelector('div[style*="font-weight"]');
+            if (title) title.style.fontWeight = '500';
+        }
+        // Refresh unread count
+        pollUnreadCount();
+    } catch { /* silent */ }
+}
+
+async function pollUnreadCount() {
+    try {
+        const res = await apiClient.get('/notifications/unread-count');
+        const count = res?.data ?? res?.count ?? 0;
+        const badge = document.querySelector('.notification-icon .badge');
+        if (badge) {
+            badge.textContent = count;
+            badge.style.display = count > 0 ? '' : 'none';
+        }
+    } catch { /* silent */ }
 }
 
 function getRelPath(page) {

@@ -157,6 +157,15 @@
                 </div>
             </div>
 
+            <!-- Metrics -->
+            <div class="audit-stats">
+                <div class="audit-stat"><div class="num" id="m-total">—</div><div class="lbl">Total Logs</div></div>
+                <div class="audit-stat"><div class="num" id="m-today">—</div><div class="lbl">Today</div></div>
+                <div class="audit-stat"><div class="num" id="m-users">—</div><div class="lbl">Unique Users</div></div>
+                <div class="audit-stat warn"><div class="num" id="m-failed">—</div><div class="lbl">Failed Ops</div></div>
+                <div class="audit-stat critical"><div class="num" id="m-critical">—</div><div class="lbl">Critical</div></div>
+            </div>
+
             <!-- Filters -->
             <div class="audit-filters">
                 <input type="text" class="search-input" id="f-search" placeholder="Search action, actor, resource..." oninput="debounceSearch()">
