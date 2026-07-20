@@ -81,8 +81,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Show SuperAdmin nav items if the logged-in user is a SuperAdmin
     showSuperAdminNav();
 
-    // Delay sidebar dots + bell badge so they don't compete with page-specific API calls
-    setTimeout(() => loadPendingCounts(), 1500);
+    // Delay sidebar dots + bell badge — longer on dashboard (most API calls) shorter elsewhere
+    const isDashboard = window.location.pathname.endsWith('index.html') || window.location.pathname.endsWith('/');
+    setTimeout(() => loadPendingCounts(), isDashboard ? 3000 : 800);
 
 });
 
@@ -172,13 +173,22 @@ function extractCount(settled) {
 }
 
 // Single shared fetch — used by both bell badge and sidebar dots
-async function loadPendingCounts() {
+async function loadPendingCounts(retryCount = 0) {
     if (!window.apiClient) return;
     try {
         const [pharmRes, internRes] = await Promise.allSettled([
             apiClient.get('/admin/applications?type=Pharmacist&status=Pending&pageSize=1'),
             apiClient.get('/admin/applications?type=Intern&status=Pending&pageSize=1'),
         ]);
+
+        // If both failed with 429, retry once after 3s
+        const both429 = [pharmRes, internRes].every(r =>
+            r.status === 'rejected' && (r.reason?.status === 429 || String(r.reason).includes('429'))
+        );
+        if (both429 && retryCount < 2) {
+            setTimeout(() => loadPendingCounts(retryCount + 1), 3000);
+            return;
+        }
         const pharmCount  = extractCount(pharmRes);
         const internCount = extractCount(internRes);
 
