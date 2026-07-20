@@ -81,8 +81,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Show SuperAdmin nav items if the logged-in user is a SuperAdmin
     showSuperAdminNav();
 
-    // Show pending-requests dot on sidebar nav items
-    loadSidebarPendingDots();
+    // Delay sidebar dots + bell badge so they don't compete with page-specific API calls
+    setTimeout(() => loadPendingCounts(), 1500);
 
 });
 
@@ -136,8 +136,6 @@ function initNotificationBell() {
     document.addEventListener('click', () => {
         dropdown.style.display = 'none';
     });
-
-    loadBellBadge();
 }
 
 async function maybeRequestBrowserPermission() {
@@ -173,20 +171,61 @@ function extractCount(settled) {
     return v?.data?.totalCount ?? v?.totalCount ?? v?.data?.total ?? v?.total ?? 0;
 }
 
-async function loadBellBadge() {
-    const badge = document.querySelector('.notification-icon .badge');
-    if (!badge) return;
+// Single shared fetch — used by both bell badge and sidebar dots
+async function loadPendingCounts() {
+    if (!window.apiClient) return;
     try {
-        const [pharmRes, internRes, ordersRes] = await Promise.allSettled([
+        const [pharmRes, internRes] = await Promise.allSettled([
             apiClient.get('/admin/applications?type=Pharmacist&status=Pending&pageSize=1'),
             apiClient.get('/admin/applications?type=Intern&status=Pending&pageSize=1'),
-            apiClient.get('/admin/orders?status=Pending&pageSize=1'),
         ]);
-        const total = extractCount(pharmRes) + extractCount(internRes) + extractCount(ordersRes);
-        badge.textContent = total > 99 ? '99+' : String(total);
-        badge.style.display = total === 0 ? 'none' : '';
+        const pharmCount  = extractCount(pharmRes);
+        const internCount = extractCount(internRes);
+
+        // ── Bell badge ──────────────────────────────────────────────────────
+        const badge = document.querySelector('.notification-icon .badge');
+        if (badge) {
+            const total = pharmCount + internCount;
+            badge.textContent = total > 99 ? '99+' : String(total);
+            badge.style.display = total === 0 ? 'none' : '';
+        }
+
+        // ── Sidebar dots ─────────────────────────────────────────────────────
+        const dotMap = [
+            { filename: 'intern_pharmacists', count: internCount, label: 'Intern'     },
+            { filename: 'pharmacists',         count: pharmCount,  label: 'Pharmacist' },
+        ];
+
+        document.querySelectorAll('.nav-links li a').forEach(link => {
+            const filename = (link.getAttribute('href') || '').split('/').pop().replace('.html', '');
+            link.querySelector('.nav-pending-dot')?.remove();
+            for (const { filename: fn, count, label } of dotMap) {
+                if (filename !== fn) continue;
+                if (count > 0) {
+                    link.style.position = 'relative';
+                    const dot = document.createElement('span');
+                    dot.className = 'nav-pending-dot';
+                    dot.textContent = count > 99 ? '99+' : String(count);
+                    dot.title = `${count} pending ${label} application${count !== 1 ? 's' : ''}`;
+                    link.appendChild(dot);
+                }
+                break;
+            }
+        });
+
+        // ── Tab badge (on pharmacists / intern_pharmacists pages) ────────────
+        const tabBadge = document.getElementById('requests-badge');
+        if (tabBadge) {
+            const isInternPage = window.location.pathname.includes('intern_pharmacists');
+            const count = isInternPage ? internCount : pharmCount;
+            tabBadge.textContent = count > 99 ? '99+' : String(count);
+            tabBadge.style.cssText = count > 0
+                ? 'display:inline-flex;align-items:center;justify-content:center;background:#ef4444;color:white;font-size:11px;min-width:20px;height:20px;padding:0 5px;border-radius:10px;margin-left:8px;font-weight:700;line-height:1;'
+                : 'display:none;';
+        }
+
     } catch {
-        badge.style.display = 'none';
+        // Silent — non-critical UI
     }
 }
 
@@ -322,65 +361,6 @@ function escapeHtmlBell(str) {
 }
 
 // ─── SuperAdmin Navigation ────────────────────────────────────────────────────
-
-// ─── Sidebar Pending Dots ─────────────────────────────────────────────────────
-
-async function loadSidebarPendingDots() {
-    if (!window.apiClient) return;
-
-    try {
-        const [pharmRes, internRes] = await Promise.allSettled([
-            apiClient.get('/admin/applications?type=Pharmacist&status=Pending&pageSize=1'),
-            apiClient.get('/admin/applications?type=Intern&status=Pending&pageSize=1'),
-        ]);
-
-        const pharmCount  = extractCount(pharmRes);
-        const internCount = extractCount(internRes);
-
-        // Map: page filename → pending count (intern checked first to avoid substring collision)
-        const dotMap = [
-            { filename: 'intern_pharmacists', count: internCount, label: 'Intern'      },
-            { filename: 'pharmacists',         count: pharmCount,  label: 'Pharmacist'  },
-        ];
-
-        document.querySelectorAll('.nav-links li a').forEach(link => {
-            const href = (link.getAttribute('href') || '').split('/').pop().replace('.html', '');
-
-            link.querySelector('.nav-pending-dot')?.remove();
-
-            for (const { filename, count, label } of dotMap) {
-                if (href !== filename) continue;
-
-                if (count > 0) {
-                    link.style.position = 'relative';
-                    const dot = document.createElement('span');
-                    dot.className = 'nav-pending-dot';
-                    dot.textContent = count > 99 ? '99+' : String(count);
-                    dot.title = `${count} pending ${label} application${count !== 1 ? 's' : ''}`;
-                    link.appendChild(dot);
-                }
-                break;
-            }
-        });
-
-        // Update tab badge if the element exists on the current page
-        // pharmacists.html badge — shows pharmCount only
-        // intern_pharmacists.html badge — shows internCount only
-        const tabBadge = document.getElementById('requests-badge');
-        if (tabBadge) {
-            const currentHref = window.location.pathname;
-            const isInternPage = currentHref.includes('intern_pharmacists');
-            const count = isInternPage ? internCount : pharmCount;
-            tabBadge.textContent = count > 99 ? '99+' : String(count);
-            tabBadge.style.cssText = count > 0
-                ? 'display:inline-flex; align-items:center; justify-content:center; background:#ef4444; color:white; font-size:11px; min-width:20px; height:20px; padding:0 5px; border-radius:10px; margin-left:8px; font-weight:700; line-height:1;'
-                : 'display:none;';
-        }
-
-    } catch {
-        // Silent — sidebar dots are non-critical
-    }
-}
 
 function showSuperAdminNav() {
     const token = localStorage.getItem('idToken');
