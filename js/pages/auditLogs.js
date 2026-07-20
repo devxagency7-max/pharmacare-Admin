@@ -28,7 +28,8 @@ async function loadMetrics() {
         setText('m-users',    (d.uniqueUsers ?? 0).toLocaleString());
         setText('m-failed',   (d.failedOperations ?? 0).toLocaleString());
         setText('m-critical', (d.criticalEvents ?? 0).toLocaleString());
-    } catch {
+    } catch (e) {
+        // Metrics endpoint not available — show dashes silently
         ['m-total','m-today','m-users','m-failed','m-critical'].forEach(id => setText(id, '—'));
     }
 }
