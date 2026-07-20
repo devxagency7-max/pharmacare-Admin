@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Delay sidebar dots + bell badge — longer on dashboard (most API calls) shorter elsewhere
     const isDashboard = window.location.pathname.endsWith('index.html') || window.location.pathname.endsWith('/');
-    setTimeout(() => loadPendingCounts(), isDashboard ? 3000 : 800);
+    setTimeout(() => loadPendingCounts(), isDashboard ? 3000 : 500);
 
 });
 
@@ -181,16 +181,20 @@ async function loadPendingCounts(retryCount = 0) {
             apiClient.get('/admin/applications?type=Intern&status=Pending&pageSize=1'),
         ]);
 
-        // If both failed with 429, retry once after 3s
-        const both429 = [pharmRes, internRes].every(r =>
-            r.status === 'rejected' && (r.reason?.status === 429 || String(r.reason).includes('429'))
-        );
-        if (both429 && retryCount < 2) {
+        const pharmCount  = extractCount(pharmRes);
+        const internCount = extractCount(internRes);
+
+        console.log('[PendingCounts] pharmRes:', pharmRes);
+        console.log('[PendingCounts] internRes:', internRes);
+        console.log('[PendingCounts] counts:', pharmCount, internCount);
+
+        // Retry if both failed (e.g. 429), up to 2 times
+        if (pharmCount === 0 && internCount === 0 &&
+            pharmRes.status === 'rejected' && internRes.status === 'rejected' &&
+            retryCount < 2) {
             setTimeout(() => loadPendingCounts(retryCount + 1), 3000);
             return;
         }
-        const pharmCount  = extractCount(pharmRes);
-        const internCount = extractCount(internRes);
 
         // ── Bell badge ──────────────────────────────────────────────────────
         const badge = document.querySelector('.notification-icon .badge');
