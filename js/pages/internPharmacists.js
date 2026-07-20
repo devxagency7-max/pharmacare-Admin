@@ -321,6 +321,10 @@ async function viewInternDetails(id) {
         }
         if (!intern) throw new Error('Intern not found.');
 
+        // Merge cached row data (has name/email) with API response
+        const cached = currentInternPharmacistsData.find(x => String(x.id || x.userId) === String(id));
+        if (cached) intern = { ...cached, ...intern };
+
         // Fetch application by userId/email to get uploaded documents
         if (!intern.documents || intern.documents.length === 0) {
             try {

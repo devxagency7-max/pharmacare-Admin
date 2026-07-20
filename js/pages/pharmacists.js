@@ -334,6 +334,10 @@ async function viewPharmacistProfile(id, content) {
     }
     if (!p) throw new Error('Pharmacist not found.');
 
+    // Merge cached row data (has name/email) with API response
+    const cached = currentPharmacistsData.find(x => String(x.id) === String(id) || String(x.userId) === String(id));
+    if (cached) p = { ...cached, ...p };
+
     // Fetch application by userId/email to get uploaded documents
     if (!p.documents || p.documents.length === 0) {
         try {
