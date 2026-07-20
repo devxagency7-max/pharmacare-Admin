@@ -379,38 +379,32 @@ async function viewInternDetails(id) {
                 </div>
             </div>
             
-            ${intern.documents && intern.documents.length > 0 ? `
-                <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid rgba(0,0,0,0.05);">
-                    <h4 style="font-size: 14px; margin-bottom: 12px; color: var(--text-main);"><i class='bx bx-file-find'></i> Verification Documents</h4>
-                    <div style="display: grid; grid-template-columns: 1fr; gap: 10px;">
-                        ${intern.documents.map(doc => {
-            const isImage = /\.(jpg|jpeg|png|webp|gif)$/i.test(doc.fileUrl || '');
-            const docLabel = doc.documentType || 'Identity Document';
-            return `
-                                <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px; background: #F8FAFD; border-radius: 12px; border: 1px solid #E2E8F0;">
-                                    <div style="display: flex; align-items: center; gap: 12px;">
-                                        <div style="width: 40px; height: 40px; border-radius: 8px; background: ${isImage ? '#FEF3C7' : '#E0F2FE'}; color: ${isImage ? '#D97706' : '#0369A1'}; display: flex; align-items: center; justify-content: center; font-size: 20px;">
-                                            <i class='bx ${isImage ? 'bx-image' : 'bx-file-blank'}'></i>
-                                        </div>
-                                        <div>
-                                            <div style="font-weight: 600; font-size: 13px;">${docLabel}</div>
-                                            <div style="font-size: 11px; color: var(--text-muted);">Uploaded on ${doc.uploadedAt ? new Date(doc.uploadedAt).toLocaleDateString() : 'N/A'}</div>
-                                        </div>
-                                    </div>
-                                    <a href="${doc.fileUrl || '#'}" target="_blank" class="btn btn-sm" style="background: white; border: 1px solid #E2E8F0; padding: 6px 12px; font-size: 12px; color: var(--primary);">
-                                        <i class='bx bx-link-external'></i> View File
-                                    </a>
-                                </div>
-                            `;
-        }).join('')}
-                    </div>
-                </div>
-            ` : `
-                <div style="margin-top: 25px; padding: 20px; background: #FFFBEB; border-radius: 12px; border: 1px solid #FEF3C7; text-align: center;">
-                    <i class='bx bx-error-circle' style="font-size: 24px; color: #D97706; margin-bottom: 8px;"></i>
-                    <p style="font-size: 13px; color: #92400E; margin: 0;">No verification documents have been uploaded yet.</p>
-                </div>
-            `}
+            <div style="margin-top:25px;padding-top:20px;border-top:1px solid rgba(0,0,0,0.05);">
+                <div style="font-size:13px;font-weight:700;color:#0f172a;margin-bottom:12px;display:flex;align-items:center;gap:6px;"><i class='bx bx-folder'></i> Uploaded Documents (${(intern.documents || []).length})</div>
+                ${!intern.documents || intern.documents.length === 0 ? `
+                <div style="padding:20px;text-align:center;background:#f8fafc;border-radius:10px;border:1px dashed #e2e8f0;color:#94a3b8;font-size:13px;">
+                    <i class='bx bx-folder-open' style="font-size:28px;display:block;margin-bottom:6px;"></i>
+                    No documents uploaded (0)
+                </div>` : `
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;">
+                    ${intern.documents.map(doc => {
+                        const url = doc.url || doc.fileUrl || doc.downloadUrl || '';
+                        const docName = doc.documentType || doc.type || doc.name || 'Document';
+                        const isImage = url && (/\.(jpg|jpeg|png|gif|webp)$/i.test(url) || url.includes('r2.') || url.includes('cloudflare') || url.includes('/uploads/'));
+                        return `
+                        <div style="border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;background:#fff;">
+                            ${isImage && url
+                                ? `<a href="${url}" target="_blank"><img src="${url}" alt="${docName}" style="width:100%;height:140px;object-fit:cover;display:block;" onerror="this.parentElement.innerHTML='<div style=\\'height:90px;background:#f8fafc;display:flex;align-items:center;justify-content:center;\\'><i class=\\'bx bx-file\\' style=\\'font-size:36px;color:#94a3b8;\\'></i></div>'"></a>`
+                                : `<div style="height:90px;background:#f8fafc;display:flex;align-items:center;justify-content:center;"><i class='bx bx-file' style="font-size:36px;color:#94a3b8;"></i></div>`
+                            }
+                            <div style="padding:8px 12px;">
+                                <div style="font-size:12px;font-weight:600;color:#0f172a;">${docName}</div>
+                                ${url ? `<a href="${url}" target="_blank" style="font-size:11px;color:#0057d1;text-decoration:none;"><i class='bx bx-link-external'></i> View / Download</a>` : ''}
+                            </div>
+                        </div>`;
+                    }).join('')}
+                </div>`}
+            </div>
 
             <div style="display:flex;gap:12px;padding-top:16px;margin-top:16px;border-top:1px solid #e2e8f0;">
                 ${status.toLowerCase() === 'suspended' ? `

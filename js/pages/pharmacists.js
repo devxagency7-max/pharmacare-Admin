@@ -384,18 +384,22 @@ async function viewPharmacistProfile(id, content) {
                 </div>`).join('')}
         </div>
 
-        ${p.documents && p.documents.length > 0 ? `
         <div style="margin-bottom:20px;">
-            <div style="font-size:13px;font-weight:700;color:#0f172a;margin-bottom:12px;display:flex;align-items:center;gap:6px;"><i class='bx bx-folder'></i> Uploaded Documents (${p.documents.length})</div>
+            <div style="font-size:13px;font-weight:700;color:#0f172a;margin-bottom:12px;display:flex;align-items:center;gap:6px;"><i class='bx bx-folder'></i> Uploaded Documents (${(p.documents || []).length})</div>
+            ${!p.documents || p.documents.length === 0 ? `
+            <div style="padding:20px;text-align:center;background:#f8fafc;border-radius:10px;border:1px dashed #e2e8f0;color:#94a3b8;font-size:13px;">
+                <i class='bx bx-folder-open' style="font-size:28px;display:block;margin-bottom:6px;"></i>
+                No documents uploaded (0)
+            </div>` : `
             <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;">
                 ${p.documents.map(doc => {
                     const url = doc.url || doc.fileUrl || doc.downloadUrl || '';
                     const docName = doc.documentType || doc.type || doc.name || 'Document';
-                    const isImage = url && /\.(jpg|jpeg|png|gif|webp)$/i.test(url);
+                    const isImage = url && (/\.(jpg|jpeg|png|gif|webp)$/i.test(url) || url.includes('r2.') || url.includes('cloudflare') || url.includes('/uploads/'));
                     return `
                     <div style="border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;background:#fff;">
-                        ${isImage
-                            ? `<a href="${url}" target="_blank"><img src="${url}" alt="${docName}" style="width:100%;height:140px;object-fit:cover;display:block;" onerror="this.style.display='none'"></a>`
+                        ${isImage && url
+                            ? `<a href="${url}" target="_blank"><img src="${url}" alt="${docName}" style="width:100%;height:140px;object-fit:cover;display:block;" onerror="this.parentElement.innerHTML='<div style=\\'height:90px;background:#f8fafc;display:flex;align-items:center;justify-content:center;\\'><i class=\\'bx bx-file\\' style=\\'font-size:36px;color:#94a3b8;\\'></i></div>'"></a>`
                             : `<div style="height:90px;background:#f8fafc;display:flex;align-items:center;justify-content:center;"><i class='bx bx-file' style="font-size:36px;color:#94a3b8;"></i></div>`
                         }
                         <div style="padding:8px 12px;">
@@ -404,8 +408,8 @@ async function viewPharmacistProfile(id, content) {
                         </div>
                     </div>`;
                 }).join('')}
-            </div>
-        </div>` : ''}
+            </div>`}
+        </div>
 
         <div style="padding:18px 20px;background:#F0FDFA;border-radius:12px;border:1px solid #CCFBF1;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
             <div>
