@@ -174,6 +174,7 @@ function extractCount(settled) {
 
 // Single shared fetch — used by both bell badge and sidebar dots
 async function loadPendingCounts(retryCount = 0) {
+    console.log('[PendingCounts] STARTED, apiClient:', !!window.apiClient);
     if (!window.apiClient) return;
     try {
         const [pharmRes, internRes] = await Promise.allSettled([
