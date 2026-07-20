@@ -321,15 +321,14 @@ async function viewInternDetails(id) {
         }
         if (!intern) throw new Error('Intern not found.');
 
-        // Fetch approved application to get documents (interns endpoint may not include documents)
+        // Fetch application by userId to get uploaded documents
         if (!intern.documents || intern.documents.length === 0) {
             try {
-                const appRes = await fetchInternApplicationById(id);
-                const appData = appRes?.data || appRes;
+                const appData = await fetchInternApplicationByUserId(intern.id || intern.userId);
                 if (appData && Array.isArray(appData.documents) && appData.documents.length > 0) {
                     intern.documents = appData.documents;
                 }
-            } catch { /* silent — documents just won't show */ }
+            } catch { /* silent */ }
         }
 
         // Priority: userName from API, then other fields, no email fallback

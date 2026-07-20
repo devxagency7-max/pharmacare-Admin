@@ -334,11 +334,10 @@ async function viewPharmacistProfile(id, content) {
     }
     if (!p) throw new Error('Pharmacist not found.');
 
-    // Fetch approved application to get documents (pharmacists endpoint may not include documents)
+    // Fetch application by userId to get uploaded documents
     if (!p.documents || p.documents.length === 0) {
         try {
-            const appRes = await fetchPharmacistApplicationById(id);
-            const appData = appRes?.data || appRes;
+            const appData = await fetchPharmacistApplicationByUserId(p.id || p.userId);
             if (appData && Array.isArray(appData.documents) && appData.documents.length > 0) {
                 p.documents = appData.documents;
             }

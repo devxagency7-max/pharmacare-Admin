@@ -23,6 +23,13 @@ async function fetchInternApplicationById(id) {
     return await apiClient.get(`/admin/applications/${id}`);
 }
 
+async function fetchInternApplicationByUserId(userId) {
+    const res = await apiClient.get(`/admin/applications?type=Intern&userId=${userId}&pageSize=1`);
+    const dataRoot = res?.data || res;
+    const items = Array.isArray(dataRoot) ? dataRoot : (dataRoot.items || []);
+    return items[0] || null;
+}
+
 // id here is the APPLICATION ID, not the user ID
 async function approveIntern(id) {
     return await apiClient.put(`/admin/interns/${id}/approve`);

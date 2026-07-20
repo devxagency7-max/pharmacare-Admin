@@ -23,6 +23,14 @@ async function fetchPharmacistApplicationById(id) {
     return await apiClient.get(`/admin/applications/${id}`);
 }
 
+async function fetchPharmacistApplicationByUserId(userId) {
+    // Search approved applications by userId to get documents
+    const res = await apiClient.get(`/admin/applications?type=Pharmacist&userId=${userId}&pageSize=1`);
+    const dataRoot = res?.data || res;
+    const items = Array.isArray(dataRoot) ? dataRoot : (dataRoot.items || []);
+    return items[0] || null;
+}
+
 // Approve/reject use /admin/applications/:id — NOT /admin/pharmacist/:id
 async function approvePharmacist(id) {
     return await apiClient.post(`/admin/applications/${id}/approve`);
