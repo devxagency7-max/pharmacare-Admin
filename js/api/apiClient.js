@@ -65,7 +65,6 @@ const apiClient = {
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
             const msg = errorData.message || errorData.error || `API Error: ${response.status}`;
-            console.error('[API Client Error]', errorData);
             const error = new Error(msg);
             error.status = response.status;
             error.data = errorData;
