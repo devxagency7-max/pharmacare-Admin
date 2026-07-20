@@ -198,10 +198,6 @@ async function loadPendingCounts(retryCount = 0) {
         const pharmCount  = extractCount(pharmRes);
         const internCount = extractCount(internRes);
 
-        console.log('[PendingCounts] pharmRes:', pharmRes);
-        console.log('[PendingCounts] internRes:', internRes);
-        console.log('[PendingCounts] counts:', pharmCount, internCount);
-
         // Retry if both failed (e.g. 429), up to 2 times
         if (pharmCount === 0 && internCount === 0 &&
             pharmRes.status === 'rejected' && internRes.status === 'rejected' &&
