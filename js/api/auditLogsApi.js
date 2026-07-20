@@ -32,7 +32,9 @@ async function fetchAuditLogById(id) {
 }
 
 async function fetchAuditMetrics() {
-    return apiClient.get('/admin/audit-logs/metrics');
+    const to = new Date().toISOString().split('T')[0];
+    const from = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    return apiClient.get(`/admin/audit-logs/metrics?from=${from}&to=${to}`);
 }
 
 async function archiveAuditLogs(retentionDays) {
