@@ -19,6 +19,10 @@ async function fetchPharmacistById(id) {
     return await apiClient.get(`/admin/pharmacists/${id}`);
 }
 
+async function fetchPharmacistApplicationById(id) {
+    return await apiClient.get(`/admin/applications/${id}`);
+}
+
 // Approve/reject use /admin/applications/:id — NOT /admin/pharmacist/:id
 async function approvePharmacist(id) {
     return await apiClient.post(`/admin/applications/${id}/approve`);

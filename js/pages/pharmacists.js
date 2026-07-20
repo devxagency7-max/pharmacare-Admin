@@ -231,122 +231,154 @@ async function viewPharmacistDetails(id) {
 
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
+    content.innerHTML = `<div style="text-align:center;padding:40px;"><i class="bx bx-loader-alt bx-spin" style="font-size:40px;color:var(--primary);"></i><p>Loading...</p></div>`;
 
-    content.innerHTML = `
-        <div style="text-align: center; padding: 40px;">
-            <i class="bx bx-loader-alt bx-spin" style="font-size: 40px; color: var(--primary);"></i>
-            <p>Fetching full profile...</p>
-        </div>
-    `;
+    const isAppTab = currentTab === 'requests' || currentTab === 'rejected';
 
     try {
-        let p;
-        try {
-            // Try fetching latest data from server
-            const response = await fetchPharmacistById(id);
-            p = response?.data || response;
-        } catch (fetchErr) {
-            console.warn('[Pharmacists] Detail fetch failed, falling back to cache:', fetchErr);
-            // Fallback to cache if server detail endpoint fails
-            p = currentPharmacistsData.find(x => String(x.id) === String(id) || String(x.userId) === String(id));
+        if (isAppTab) {
+            await viewApplicationDetails(id, content);
+        } else {
+            await viewPharmacistProfile(id, content);
         }
-        
-        if (!p) throw new Error('Pharmacist not found.');
-
-        // Update local cache as well
-        const pIndex = currentPharmacistsData.findIndex(x => String(x.id) === String(id));
-        if (pIndex > -1) {
-            currentPharmacistsData[pIndex] = { ...currentPharmacistsData[pIndex], ...p };
-        }
-
-        // Priority: userName from API as requested
-        let displayName = p.userName || p.fullName || p.name || p.displayName || '';
-        if (!displayName && p.email) {
-            displayName = p.email.split('@')[0];
-        }
-        if (!displayName) displayName = 'Unnamed Pharmacist';
-        
-        const initials = displayName.substring(0, 2).toUpperCase();
-        const status = (p.isActive === false || (p.status && p.status.toLowerCase() === 'suspended')) ? 'Suspended' : (p.status || 'Active');
-        
-        // Comprehensive check for any possible field name the backend might use
-        const maxLimit = (p.maxPatients !== undefined && p.maxPatients !== null) ? p.maxPatients : 
-                         (p.maxPatientsLimit !== undefined && p.maxPatientsLimit !== null) ? p.maxPatientsLimit : 
-                         (p.limit !== undefined && p.limit !== null) ? p.limit : null;
-
-        content.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 24px; margin-bottom: 30px; padding: 20px; background: linear-gradient(to right, #F8FAFD, #FFFFFF); border-radius: 16px; border: 1px solid #E2E8F0;">
-                <div style="width: 90px; height: 90px; border-radius: 16px; background: #EAF2FE; color: #0057d1; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 32px; border: 2px solid white; box-shadow: var(--shadow-sm);">
-                    ${initials}
-                </div>
-                <div>
-                    <h3 style="margin: 0; font-size: 24px; color: var(--primary); font-weight: 700;">${displayName}</h3>
-                    <div style="display: flex; align-items: center; gap: 8px; margin-top: 6px;">
-                        <span style="font-size: 14px; color: var(--text-muted);"><i class='bx bx-user-circle'></i> ${p.userName || 'no-username'}</span>
-                        <span style="width: 4px; height: 4px; border-radius: 50%; background: #CBD5E1;"></span>
-                        <span style="font-size: 14px; color: var(--text-muted);"><i class='bx bx-check-shield'></i> ${p.specialization || 'Registered Pharmacist'}</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="details-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 30px;">
-                <div class="detail-item">
-                    <label style="display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">Full Name</label>
-                    <div style="font-weight: 600; color: var(--text-main); font-size: 14px;">${displayName}</div>
-                </div>
-                <div class="detail-item">
-                    <label style="display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">User Name</label>
-                    <div style="font-weight: 700; color: #0057d1; font-size: 14px; background: #EAF2FE; padding: 4px 10px; border-radius: 6px; display: inline-block;">${p.userName || 'N/A'}</div>
-                </div>
-                <div class="detail-item">
-                    <label style="display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">Status</label>
-                    <div><span class="status-badge ${getStatusClass(status)}" style="padding: 4px 12px; font-size: 12px;">${status}</span></div>
-                </div>
-                <div class="detail-item">
-                    <label style="display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">Email Address</label>
-                    <div style="font-weight: 600; color: var(--text-main); font-size: 13px;">${p.email || p.userEmail || 'N/A'}</div>
-                </div>
-                <div class="detail-item">
-                    <label style="display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">License Number</label>
-                    <div style="font-weight: 700; color: var(--primary); font-size: 14px;">${p.membershipNumber || p.licenseNumber || 'N/A'}</div>
-                </div>
-                <div class="detail-item">
-                    <label style="display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">Phone Number</label>
-                    <div style="font-weight: 600; color: var(--text-main); font-size: 13px;">${p.phone || p.phoneNumber || 'N/A'}</div>
-                </div>
-                <div class="detail-item">
-                    <label style="display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">Max Patients</label>
-                    <div style="font-weight: 700; color: #0d9488; font-size: 15px;">${maxLimit !== null ? maxLimit : 'Not Set'}</div>
-                </div>
-                <div class="detail-item" style="grid-column: span 2;">
-                    <label style="display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">Member Since</label>
-                    <div style="font-weight: 600; color: var(--text-main); font-size: 13px;">${p.createdAt ? new Date(p.createdAt).toLocaleString() : 'N/A'}</div>
-                </div>
-            </div>
-            
-            <div style="margin-top: 10px; padding: 20px; background: #F0FDFA; border-radius: 12px; border: 1px solid #CCFBF1;">
-                <div style="display: flex; align-items: center; justify-content: space-between;">
-                    <div>
-                        <h4 style="font-size: 14px; margin: 0; color: #0f172a;">Admin Quick Actions</h4>
-                        <p style="font-size: 12px; color: #0d9488; margin: 4px 0 0;">Update operational limits for this pharmacist.</p>
-                    </div>
-                    <button class="btn btn-primary" onclick="promptMaxPatients('${p.id}')" style="font-size: 13px; padding: 10px 20px; box-shadow: 0 4px 12px rgba(0, 87, 209, 0.2);">
-                        <i class='bx bx-edit-alt'></i> Update Limit
-                    </button>
-                </div>
-            </div>
-        `;
     } catch (err) {
-        console.error('[Pharmacists] Failed to load profile:', err);
-        content.innerHTML = `
-            <div style="padding: 40px; text-align: center; color: var(--danger);">
-                <i class="bx bx-error-circle" style="font-size: 40px;"></i>
-                <p style="font-weight: bold; font-size: 16px; margin-top: 10px;">Failed to load profile details.</p>
-                <p style="font-size: 13px; margin-top: 10px; opacity: 0.8; word-break: break-all;">Error: ${err.message}</p>
-                <p style="font-size: 10px; margin-top: 10px; opacity: 0.5; word-break: break-all; text-align: left;">${err.stack}</p>
-            </div>
-        `;
+        content.innerHTML = `<div style="padding:40px;text-align:center;color:var(--danger);"><i class="bx bx-error-circle" style="font-size:40px;"></i><p style="font-weight:bold;margin-top:10px;">Failed to load details.</p><p style="font-size:13px;opacity:0.8;">${err.message}</p></div>`;
     }
+}
+
+async function viewApplicationDetails(id, content) {
+    const res = await fetchPharmacistApplicationById(id);
+    const app = res?.data || res;
+    if (!app) throw new Error('Application not found.');
+
+    const name = app.userName || app.fullName || app.userEmail || 'Applicant';
+    const initials = name.substring(0, 2).toUpperCase();
+    const status = app.status || 'Pending';
+    const statusClass = status.toLowerCase() === 'pending' ? 'warning' : status.toLowerCase() === 'approved' ? 'success' : 'danger';
+    const docs = Array.isArray(app.documents) ? app.documents : [];
+
+    const docsHtml = docs.length === 0
+        ? `<div style="padding:20px;text-align:center;color:#94a3b8;font-size:13px;"><i class='bx bx-folder-open' style="font-size:32px;"></i><p>No documents uploaded.</p></div>`
+        : docs.map(doc => {
+            const url = doc.url || doc.fileUrl || doc.downloadUrl || '';
+            const name = doc.documentType || doc.type || doc.name || 'Document';
+            const isImage = url && /\.(jpg|jpeg|png|gif|webp)$/i.test(url);
+            return `
+            <div style="border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;background:#fff;">
+                ${isImage
+                    ? `<a href="${url}" target="_blank"><img src="${url}" alt="${name}" style="width:100%;height:160px;object-fit:cover;display:block;" onerror="this.style.display='none'"></a>`
+                    : `<div style="height:100px;background:#f8fafc;display:flex;align-items:center;justify-content:center;"><i class='bx bx-file' style="font-size:40px;color:#94a3b8;"></i></div>`
+                }
+                <div style="padding:10px 12px;">
+                    <div style="font-size:12px;font-weight:600;color:#0f172a;">${name}</div>
+                    ${url ? `<a href="${url}" target="_blank" style="font-size:11px;color:#0057d1;text-decoration:none;"><i class='bx bx-link-external'></i> View / Download</a>` : ''}
+                </div>
+            </div>`;
+        }).join('');
+
+    const isPending = status.toLowerCase() === 'pending';
+
+    content.innerHTML = `
+        <div style="display:flex;align-items:center;gap:20px;margin-bottom:24px;padding:18px 20px;background:linear-gradient(to right,#f8fafc,#fff);border-radius:14px;border:1px solid #e2e8f0;">
+            <div style="width:72px;height:72px;border-radius:14px;background:#eff6ff;color:#3b82f6;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:28px;flex-shrink:0;">${initials}</div>
+            <div style="flex:1;">
+                <div style="font-size:18px;font-weight:700;color:#0f172a;">${name}</div>
+                <div style="font-size:13px;color:#64748b;margin-top:4px;">${app.userEmail || ''}</div>
+            </div>
+            <span class="status-badge ${statusClass}" style="padding:5px 14px;font-size:12px;">${status}</span>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:24px;">
+            ${[
+                ['Application ID', app.id],
+                ['Type', app.applicationType || 'Pharmacist'],
+                ['Membership No.', app.membershipNumber || 'N/A'],
+                ['University', app.universityName || 'N/A'],
+                ['Submitted', app.submittedAt ? new Date(app.submittedAt).toLocaleString() : 'N/A'],
+                ['Reviewed By', app.reviewerName || '—'],
+            ].map(([label, val]) => `
+                <div style="padding:12px 14px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0;">
+                    <div style="font-size:10px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">${label}</div>
+                    <div style="font-size:13px;font-weight:600;color:#0f172a;">${val || '—'}</div>
+                </div>`).join('')}
+        </div>
+
+        ${app.rejectionReason ? `
+        <div style="padding:14px 16px;background:#fef2f2;border-radius:10px;border:1px solid #fecaca;margin-bottom:24px;">
+            <div style="font-size:11px;color:#ef4444;font-weight:700;text-transform:uppercase;margin-bottom:4px;">Rejection Reason</div>
+            <div style="font-size:13px;color:#7f1d1d;">${app.rejectionReason}</div>
+        </div>` : ''}
+
+        <div style="margin-bottom:24px;">
+            <div style="font-size:13px;font-weight:700;color:#0f172a;margin-bottom:12px;display:flex;align-items:center;gap:6px;"><i class='bx bx-folder'></i> Uploaded Documents (${docs.length})</div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;">
+                ${docsHtml}
+            </div>
+        </div>
+
+        ${isPending ? `
+        <div style="display:flex;gap:12px;padding-top:16px;border-top:1px solid #e2e8f0;">
+            <button onclick="handleApproval('${app.id}')" style="flex:1;padding:12px;background:#0057d1;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;"><i class='bx bx-check-shield'></i> Approve</button>
+            <button onclick="handleRejection('${app.id}')" style="flex:1;padding:12px;background:#fef2f2;color:#e11d48;border:1px solid #fecaca;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;"><i class='bx bx-x-circle'></i> Reject</button>
+        </div>` : ''}
+    `;
+}
+
+async function viewPharmacistProfile(id, content) {
+    let p;
+    try {
+        const response = await fetchPharmacistById(id);
+        p = response?.data || response;
+    } catch {
+        p = currentPharmacistsData.find(x => String(x.id) === String(id) || String(x.userId) === String(id));
+    }
+    if (!p) throw new Error('Pharmacist not found.');
+
+    const pIndex = currentPharmacistsData.findIndex(x => String(x.id) === String(id));
+    if (pIndex > -1) currentPharmacistsData[pIndex] = { ...currentPharmacistsData[pIndex], ...p };
+
+    let displayName = p.userName || p.fullName || p.name || p.displayName || '';
+    if (!displayName && p.email) displayName = p.email.split('@')[0];
+    if (!displayName) displayName = 'Unnamed Pharmacist';
+
+    const initials = displayName.substring(0, 2).toUpperCase();
+    const status = (p.isActive === false || (p.status && p.status.toLowerCase() === 'suspended')) ? 'Suspended' : (p.status || 'Active');
+    const maxLimit = p.maxPatients ?? p.maxPatientsLimit ?? p.limit ?? null;
+
+    content.innerHTML = `
+        <div style="display:flex;align-items:center;gap:24px;margin-bottom:30px;padding:20px;background:linear-gradient(to right,#F8FAFD,#FFFFFF);border-radius:16px;border:1px solid #E2E8F0;">
+            <div style="width:90px;height:90px;border-radius:16px;background:#EAF2FE;color:#0057d1;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:32px;">${initials}</div>
+            <div>
+                <h3 style="margin:0;font-size:22px;color:var(--primary);font-weight:700;">${displayName}</h3>
+                <div style="font-size:13px;color:var(--text-muted);margin-top:4px;">${p.email || p.userEmail || ''}</div>
+            </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:24px;">
+            ${[
+                ['Status', `<span class="status-badge ${getStatusClass(status)}">${status}</span>`],
+                ['License No.', p.membershipNumber || p.licenseNumber || 'N/A'],
+                ['Phone', p.phone || p.phoneNumber || 'N/A'],
+                ['Max Patients', maxLimit !== null ? maxLimit : 'Not Set'],
+                ['Member Since', p.createdAt ? new Date(p.createdAt).toLocaleDateString() : 'N/A'],
+                ['Specialization', p.specialization || 'Pharmacist'],
+            ].map(([label, val]) => `
+                <div style="padding:12px 14px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0;">
+                    <div style="font-size:10px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">${label}</div>
+                    <div style="font-size:13px;font-weight:600;color:#0f172a;">${val}</div>
+                </div>`).join('')}
+        </div>
+
+        <div style="padding:18px 20px;background:#F0FDFA;border-radius:12px;border:1px solid #CCFBF1;display:flex;align-items:center;justify-content:space-between;">
+            <div>
+                <div style="font-size:14px;font-weight:600;color:#0f172a;">Update Patient Limit</div>
+                <div style="font-size:12px;color:#0d9488;margin-top:2px;">Current limit: ${maxLimit !== null ? maxLimit : 'Not Set'}</div>
+            </div>
+            <button class="btn btn-primary" onclick="promptMaxPatients('${p.id}')" style="font-size:13px;padding:10px 20px;">
+                <i class='bx bx-edit-alt'></i> Update Limit
+            </button>
+        </div>
+    `;
 }
 
 function closeViewModal() {

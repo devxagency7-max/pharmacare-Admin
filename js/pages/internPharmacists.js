@@ -229,21 +229,94 @@ async function viewInternDetails(id) {
 
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
+    content.innerHTML = `<div style="text-align:center;padding:40px;"><i class="bx bx-loader-alt bx-spin" style="font-size:40px;color:var(--primary);"></i><p>Loading...</p></div>`;
 
-    content.innerHTML = `
-        <div style="text-align: center; padding: 40px;">
-            <i class="bx bx-loader-alt bx-spin" style="font-size: 40px; color: var(--primary);"></i>
-            <p>Fetching full profile...</p>
-        </div>
-    `;
+    const isAppTab = currentTab === 'requests' || currentTab === 'rejected';
 
     try {
+        if (isAppTab) {
+            // Fetch application with documents
+            const res = await fetchInternApplicationById(id);
+            const app = res?.data || res;
+            if (!app) throw new Error('Application not found.');
+
+            const name = app.userName || app.fullName || app.userEmail || 'Applicant';
+            const initials = name.substring(0, 2).toUpperCase();
+            const status = app.status || 'Pending';
+            const statusClass = status.toLowerCase() === 'pending' ? 'warning' : status.toLowerCase() === 'approved' ? 'success' : 'danger';
+            const docs = Array.isArray(app.documents) ? app.documents : [];
+            const isPending = status.toLowerCase() === 'pending';
+
+            const docsHtml = docs.length === 0
+                ? `<div style="padding:20px;text-align:center;color:#94a3b8;"><i class='bx bx-folder-open' style="font-size:32px;"></i><p style="font-size:13px;">No documents uploaded.</p></div>`
+                : docs.map(doc => {
+                    const url = doc.url || doc.fileUrl || doc.downloadUrl || '';
+                    const docName = doc.documentType || doc.type || doc.name || 'Document';
+                    const isImage = url && /\.(jpg|jpeg|png|gif|webp)$/i.test(url);
+                    return `
+                    <div style="border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;background:#fff;">
+                        ${isImage
+                            ? `<a href="${url}" target="_blank"><img src="${url}" alt="${docName}" style="width:100%;height:160px;object-fit:cover;display:block;" onerror="this.style.display='none'"></a>`
+                            : `<div style="height:100px;background:#f8fafc;display:flex;align-items:center;justify-content:center;"><i class='bx bx-file' style="font-size:40px;color:#94a3b8;"></i></div>`
+                        }
+                        <div style="padding:10px 12px;">
+                            <div style="font-size:12px;font-weight:600;color:#0f172a;">${docName}</div>
+                            ${url ? `<a href="${url}" target="_blank" style="font-size:11px;color:#0057d1;text-decoration:none;"><i class='bx bx-link-external'></i> View / Download</a>` : ''}
+                        </div>
+                    </div>`;
+                }).join('');
+
+            content.innerHTML = `
+                <div style="display:flex;align-items:center;gap:20px;margin-bottom:24px;padding:18px 20px;background:linear-gradient(to right,#f8fafc,#fff);border-radius:14px;border:1px solid #e2e8f0;">
+                    <div style="width:72px;height:72px;border-radius:14px;background:#f0fdf4;color:#16a34a;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:28px;flex-shrink:0;">${initials}</div>
+                    <div style="flex:1;">
+                        <div style="font-size:18px;font-weight:700;color:#0f172a;">${name}</div>
+                        <div style="font-size:13px;color:#64748b;margin-top:4px;">${app.userEmail || ''}</div>
+                    </div>
+                    <span class="status-badge ${statusClass}" style="padding:5px 14px;font-size:12px;">${status}</span>
+                </div>
+
+                <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:24px;">
+                    ${[
+                        ['Application ID', app.id],
+                        ['Type', app.applicationType || 'Intern'],
+                        ['University', app.universityName || 'N/A'],
+                        ['Membership No.', app.membershipNumber || 'N/A'],
+                        ['Submitted', app.submittedAt ? new Date(app.submittedAt).toLocaleString() : 'N/A'],
+                        ['Reviewed By', app.reviewerName || '—'],
+                    ].map(([label, val]) => `
+                        <div style="padding:12px 14px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0;">
+                            <div style="font-size:10px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">${label}</div>
+                            <div style="font-size:13px;font-weight:600;color:#0f172a;">${val || '—'}</div>
+                        </div>`).join('')}
+                </div>
+
+                ${app.rejectionReason ? `
+                <div style="padding:14px 16px;background:#fef2f2;border-radius:10px;border:1px solid #fecaca;margin-bottom:24px;">
+                    <div style="font-size:11px;color:#ef4444;font-weight:700;text-transform:uppercase;margin-bottom:4px;">Rejection Reason</div>
+                    <div style="font-size:13px;color:#7f1d1d;">${app.rejectionReason}</div>
+                </div>` : ''}
+
+                <div style="margin-bottom:24px;">
+                    <div style="font-size:13px;font-weight:700;color:#0f172a;margin-bottom:12px;display:flex;align-items:center;gap:6px;"><i class='bx bx-folder'></i> Uploaded Documents (${docs.length})</div>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;">${docsHtml}</div>
+                </div>
+
+                ${isPending ? `
+                <div style="display:flex;gap:12px;padding-top:16px;border-top:1px solid #e2e8f0;">
+                    <button onclick="handleApproval('${app.id}')" style="flex:1;padding:12px;background:#0057d1;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;"><i class='bx bx-check-shield'></i> Approve</button>
+                    <button onclick="handleRejection('${app.id}')" style="flex:1;padding:12px;background:#fef2f2;color:#e11d48;border:1px solid #fecaca;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;"><i class='bx bx-x-circle'></i> Reject</button>
+                </div>` : ''}
+            `;
+            return;
+        }
+
+        // Normal intern profile (All Interns tab)
         let intern;
         try {
             const res = await fetchInternPharmacistById(id);
             intern = res?.data || res;
-        } catch (fetchErr) {
-            console.warn('[Interns] Detail fetch failed, using cache:', fetchErr.message);
+        } catch {
             intern = currentInternPharmacistsData.find(x => String(x.id || x.userId) === String(id));
         }
         if (!intern) throw new Error('Intern not found.');

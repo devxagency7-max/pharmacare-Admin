@@ -19,6 +19,10 @@ async function fetchInternPharmacistById(id) {
     return await apiClient.get(`/admin/interns/${id}`);
 }
 
+async function fetchInternApplicationById(id) {
+    return await apiClient.get(`/admin/applications/${id}`);
+}
+
 // id here is the APPLICATION ID, not the user ID
 async function approveIntern(id) {
     return await apiClient.put(`/admin/interns/${id}/approve`);
