@@ -92,7 +92,6 @@ function initNotificationBell() {
     const bellWrapper = document.querySelector('.notification-icon');
     if (!bellWrapper || !window.apiClient) return;
 
-    // Inject dropdown markup once
     bellWrapper.style.position = 'relative';
     bellWrapper.style.cursor = 'pointer';
 
@@ -103,7 +102,7 @@ function initNotificationBell() {
         position: absolute;
         top: calc(100% + 10px);
         right: 0;
-        width: 340px;
+        width: 360px;
         background: #fff;
         border-radius: 14px;
         box-shadow: 0 8px 40px rgba(0,0,0,0.13);
@@ -114,43 +113,73 @@ function initNotificationBell() {
     dropdown.innerHTML = `
         <div style="padding: 16px 20px; border-bottom: 1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center;">
             <span style="font-weight:700; font-size:15px; color:#0f172a;">Notifications</span>
-            <a href="${getNotifPagePath()}" style="font-size:12px; color:#0057d1; text-decoration:none; font-weight:600;">View All</a>
         </div>
-        <div id="notif-dropdown-list" style="max-height: 320px; overflow-y: auto;"></div>
+        <div id="notif-permission-bar" style="padding:10px 16px; background:#eff6ff; border-bottom:1px solid #dbeafe; font-size:12px; color:#1d4ed8; align-items:center; gap:8px; display:none;">
+            <i class='bx bx-bell-plus' style="font-size:16px;"></i>
+            <span style="flex:1;">Enable browser notifications to get real-time alerts.</span>
+            <button onclick="requestBellPermission()" style="background:#0057d1;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;">Allow</button>
+        </div>
+        <div id="notif-dropdown-list" style="max-height: 380px; overflow-y: auto;"></div>
     `;
     bellWrapper.appendChild(dropdown);
 
-    // Toggle dropdown on click
-    bellWrapper.addEventListener('click', (e) => {
+    bellWrapper.addEventListener('click', async (e) => {
         e.stopPropagation();
         const isOpen = dropdown.style.display === 'block';
         dropdown.style.display = isOpen ? 'none' : 'block';
-        if (!isOpen) loadBellNotifications();
+        if (!isOpen) {
+            await maybeRequestBrowserPermission();
+            loadBellNotifications();
+        }
     });
 
-    // Close when clicking outside
     document.addEventListener('click', () => {
         dropdown.style.display = 'none';
     });
 
-    // Load badge count on page load
     loadBellBadge();
 }
 
-function getNotifPagePath() {
-    const inPages = window.location.pathname.toLowerCase().includes('/pages/');
-    return inPages ? 'notifications.html' : 'pages/notifications.html';
+async function maybeRequestBrowserPermission() {
+    if (!('Notification' in window)) return;
+    const bar = document.getElementById('notif-permission-bar');
+    if (Notification.permission === 'default') {
+        if (bar) bar.style.display = 'flex';
+    } else if (Notification.permission === 'granted') {
+        if (bar) bar.style.display = 'none';
+    } else {
+        if (bar) bar.style.display = 'none';
+    }
+}
+
+async function requestBellPermission() {
+    if (!('Notification' in window)) return;
+    const permission = await Notification.requestPermission();
+    const bar = document.getElementById('notif-permission-bar');
+    if (permission === 'granted') {
+        if (bar) bar.style.display = 'none';
+        new Notification('Notifications enabled', {
+            body: 'You will now receive alerts for new orders and applications.',
+            icon: '../logo.jpeg',
+        });
+    } else {
+        if (bar) bar.style.display = 'none';
+    }
 }
 
 async function loadBellBadge() {
     const badge = document.querySelector('.notification-icon .badge');
     if (!badge) return;
     try {
-        const res = await apiClient.get('/admin/notifications/campaigns?status=Scheduled&pageSize=1');
-        const scheduledCount = res?.data?.totalCount || 0;
-        const draftRes = await apiClient.get('/admin/notifications/campaigns?status=Draft&pageSize=1');
-        const draftCount = draftRes?.data?.totalCount || 0;
-        const total = scheduledCount + draftCount;
+        const [pharmRes, internRes, ordersRes] = await Promise.allSettled([
+            apiClient.get('/admin/applications?type=Pharmacist&status=Pending&pageSize=1'),
+            apiClient.get('/admin/applications?type=Intern&status=Pending&pageSize=1'),
+            apiClient.get('/admin/orders?status=Pending&pageSize=1'),
+        ]);
+        const pharmCount  = pharmRes.status  === 'fulfilled' ? (pharmRes.value?.data?.totalCount  || 0) : 0;
+        const internCount = internRes.status === 'fulfilled' ? (internRes.value?.data?.totalCount || 0) : 0;
+        const ordersCount = ordersRes.status === 'fulfilled' ? (ordersRes.value?.data?.totalCount || 0) : 0;
+        const total = pharmCount + internCount + ordersCount;
         badge.textContent = total > 99 ? '99+' : String(total);
         badge.style.display = total === 0 ? 'none' : '';
     } catch {
@@ -162,47 +191,89 @@ async function loadBellNotifications() {
     const list = document.getElementById('notif-dropdown-list');
     if (!list) return;
 
-    list.innerHTML = '<div style="padding:24px; text-align:center; color:#94a3b8;"><i class="bx bx-loader-alt bx-spin" style="font-size:22px;"></i></div>';
+    list.innerHTML = '<div style="padding:28px; text-align:center; color:#94a3b8;"><i class="bx bx-loader-alt bx-spin" style="font-size:22px;"></i></div>';
 
     try {
-        const res = await apiClient.get('/admin/notifications/campaigns?pageSize=5');
-        const items = res?.data?.items || [];
+        const [pharmRes, internRes, ordersRes] = await Promise.allSettled([
+            apiClient.get('/admin/applications?type=Pharmacist&status=Pending&pageSize=10'),
+            apiClient.get('/admin/applications?type=Intern&status=Pending&pageSize=10'),
+            apiClient.get('/admin/orders?pageSize=10'),
+        ]);
 
-        if (items.length === 0) {
-            list.innerHTML = '<div style="padding:32px; text-align:center; color:#94a3b8; font-size:13px;">No campaigns yet.</div>';
+        const pharmItems  = pharmRes.status  === 'fulfilled' ? (pharmRes.value?.data?.items  || []) : [];
+        const internItems = internRes.status === 'fulfilled' ? (internRes.value?.data?.items || []) : [];
+        const orderItems  = ordersRes.status === 'fulfilled' ? (ordersRes.value?.data?.items || []) : [];
+
+        const entries = [];
+
+        pharmItems.forEach(app => entries.push({
+            type: 'pharmacist',
+            icon: 'bx-plus-medical',
+            iconBg: '#eff6ff',
+            iconColor: '#3b82f6',
+            title: `New Pharmacist Application`,
+            subtitle: app.fullName || app.name || app.applicantName || 'Applicant',
+            time: app.createdAt || app.submittedAt || '',
+            href: getRelPath('pharmacists.html'),
+        }));
+
+        internItems.forEach(app => entries.push({
+            type: 'intern',
+            icon: 'bx-book-reader',
+            iconBg: '#f0fdf4',
+            iconColor: '#16a34a',
+            title: `New Intern Application`,
+            subtitle: app.fullName || app.name || app.applicantName || 'Applicant',
+            time: app.createdAt || app.submittedAt || '',
+            href: getRelPath('intern_pharmacists.html'),
+        }));
+
+        orderItems.forEach(order => entries.push({
+            type: 'order',
+            icon: 'bx-cart',
+            iconBg: '#fffbeb',
+            iconColor: '#d97706',
+            title: `New Order`,
+            subtitle: order.patientName || order.customerName || (`#${order.id || order.orderId}`),
+            time: order.createdAt || order.orderDate || '',
+            href: getRelPath('orders.html'),
+        }));
+
+        // Sort newest first
+        entries.sort((a, b) => (b.time && a.time) ? new Date(b.time) - new Date(a.time) : 0);
+
+        if (entries.length === 0) {
+            list.innerHTML = '<div style="padding:36px; text-align:center; color:#94a3b8; font-size:13px;">No new notifications.</div>';
             return;
         }
 
-        const statusColors = {
-            sent:      { bg: '#ecfdf5', color: '#059669' },
-            scheduled: { bg: '#fffbeb', color: '#d97706' },
-            draft:     { bg: '#eff6ff', color: '#3b82f6' },
-            cancelled: { bg: '#f1f5f9', color: '#64748b' },
-            failed:    { bg: '#fef2f2', color: '#ef4444' },
-        };
-
-        list.innerHTML = items.map(item => {
-            const s = (item.status || '').toLowerCase();
-            const sc = statusColors[s] || { bg: '#f1f5f9', color: '#64748b' };
-            const time = item.createdAt ? new Date(item.createdAt).toLocaleString('en-US', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }) : '';
+        list.innerHTML = entries.map(e => {
+            const time = e.time ? new Date(e.time).toLocaleString('en-US', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }) : '';
             return `
-            <div style="padding: 14px 20px; border-bottom: 1px solid #f8fafc; display:flex; gap:12px; align-items:flex-start;">
-                <div style="width:36px;height:36px;border-radius:10px;background:${sc.bg};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                    <i class='bx bx-bell' style="color:${sc.color};font-size:18px;"></i>
+            <a href="${e.href}" style="padding:14px 18px; border-bottom:1px solid #f8fafc; display:flex; gap:12px; align-items:flex-start; text-decoration:none; background:#fff; transition:background 0.15s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#fff'">
+                <div style="width:38px;height:38px;border-radius:10px;background:${e.iconBg};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class='bx ${e.icon}' style="color:${e.iconColor};font-size:18px;"></i>
                 </div>
                 <div style="flex:1;min-width:0;">
-                    <div style="font-size:13px;font-weight:600;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtmlBell(item.title)}</div>
-                    <div style="font-size:11px;color:#94a3b8;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtmlBell(item.audience || item.targetType || '')}</div>
+                    <div style="font-size:13px;font-weight:600;color:#0f172a;line-height:1.3;">${escapeHtmlBell(e.title)}</div>
+                    <div style="font-size:12px;color:#64748b;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtmlBell(e.subtitle)}</div>
                 </div>
-                <div style="text-align:right;flex-shrink:0;">
-                    <span style="display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;background:${sc.bg};color:${sc.color};">${item.status}</span>
-                    <div style="font-size:10px;color:#cbd5e1;margin-top:4px;">${time}</div>
-                </div>
-            </div>`;
+                ${time ? `<div style="font-size:10px;color:#cbd5e1;flex-shrink:0;text-align:right;padding-top:2px;white-space:nowrap;">${time}</div>` : ''}
+            </a>`;
         }).join('');
+
     } catch {
-        list.innerHTML = '<div style="padding:24px; text-align:center; color:#ef4444; font-size:13px;">Failed to load.</div>';
+        list.innerHTML = '<div style="padding:24px; text-align:center; color:#ef4444; font-size:13px;">Failed to load notifications.</div>';
     }
+}
+
+function getRelPath(page) {
+    const inPages = window.location.pathname.toLowerCase().includes('/pages/');
+    return inPages ? page : `pages/${page}`;
+}
+
+function getNotifPagePath() {
+    return getRelPath('notifications.html');
 }
 
 // ─── Topbar Profile ───────────────────────────────────────────────────────────
@@ -258,25 +329,25 @@ async function loadSidebarPendingDots() {
         const pharmCount  = pharmRes.status  === 'fulfilled' ? (pharmRes.value?.data?.totalCount  || 0) : 0;
         const internCount = internRes.status === 'fulfilled' ? (internRes.value?.data?.totalCount || 0) : 0;
 
-        // Map: which href keyword → pending count for that link
+        // Map: page filename → pending count (intern checked first to avoid substring collision)
         const dotMap = [
-            { keyword: 'pharmacists',       count: pharmCount,  label: 'Pharmacist'      },
-            { keyword: 'intern_pharmacists', count: internCount, label: 'Intern'          },
+            { filename: 'intern_pharmacists', count: internCount, label: 'Intern'      },
+            { filename: 'pharmacists',         count: pharmCount,  label: 'Pharmacist'  },
         ];
 
         document.querySelectorAll('.nav-links li a').forEach(link => {
-            const href = link.getAttribute('href') || '';
+            const href = (link.getAttribute('href') || '').split('/').pop().replace('.html', '');
 
-            for (const { keyword, count, label } of dotMap) {
-                if (!href.includes(keyword)) continue;
+            link.querySelector('.nav-pending-dot')?.remove();
 
-                // Remove stale dot
-                link.querySelector('.nav-pending-dot')?.remove();
+            for (const { filename, count, label } of dotMap) {
+                if (href !== filename) continue;
 
                 if (count > 0) {
                     link.style.position = 'relative';
                     const dot = document.createElement('span');
                     dot.className = 'nav-pending-dot';
+                    dot.textContent = count > 99 ? '99+' : String(count);
                     dot.title = `${count} pending ${label} application${count !== 1 ? 's' : ''}`;
                     link.appendChild(dot);
                 }
@@ -292,8 +363,10 @@ async function loadSidebarPendingDots() {
             const currentHref = window.location.pathname;
             const isInternPage = currentHref.includes('intern_pharmacists');
             const count = isInternPage ? internCount : pharmCount;
-            tabBadge.textContent = count;
-            tabBadge.style.display = count > 0 ? 'inline-block' : 'none';
+            tabBadge.textContent = count > 99 ? '99+' : String(count);
+            tabBadge.style.cssText = count > 0
+                ? 'display:inline-flex; align-items:center; justify-content:center; background:#ef4444; color:white; font-size:11px; min-width:20px; height:20px; padding:0 5px; border-radius:10px; margin-left:8px; font-weight:700; line-height:1;'
+                : 'display:none;';
         }
 
     } catch {
