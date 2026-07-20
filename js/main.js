@@ -81,6 +81,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Show SuperAdmin nav items if the logged-in user is a SuperAdmin
     showSuperAdminNav();
 
+    // Show pending-requests dot on sidebar nav items
+    loadSidebarPendingDots();
+
 });
 
 // ─── Notification Bell ────────────────────────────────────────────────────────
@@ -240,6 +243,63 @@ function escapeHtmlBell(str) {
 }
 
 // ─── SuperAdmin Navigation ────────────────────────────────────────────────────
+
+// ─── Sidebar Pending Dots ─────────────────────────────────────────────────────
+
+async function loadSidebarPendingDots() {
+    if (!window.apiClient) return;
+
+    try {
+        const [pharmRes, internRes] = await Promise.allSettled([
+            apiClient.get('/admin/applications?type=Pharmacist&status=Pending&pageSize=1'),
+            apiClient.get('/admin/applications?type=Intern&status=Pending&pageSize=1'),
+        ]);
+
+        const pharmCount  = pharmRes.status  === 'fulfilled' ? (pharmRes.value?.data?.totalCount  || 0) : 0;
+        const internCount = internRes.status === 'fulfilled' ? (internRes.value?.data?.totalCount || 0) : 0;
+
+        // Map: which href keyword → pending count for that link
+        const dotMap = [
+            { keyword: 'pharmacists',       count: pharmCount,  label: 'Pharmacist'      },
+            { keyword: 'intern_pharmacists', count: internCount, label: 'Intern'          },
+        ];
+
+        document.querySelectorAll('.nav-links li a').forEach(link => {
+            const href = link.getAttribute('href') || '';
+
+            for (const { keyword, count, label } of dotMap) {
+                if (!href.includes(keyword)) continue;
+
+                // Remove stale dot
+                link.querySelector('.nav-pending-dot')?.remove();
+
+                if (count > 0) {
+                    link.style.position = 'relative';
+                    const dot = document.createElement('span');
+                    dot.className = 'nav-pending-dot';
+                    dot.title = `${count} pending ${label} application${count !== 1 ? 's' : ''}`;
+                    link.appendChild(dot);
+                }
+                break;
+            }
+        });
+
+        // Update tab badge if the element exists on the current page
+        // pharmacists.html badge — shows pharmCount only
+        // intern_pharmacists.html badge — shows internCount only
+        const tabBadge = document.getElementById('requests-badge');
+        if (tabBadge) {
+            const currentHref = window.location.pathname;
+            const isInternPage = currentHref.includes('intern_pharmacists');
+            const count = isInternPage ? internCount : pharmCount;
+            tabBadge.textContent = count;
+            tabBadge.style.display = count > 0 ? 'inline-block' : 'none';
+        }
+
+    } catch {
+        // Silent — sidebar dots are non-critical
+    }
+}
 
 function showSuperAdminNav() {
     const token = localStorage.getItem('idToken');

@@ -9,25 +9,20 @@ document.addEventListener('DOMContentLoaded', () => {
     loadPharmacists();
     initSearchAndFilters();
     updateRequestsBadge();
+    updateRejectedBadge();
 });
 
 function switchTab(tab) {
     currentTab = tab;
-    const tabAll = document.getElementById('tab-all');
-    const tabReq = document.getElementById('tab-requests');
-
-    if (tabAll) {
-        tabAll.style.fontWeight = tab === 'all' ? '600' : '500';
-        tabAll.style.color = tab === 'all' ? '#0f172a' : '#64748b';
-        tabAll.style.borderBottomColor = tab === 'all' ? '#0057d1' : 'transparent';
-    }
-
-    if (tabReq) {
-        tabReq.style.fontWeight = tab === 'requests' ? '600' : '500';
-        tabReq.style.color = tab === 'requests' ? '#0f172a' : '#64748b';
-        tabReq.style.borderBottomColor = tab === 'requests' ? '#0057d1' : 'transparent';
-    }
-
+    const tabs = ['all', 'requests', 'rejected'];
+    tabs.forEach(t => {
+        const el = document.getElementById(`tab-${t}`);
+        if (!el) return;
+        const isActive = t === tab;
+        el.style.fontWeight = isActive ? '600' : '500';
+        el.style.color = isActive ? '#0f172a' : '#64748b';
+        el.style.borderBottomColor = isActive ? '#0057d1' : 'transparent';
+    });
     loadPharmacists(1);
 }
 
@@ -62,6 +57,8 @@ async function loadPharmacists(page = 1) {
         let response;
         if (currentTab === 'requests') {
             response = await fetchPharmacistApplications(page, PAGE_SIZE);
+        } else if (currentTab === 'rejected') {
+            response = await fetchRejectedPharmacistApplications(page, PAGE_SIZE);
         } else {
             response = await fetchPharmacists(page, PAGE_SIZE, currentSearch, '');
         }
@@ -71,7 +68,8 @@ async function loadPharmacists(page = 1) {
         const total = dataRoot.totalCount || dataRoot.total || dataRoot.recordsTotal || pharmacists.length;
 
         if (!pharmacists || pharmacists.length === 0) {
-            tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 40px;">No ${currentTab === 'requests' ? 'applications' : 'pharmacists'} found.</td></tr>`;
+            const emptyLabel = currentTab === 'requests' ? 'pending applications' : currentTab === 'rejected' ? 'rejected applications' : 'pharmacists';
+            tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 40px; color:var(--text-muted);">No ${emptyLabel} found.</td></tr>`;
             updatePaginationInfo(0, page);
             if (paginationButtons) paginationButtons.innerHTML = '';
             return;
@@ -464,6 +462,26 @@ async function updateRequestsBadge() {
         }
     } catch (error) {
         console.error('[Pharmacists] Failed to update badge:', error);
+    }
+}
+
+async function updateRejectedBadge() {
+    const badge = document.getElementById('rejected-badge');
+    if (!badge) return;
+
+    try {
+        const response = await fetchRejectedPharmacistApplications(1, 1);
+        const dataRoot = response?.data || response;
+        const total = dataRoot.totalCount || dataRoot.total || dataRoot.recordsTotal || 0;
+
+        if (total > 0) {
+            badge.textContent = total;
+            badge.style.display = 'inline-block';
+        } else {
+            badge.style.display = 'none';
+        }
+    } catch {
+        // silent
     }
 }
 

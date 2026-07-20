@@ -8,7 +8,11 @@ async function fetchPharmacists(page = 1, pageSize = 20, search = '', status = '
 }
 
 async function fetchPharmacistApplications(page = 1, pageSize = 20) {
-    return await apiClient.get(`/admin/applications?type=Pharmacist&page=${page}&pageSize=${pageSize}`);
+    return await apiClient.get(`/admin/applications?type=Pharmacist&status=Pending&page=${page}&pageSize=${pageSize}`);
+}
+
+async function fetchRejectedPharmacistApplications(page = 1, pageSize = 20) {
+    return await apiClient.get(`/admin/applications?type=Pharmacist&status=Rejected&page=${page}&pageSize=${pageSize}`);
 }
 
 async function fetchPharmacistById(id) {
@@ -20,9 +24,8 @@ async function approvePharmacist(id) {
     return await apiClient.post(`/admin/applications/${id}/approve`);
 }
 
-async function rejectPharmacist(id) {
-    // Backend does NOT accept a rejection reason body for this endpoint
-    return await apiClient.post(`/admin/applications/${id}/reject`);
+async function rejectPharmacist(id, reason) {
+    return await apiClient.post(`/admin/applications/${id}/reject`, { reason: reason || 'Did not meet requirements.' });
 }
 
 async function deletePharmacist(id) {

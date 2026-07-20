@@ -8,7 +8,11 @@ async function fetchInternPharmacists(page = 1, pageSize = 20, search = '', stat
 }
 
 async function fetchInternPharmacistApplications(page = 1, pageSize = 20) {
-    return await apiClient.get(`/admin/applications?type=Intern&page=${page}&pageSize=${pageSize}`);
+    return await apiClient.get(`/admin/applications?type=Intern&status=Pending&page=${page}&pageSize=${pageSize}`);
+}
+
+async function fetchRejectedInternApplications(page = 1, pageSize = 20) {
+    return await apiClient.get(`/admin/applications?type=Intern&status=Rejected&page=${page}&pageSize=${pageSize}`);
 }
 
 async function fetchInternPharmacistById(id) {

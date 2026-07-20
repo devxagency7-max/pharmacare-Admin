@@ -201,6 +201,28 @@ ul {
     transition: opacity 0.3s;
 }
 
+/* Pending-requests dot on sidebar nav items */
+.nav-links li a .nav-pending-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ef4444;
+    margin-left: auto;
+    flex-shrink: 0;
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.25);
+    animation: dotPulse 2s ease-in-out infinite;
+}
+.sidebar.close .nav-links li a .nav-pending-dot {
+    margin-left: 0;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+@keyframes dotPulse {
+    0%, 100% { box-shadow: 0 0 0 2px rgba(239,68,68,0.25); }
+    50%       { box-shadow: 0 0 0 5px rgba(239,68,68,0.10); }
+}
+
 .sidebar.close .nav-links li a .link-name {
     opacity: 0;
     display: none;
