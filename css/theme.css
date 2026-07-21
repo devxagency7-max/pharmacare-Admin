@@ -175,10 +175,10 @@
 [data-theme="dark"] .profile-info .role { color: #64748b; }
 [data-theme="dark"] .table-person .info .name { color: #e2e8f0; }
 [data-theme="dark"] .table-person .info .email { color: #64748b; }
-[data-theme="dark"] .status-badge.success { background: rgba(16,185,129,0.15); }
-[data-theme="dark"] .status-badge.warning { background: rgba(245,158,11,0.15); }
-[data-theme="dark"] .status-badge.danger  { background: rgba(239,68,68,0.15); }
-[data-theme="dark"] .status-badge.primary { background: rgba(0,87,209,0.15); }
+[data-theme="dark"] .status-badge.success { background: rgba(16,185,129,0.18); color: #34d399; }
+[data-theme="dark"] .status-badge.warning { background: rgba(245,158,11,0.18); color: #fbbf24; }
+[data-theme="dark"] .status-badge.danger  { background: rgba(239,68,68,0.18);  color: #f87171; }
+[data-theme="dark"] .status-badge.primary { background: rgba(96,165,250,0.18); color: #60a5fa; }
 [data-theme="dark"] .filter-tab.active { background: var(--primary); }
 [data-theme="dark"] .request-card-header { color: #e2e8f0; }
 [data-theme="dark"] .request-pharmacy-info h3 { color: #e2e8f0; }
