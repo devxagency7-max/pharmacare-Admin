@@ -253,7 +253,8 @@
 [dir="rtl"] .page-header { text-align: right; }
 [dir="rtl"] .card-header { flex-direction: row-reverse; }
 [dir="rtl"] .filter-tabs { flex-direction: row-reverse; }
-[dir="rtl"] .table-person { flex-direction: row-reverse; text-align: right; }
+[dir="rtl"] .table-person { flex-direction: row; text-align: right; }
+[dir="rtl"] .table-person .info { text-align: right; }
 [dir="rtl"] .data-table { text-align: right; }
 [dir="rtl"] .data-table tbody tr:hover {
     box-shadow: inset -2px 0 0 var(--primary);
