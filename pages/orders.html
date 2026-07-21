@@ -105,6 +105,20 @@
             width: fit-content;
             border: none;
         }
+        [data-theme="dark"] .filter-tabs {
+            background: #1e2130;
+        }
+        [data-theme="dark"] .filter-tab {
+            color: #64748b;
+        }
+        [data-theme="dark"] .filter-tab.active {
+            background: var(--primary);
+            color: #fff;
+        }
+        [data-theme="dark"] .filter-tab:hover {
+            color: #e2e8f0;
+            background: rgba(255,255,255,0.06);
+        }
 
         .filter-tab {
             padding: 10px 22px;
