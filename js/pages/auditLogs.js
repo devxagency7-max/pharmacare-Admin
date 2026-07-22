@@ -28,10 +28,42 @@ async function loadMetrics() {
         setText('m-users',    (d.uniqueUsers ?? 0).toLocaleString());
         setText('m-failed',   (d.failedOperations ?? 0).toLocaleString());
         setText('m-critical', (d.criticalEvents ?? 0).toLocaleString());
+        setText('m-module',   d.mostActiveModule || '—');
+        setText('m-avg-resp', d.averageResponseTimeMs != null ? d.averageResponseTimeMs.toFixed(1) + ' ms' : '—');
+
+        renderTopActions(d.topActions || []);
+        renderTopActors(d.topActors || []);
     } catch (e) {
-        // Metrics endpoint not available — show dashes silently
-        ['m-total','m-today','m-users','m-failed','m-critical'].forEach(id => setText(id, '—'));
+        ['m-total','m-today','m-users','m-failed','m-critical','m-module','m-avg-resp'].forEach(id => setText(id, '—'));
+        setText('top-actions-list', '');
+        setText('top-actors-list', '');
     }
+}
+
+function renderTopActions(actions) {
+    const el = document.getElementById('top-actions-list');
+    if (!el) return;
+    if (!actions.length) { el.innerHTML = '<li style="color:var(--text-muted)">No data</li>'; return; }
+    const max = actions[0].count || 1;
+    el.innerHTML = actions.map(a => `
+        <li>
+            <span class="i-name">${escHtml(a.action)}</span>
+            <div class="i-bar-wrap"><div class="i-bar" style="width:${Math.round((a.count/max)*100)}%"></div></div>
+            <span class="i-count">${a.count.toLocaleString()}</span>
+        </li>`).join('');
+}
+
+function renderTopActors(actors) {
+    const el = document.getElementById('top-actors-list');
+    if (!el) return;
+    if (!actors.length) { el.innerHTML = '<li style="color:var(--text-muted)">No data</li>'; return; }
+    const max = actors[0].count || 1;
+    el.innerHTML = actors.map(a => `
+        <li>
+            <span class="i-name" style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escHtml(a.actorName)}">${escHtml(a.actorName)}</span>
+            <div class="i-bar-wrap"><div class="i-bar" style="width:${Math.round((a.count/max)*100)}%;background:#8b5cf6;"></div></div>
+            <span class="i-count">${a.count.toLocaleString()}</span>
+        </li>`).join('');
 }
 
 function setText(id, val) {

@@ -22,6 +22,20 @@
         .audit-stat .lbl { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-top: 4px; }
         .audit-stat.critical .num { color: var(--danger); }
         .audit-stat.warn .num { color: #d97706; }
+        .audit-stat.success .num { color: var(--success); }
+        .audit-stat.info .num { color: var(--primary); }
+
+        /* Insights row */
+        .audit-insights { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+        @media (max-width: 768px) { .audit-insights { grid-template-columns: 1fr; } }
+        .insight-card { background: var(--bg-card); border-radius: var(--radius-md); padding: 18px 20px; box-shadow: var(--shadow-sm); }
+        .insight-card h4 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin: 0 0 14px; }
+        .insight-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+        .insight-list li { display: flex; align-items: center; justify-content: space-between; font-size: 13px; }
+        .insight-list li .i-name { font-weight: 600; color: var(--text-primary); }
+        .insight-list li .i-bar-wrap { flex: 1; margin: 0 10px; height: 6px; background: #f1f5f9; border-radius: 4px; overflow: hidden; }
+        .insight-list li .i-bar { height: 100%; border-radius: 4px; background: var(--primary); transition: width 0.4s; }
+        .insight-list li .i-count { font-size: 12px; font-weight: 700; color: var(--text-muted); min-width: 32px; text-align: right; }
 
         /* Filter bar */
         .audit-filters {
@@ -168,6 +182,24 @@
                 <div class="audit-stat"><div class="num" id="m-users">—</div><div class="lbl">Unique Users</div></div>
                 <div class="audit-stat warn"><div class="num" id="m-failed">—</div><div class="lbl">Failed Ops</div></div>
                 <div class="audit-stat critical"><div class="num" id="m-critical">—</div><div class="lbl">Critical</div></div>
+                <div class="audit-stat info"><div class="num" id="m-module">—</div><div class="lbl">Top Module</div></div>
+                <div class="audit-stat success"><div class="num" id="m-avg-resp">—</div><div class="lbl">Avg Response</div></div>
+            </div>
+
+            <!-- Insights: Top Actions & Top Actors -->
+            <div class="audit-insights">
+                <div class="insight-card">
+                    <h4><i class='bx bx-zap' style="vertical-align:middle;margin-right:4px;"></i>Top Actions</h4>
+                    <ul class="insight-list" id="top-actions-list">
+                        <li style="color:var(--text-muted);font-size:13px;">Loading...</li>
+                    </ul>
+                </div>
+                <div class="insight-card">
+                    <h4><i class='bx bx-user-check' style="vertical-align:middle;margin-right:4px;"></i>Top Actors</h4>
+                    <ul class="insight-list" id="top-actors-list">
+                        <li style="color:var(--text-muted);font-size:13px;">Loading...</li>
+                    </ul>
+                </div>
             </div>
 
             <!-- Filters -->
