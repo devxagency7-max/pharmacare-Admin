@@ -16,10 +16,12 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         /* Stat cards */
-        .audit-stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; margin-bottom: 24px; }
-        .audit-stat { background: var(--bg-card); border-radius: var(--radius-md); padding: 18px 20px; box-shadow: var(--shadow-sm); }
-        .audit-stat .num { font-size: 26px; font-weight: 800; color: var(--text-primary); }
-        .audit-stat .lbl { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-top: 4px; }
+        .audit-stats { display: grid; grid-template-columns: repeat(7, 1fr); gap: 14px; margin-bottom: 24px; }
+        @media (max-width: 1200px) { .audit-stats { grid-template-columns: repeat(4, 1fr); } }
+        @media (max-width: 700px)  { .audit-stats { grid-template-columns: repeat(2, 1fr); } }
+        .audit-stat { background: var(--bg-card); border-radius: var(--radius-md); padding: 18px 16px; box-shadow: var(--shadow-sm); text-align: center; }
+        .audit-stat .num { font-size: 24px; font-weight: 800; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .audit-stat .lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-top: 4px; }
         .audit-stat.critical .num { color: var(--danger); }
         .audit-stat.warn .num { color: #d97706; }
         .audit-stat.success .num { color: var(--success); }
@@ -182,7 +184,7 @@
                 <div class="audit-stat"><div class="num" id="m-users">—</div><div class="lbl">Unique Users</div></div>
                 <div class="audit-stat warn"><div class="num" id="m-failed">—</div><div class="lbl">Failed Ops</div></div>
                 <div class="audit-stat critical"><div class="num" id="m-critical">—</div><div class="lbl">Critical</div></div>
-                <div class="audit-stat info"><div class="num" id="m-module">—</div><div class="lbl">Top Module</div></div>
+                <div class="audit-stat info"><div class="num" id="m-module" style="font-size:16px;font-weight:800;">—</div><div class="lbl">Top Module</div></div>
                 <div class="audit-stat success"><div class="num" id="m-avg-resp">—</div><div class="lbl">Avg Response</div></div>
             </div>
 

@@ -28,7 +28,12 @@ async function loadMetrics() {
         setText('m-users',    (d.uniqueUsers ?? 0).toLocaleString());
         setText('m-failed',   (d.failedOperations ?? 0).toLocaleString());
         setText('m-critical', (d.criticalEvents ?? 0).toLocaleString());
-        setText('m-module',   d.mostActiveModule || '—');
+        const moduleEl = document.getElementById('m-module');
+        if (moduleEl) {
+            const mod = d.mostActiveModule || '—';
+            moduleEl.textContent = mod;
+            moduleEl.style.fontSize = mod.length > 10 ? '13px' : mod.length > 7 ? '16px' : '24px';
+        }
         setText('m-avg-resp', d.averageResponseTimeMs != null ? d.averageResponseTimeMs.toFixed(1) + ' ms' : '—');
 
         renderTopActions(d.topActions || []);
@@ -110,13 +115,20 @@ function buildRow(log) {
     const sev = log.severity || 'Information';
     const isCritical = sev === 'Critical';
 
-    return `<tr${isCritical ? ' class="critical-row"' : ''}>
+    const descTitle = log.description ? ` title="${escHtml(log.description)}"` : '';
+    const ipInfo = [log.ipAddress, log.browser, log.country].filter(Boolean).join(' · ');
+
+    return `<tr${isCritical ? ' class="critical-row"' : ''}${descTitle}>
         <td><div style="font-weight:600;font-size:13px;">${date}</div><div style="font-size:11px;color:var(--text-muted);">${time}</div></td>
         <td>
             <div style="font-weight:600;font-size:13px;">${escHtml(actor)}</div>
             ${log.actorRole ? `<div style="font-size:11px;color:var(--text-muted);">${escHtml(log.actorRole)}</div>` : ''}
+            ${ipInfo ? `<div style="font-size:10px;color:var(--text-muted);margin-top:2px;">${escHtml(ipInfo)}</div>` : ''}
         </td>
-        <td><span style="font-weight:700;font-size:12px;color:var(--primary);">${escHtml(log.action || '—')}</span></td>
+        <td>
+            <span style="font-weight:700;font-size:12px;color:var(--primary);">${escHtml(log.action || '—')}</span>
+            ${log.description ? `<div style="font-size:10px;color:var(--text-muted);margin-top:3px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escHtml(log.description)}">${escHtml(log.description)}</div>` : ''}
+        </td>
         <td><span style="font-size:12px;font-weight:600;color:#475569;">${escHtml(log.category || '—')}</span></td>
         <td style="font-size:12px;color:var(--text-muted);">${escHtml(resource)}</td>
         <td>${statusHtml}</td>
@@ -204,13 +216,18 @@ function renderDrawer(d) {
         <h4>Request</h4>
         ${drawerRow('Method + Endpoint', `<code style="font-size:11px;">${escHtml((d.httpMethod || '') + ' ' + (d.endpoint || ''))}</code>`)}
         ${drawerRow('IP Address', escHtml(d.ipAddress || '—'))}
+        ${drawerRow('Country', escHtml(d.country || '—'))}
         ${drawerRow('Browser', escHtml(d.browser || '—'))}
         ${drawerRow('OS', escHtml(d.operatingSystem || '—'))}
+        ${drawerRow('Environment', d.environment ? `<span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:5px;background:${d.environment==='Production'?'#fef2f2':'#eff6ff'};color:${d.environment==='Production'?'#dc2626':'#3b82f6'};">${escHtml(d.environment)}</span>` : '—')}
         ${drawerRow('Correlation ID', d.correlationId ? `<code style="font-size:11px;">${escHtml(d.correlationId)}</code>` : '—')}
     </div>`;
 
     if (d.description) {
-        html += `<div class="drawer-section"><h4>Description</h4><p style="font-size:13px;color:var(--text-muted);line-height:1.6;">${escHtml(d.description)}</p></div>`;
+        html += `<div class="drawer-section">
+            <h4>Description</h4>
+            <p style="font-size:13px;color:var(--text-muted);line-height:1.6;background:#f8fafc;padding:10px 14px;border-radius:8px;border-left:3px solid #d97706;margin:0;">${escHtml(d.description)}</p>
+        </div>`;
     }
 
     if (d.oldValues || d.newValues) {
