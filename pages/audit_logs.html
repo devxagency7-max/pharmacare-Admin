@@ -164,6 +164,11 @@
                     <button class="btn btn-outline" onclick="loadMetrics(); loadLogs(1);" style="font-size:13px; padding:8px 14px;">
                         <i class='bx bx-refresh'></i> Refresh
                     </button>
+                    <!-- SuperAdmin only: Archive Old Logs -->
+                    <button class="btn btn-outline" id="archive-btn" onclick="openArchiveModal()"
+                        style="font-size:13px; padding:8px 14px; display:none; border-color:#d97706; color:#d97706;">
+                        <i class='bx bx-archive'></i> Archive Logs
+                    </button>
                     <div class="export-wrap">
                         <button class="btn btn-outline" id="export-btn" onclick="toggleExportMenu()" style="font-size:13px; padding:8px 14px;">
                             <i class='bx bx-download'></i> Export <i class='bx bx-chevron-down'></i>
@@ -282,6 +287,42 @@
             </div>
             <div class="drawer-body" id="drawer-body">
                 <div style="text-align:center;padding:40px;color:var(--text-muted);"><i class="bx bx-loader-alt bx-spin" style="font-size:28px;"></i></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Archive Modal (SuperAdmin only) -->
+    <div class="drawer-overlay" id="archive-overlay" onclick="closeArchiveModal()" style="z-index:1100;">
+        <div onclick="event.stopPropagation()" style="
+            position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+            background:#fff; border-radius:16px; padding:32px; width:440px; max-width:90vw;
+            box-shadow:0 20px 60px rgba(0,0,0,0.18); z-index:1101;">
+            <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+                <div style="width:44px;height:44px;border-radius:12px;background:#fffbeb;display:flex;align-items:center;justify-content:center;">
+                    <i class='bx bx-archive' style="font-size:22px;color:#d97706;"></i>
+                </div>
+                <div>
+                    <h3 style="margin:0;font-size:17px;font-weight:700;">Archive Old Logs</h3>
+                    <p style="margin:0;font-size:12px;color:var(--text-muted);">SuperAdmin action — irreversible</p>
+                </div>
+            </div>
+            <p style="font-size:13px;color:var(--text-muted);line-height:1.6;margin-bottom:20px;">
+                Logs older than the specified number of days will be archived and removed from the active table.
+                This action <strong>cannot be undone</strong>.
+            </p>
+            <label style="display:block;font-size:13px;font-weight:600;margin-bottom:8px;">Retention Period (days)</label>
+            <input type="number" id="archive-days" value="90" min="30" max="3650"
+                style="width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;font-family:inherit;box-sizing:border-box;margin-bottom:20px;">
+            <p style="font-size:12px;color:#ef4444;margin-bottom:20px;">
+                <i class='bx bx-error-circle'></i>
+                Logs older than <strong><span id="archive-days-preview">90</span> days</strong> will be permanently archived.
+            </p>
+            <div style="display:flex;gap:10px;justify-content:flex-end;">
+                <button class="btn btn-outline" onclick="closeArchiveModal()">Cancel</button>
+                <button class="btn" id="archive-confirm-btn" onclick="doArchive()"
+                    style="background:#d97706;color:#fff;border:none;">
+                    <i class='bx bx-archive'></i> Archive Now
+                </button>
             </div>
         </div>
     </div>

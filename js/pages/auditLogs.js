@@ -16,7 +16,25 @@ const getFilters = () => ({
 document.addEventListener('DOMContentLoaded', () => {
     loadMetrics();
     loadLogs(1);
+    initArchiveButton();
 });
+
+function isSuperAdmin() {
+    try {
+        const token = localStorage.getItem('idToken');
+        if (!token) return false;
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const roles = payload.role || payload.roles || [];
+        return Array.isArray(roles) ? roles.includes('SuperAdmin') : roles === 'SuperAdmin';
+    } catch { return false; }
+}
+
+function initArchiveButton() {
+    if (isSuperAdmin()) {
+        const btn = document.getElementById('archive-btn');
+        if (btn) btn.style.display = '';
+    }
+}
 
 // ── Metrics ───────────────────────────────────
 async function loadMetrics() {
@@ -311,4 +329,54 @@ function buildPageRange(cur, total) {
 // ── Utils ─────────────────────────────────────
 function escHtml(str) {
     return String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── Archive (SuperAdmin only) ─────────────────
+function openArchiveModal() {
+    document.getElementById('archive-overlay').classList.add('active');
+    const input = document.getElementById('archive-days');
+    input.value = 90;
+    document.getElementById('archive-days-preview').textContent = 90;
+    input.oninput = () => {
+        document.getElementById('archive-days-preview').textContent = input.value || '?';
+    };
+}
+
+function closeArchiveModal() {
+    document.getElementById('archive-overlay').classList.remove('active');
+}
+
+async function doArchive() {
+    const days = parseInt(document.getElementById('archive-days').value);
+    if (!days || days < 30) {
+        Swal.fire('Invalid', 'Minimum retention period is 30 days.', 'warning');
+        return;
+    }
+
+    const { isConfirmed } = await Swal.fire({
+        title: 'Archive logs?',
+        html: `Logs older than <strong>${days} days</strong> will be permanently archived.<br>This cannot be undone.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, Archive',
+        confirmButtonColor: '#d97706',
+    });
+    if (!isConfirmed) return;
+
+    const btn = document.getElementById('archive-confirm-btn');
+    btn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Archiving...';
+    btn.disabled = true;
+
+    try {
+        const res = await archiveAuditLogs(days);
+        closeArchiveModal();
+        Swal.fire('Done', res?.message || `Logs older than ${days} days have been archived.`, 'success');
+        loadMetrics();
+        loadLogs(1);
+    } catch (err) {
+        Swal.fire('Failed', err.message, 'error');
+    } finally {
+        btn.innerHTML = '<i class="bx bx-archive"></i> Archive Now';
+        btn.disabled = false;
+    }
 }

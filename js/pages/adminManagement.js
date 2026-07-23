@@ -41,7 +41,35 @@ async function loadStats() {
         setText('stat-total-super',  d.totalSuperAdmins ?? '—');
         setText('stat-locked',       d.lockedAdmins ?? '—');
         setText('stat-active',       d.activeAdmins ?? '—');
+        renderRecentList('recent-promotions-list',   d.recentPromotions  || [], 'promotion');
+        renderRecentList('recent-role-changes-list', d.recentRoleChanges || [], 'rolechange');
     } catch { /* Stats are nice-to-have, not critical */ }
+}
+
+function renderRecentList(id, items, type) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (!items.length) {
+        el.innerHTML = `<li style="font-size:13px;color:var(--text-muted);">No ${type === 'promotion' ? 'promotions' : 'role changes'} yet.</li>`;
+        return;
+    }
+    el.innerHTML = items.slice(0, 5).map(item => {
+        const name   = item.targetName  || item.adminName  || item.name  || '—';
+        const actor  = item.performedBy || item.promotedBy || item.actor || '';
+        const date   = item.createdAt   || item.date       || '';
+        const dateStr = date ? timeAgo(date) : '';
+        const badge  = type === 'promotion'
+            ? `<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;background:#f0fdf4;color:#15803d;">→ Admin</span>`
+            : `<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;background:#f5f3ff;color:#7c3aed;">Role Change</span>`;
+        return `<li style="display:flex;align-items:center;justify-content:space-between;font-size:13px;">
+            <div>
+                <span style="font-weight:600;color:var(--text-primary);">${name}</span>
+                ${actor ? `<span style="color:var(--text-muted);font-size:11px;"> by ${actor}</span>` : ''}
+                <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">${dateStr}</div>
+            </div>
+            ${badge}
+        </li>`;
+    }).join('');
 }
 
 // ─── Table ───────────────────────────────────────────────────────────────────

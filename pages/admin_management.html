@@ -133,11 +133,31 @@
             </div>
 
             <!-- Stats -->
-            <div class="admin-stats" id="admin-stats">
-                <div class="admin-stat-card"><div class="stat-num" id="stat-total-admins">â€”</div><div class="stat-lbl">Total Admins</div></div>
-                <div class="admin-stat-card"><div class="stat-num" id="stat-total-super">â€”</div><div class="stat-lbl">SuperAdmins</div></div>
-                <div class="admin-stat-card"><div class="stat-num" id="stat-locked">â€”</div><div class="stat-lbl">Locked</div></div>
-                <div class="admin-stat-card"><div class="stat-num" id="stat-active">â€”</div><div class="stat-lbl">Active</div></div>
+            <div class=”admin-stats” id=”admin-stats”>
+                <div class=”admin-stat-card”><div class=”stat-num” id=”stat-total-admins”>—</div><div class=”stat-lbl”>Total Admins</div></div>
+                <div class=”admin-stat-card”><div class=”stat-num” id=”stat-total-super”>—</div><div class=”stat-lbl”>SuperAdmins</div></div>
+                <div class=”admin-stat-card”><div class=”stat-num” id=”stat-locked”>—</div><div class=”stat-lbl”>Locked</div></div>
+                <div class=”admin-stat-card”><div class=”stat-num” id=”stat-active”>—</div><div class=”stat-lbl”>Active</div></div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div style=”display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:24px;”>
+                <div class=”card” style=”padding:20px;”>
+                    <div style=”font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-muted);margin-bottom:14px;”>
+                        <i class='bx bx-user-check' style=”vertical-align:middle;margin-right:4px;color:#10b981;”></i>Recent Promotions
+                    </div>
+                    <ul id=”recent-promotions-list” style=”list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;”>
+                        <li style=”font-size:13px;color:var(--text-muted);”>Loading...</li>
+                    </ul>
+                </div>
+                <div class=”card” style=”padding:20px;”>
+                    <div style=”font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-muted);margin-bottom:14px;”>
+                        <i class='bx bx-transfer' style=”vertical-align:middle;margin-right:4px;color:#8b5cf6;”></i>Recent Role Changes
+                    </div>
+                    <ul id=”recent-role-changes-list” style=”list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;”>
+                        <li style=”font-size:13px;color:var(--text-muted);”>Loading...</li>
+                    </ul>
+                </div>
             </div>
 
             <!-- Filter Bar -->
