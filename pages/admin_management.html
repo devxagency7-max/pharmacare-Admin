@@ -99,6 +99,7 @@
             <!-- SuperAdmin Section -->
             <li class="superadmin-section" style="display:none; padding: 6px 20px 2px; pointer-events:none;"><span style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#94a3b8;" data-i18n="nav_superadmin">SuperAdmin</span></li>
             <li class="superadmin-section" style="display:none"><a href="admin_management.html" class="active"><i class='bx bx-shield-quarter'></i><span class="link-name" data-i18n="nav_admin_mgmt">Admin Management</span></a></li>
+            <li class="superadmin-section" style="display:none"><a href="admin_activity.html"><i class='bx bx-history'></i><span class="link-name">Activity Log</span></a></li>
             <li class="superadmin-section" style="display:none"><a href="platform_config.html"><i class='bx bx-slider-alt'></i><span class="link-name" data-i18n="nav_platform">Platform Config</span></a></li>
             <li class="superadmin-section" style="display:none"><a href="system_health.html"><i class='bx bx-pulse'></i><span class="link-name" data-i18n="nav_health">System Health</span></a></li>
             <li class="superadmin-section" style="display:none"><a href="backups.html"><i class='bx bx-data'></i><span class="link-name" data-i18n="nav_backups">Backups</span></a></li>
@@ -127,9 +128,14 @@
                     <h1>Admin Management</h1>
                     <p>Manage platform administrators and their roles.</p>
                 </div>
-                <button class="btn btn-primary" onclick="openPromoteModal()">
-                    <i class='bx bx-user-plus'></i> Promote to Admin
-                </button>
+                <div style="display:flex;gap:10px;">
+                    <a href="admin_activity.html" class="btn btn-outline" style="font-size:13px;padding:9px 16px;">
+                        <i class='bx bx-history'></i> Activity Log
+                    </a>
+                    <button class="btn btn-primary" onclick="openPromoteModal()">
+                        <i class='bx bx-user-plus'></i> Promote to Admin
+                    </button>
+                </div>
             </div>
 
             <!-- Stats -->

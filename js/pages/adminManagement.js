@@ -54,9 +54,9 @@ function renderRecentList(id, items, type) {
         return;
     }
     el.innerHTML = items.slice(0, 5).map(item => {
-        const name   = item.targetName  || item.adminName  || item.name  || '—';
-        const actor  = item.performedBy || item.promotedBy || item.actor || '';
-        const date   = item.createdAt   || item.date       || '';
+        const name   = item.targetUserName || item.targetName || item.name || '—';
+        const actor  = item.actorName    || item.performedBy || item.actor || '';
+        const date   = item.timestamp    || item.createdAt   || item.date || '';
         const dateStr = date ? timeAgo(date) : '';
         const badge  = type === 'promotion'
             ? `<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;background:#f0fdf4;color:#15803d;">→ Admin</span>`
