@@ -261,6 +261,68 @@ async function doPromote() {
     }
 }
 
+// ─── Invite Modal ────────────────────────────────────────────────────────────
+
+function openInviteModal() {
+    document.getElementById('invite-email-input').value = '';
+    document.getElementById('invite-error').style.display = 'none';
+    document.getElementById('invite-success').style.display = 'none';
+    document.getElementById('invite-btn').style.display = '';
+    document.getElementById('invite-modal').classList.add('active');
+    setTimeout(() => document.getElementById('invite-email-input').focus(), 200);
+}
+
+function closeInviteModal() {
+    document.getElementById('invite-modal').classList.remove('active');
+}
+
+async function doInvite() {
+    const email = document.getElementById('invite-email-input').value.trim();
+    const errEl = document.getElementById('invite-error');
+    errEl.style.display = 'none';
+
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        errEl.textContent = 'Please enter a valid email address.';
+        errEl.style.display = 'block';
+        return;
+    }
+
+    const btn = document.getElementById('invite-btn');
+    btn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Sending...';
+    btn.disabled = true;
+
+    try {
+        await inviteAdmin(email);
+        // Show success state
+        document.getElementById('invite-success-email').textContent = `Invite created for ${email} — notify them manually to sign up.`;
+        document.getElementById('invite-success').style.display = 'block';
+        btn.style.display = 'none';
+        showToast('success', `Invite created for ${email}`);
+    } catch (err) {
+        const msg = err.message || '';
+        if (msg.toLowerCase().includes('already exists') || err.status === 409) {
+            if (msg.toLowerCase().includes('pending')) {
+                errEl.textContent = 'A pending invite for this email already exists.';
+            } else {
+                errEl.innerHTML = 'A user with this email already exists — use <strong>Promote to Admin</strong> instead.';
+            }
+        } else {
+            errEl.textContent = msg || 'Something went wrong. Please try again.';
+        }
+        errEl.style.display = 'block';
+    } finally {
+        if (btn.style.display !== 'none') {
+            btn.innerHTML = '<i class="bx bx-send"></i> Send Invite';
+            btn.disabled = false;
+        }
+    }
+}
+
+function copyInviteEmail() {
+    const email = document.getElementById('invite-email-input').value.trim();
+    navigator.clipboard.writeText(email).then(() => showToast('success', 'Email copied!'));
+}
+
 // ─── Row Actions ──────────────────────────────────────────────────────────────
 
 async function doPromoteSuperAdmin(email, name) {

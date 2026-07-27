@@ -3,6 +3,10 @@
 
 // ─── Admin Management ─────────────────────────────────────────────────────────
 
+async function inviteAdmin(email) {
+    return await apiClient.post('/super-admin/admins/invite', { email });
+}
+
 async function fetchAdmins(page = 1, pageSize = 20, search = '', status = '', role = '', isLocked = '') {
     let query = `page=${page}&pageSize=${pageSize}`;
     if (search) query += `&search=${encodeURIComponent(search)}`;
