@@ -355,7 +355,7 @@ function initExportPDF() {
     const content = document.getElementById('reports-content');
 
     if (exportBtn && content) {
-        exportBtn.addEventListener('click', () => {
+        exportBtn.addEventListener('click', async () => {
             console.log('[Reports] Exporting PDF...');
             
             const originalText = exportBtn.innerHTML;
@@ -368,13 +368,22 @@ function initExportPDF() {
             document.body.classList.add('exporting-pdf');
             content.classList.add('pdf-mode');
 
+            // Small delay to let styles apply before capture
+            await new Promise(r => setTimeout(r, 300));
+
             const opt = {
-                margin: [10, 10], 
-                filename: 'Pharmacy_Care_Admin_Report.pdf',
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true, logging: false, windowWidth: 1000 },
+                margin: [8, 8, 8, 8],
+                filename: 'Tamenny_Admin_Report.pdf',
+                image: { type: 'jpeg', quality: 0.95 },
+                html2canvas: {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    windowWidth: 810,
+                    backgroundColor: '#ffffff'
+                },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+                pagebreak: { mode: ['css', 'legacy'], avoid: ['.metric-tile', '.chart-card', '.card'] }
             };
 
             html2pdf().set(opt).from(content).save().then(() => {
