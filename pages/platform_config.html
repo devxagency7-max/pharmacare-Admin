@@ -12,7 +12,7 @@
     <link rel="icon" href="../logo.jpeg" type="image/jpeg"><link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/theme.css">
     <link rel="stylesheet" href="../css/modals.css">
-    <script src="../js/i18n.js"></script>
+    <script src="../js/i18n.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
@@ -25,7 +25,7 @@
         }
         .config-section-header {
             padding: 20px 28px;
-            border-bottom: 1px solid #f1f5f9;
+            border-bottom: 1px solid var(--border-color, #f1f5f9);
             display: flex; align-items: center; gap: 12px;
         }
         .config-section-header .section-icon {
@@ -38,12 +38,16 @@
         .section-icon.orange { background: #fff7ed; color: #f97316; }
         .section-icon.green  { background: #f0fdf4; color: #22c55e; }
         .section-icon.purple { background: #faf5ff; color: #a855f7; }
+        [data-theme="dark"] .section-icon.blue   { background: rgba(59,130,246,0.15); color: #60a5fa; }
+        [data-theme="dark"] .section-icon.orange { background: rgba(249,115,22,0.15); color: #fb923c; }
+        [data-theme="dark"] .section-icon.green  { background: rgba(34,197,94,0.15);  color: #4ade80; }
+        [data-theme="dark"] .section-icon.purple { background: rgba(168,85,247,0.15); color: #c084fc; }
         .config-section-header h3 { font-size: 16px; font-weight: 700; color: var(--text-primary); margin: 0; }
         .config-section-header p  { font-size: 13px; color: var(--text-muted); margin: 2px 0 0; }
         .config-body { padding: 24px 28px; display: flex; flex-direction: column; gap: 20px; }
         .config-row {
             display: flex; align-items: flex-start; justify-content: space-between;
-            gap: 20px; padding-bottom: 20px; border-bottom: 1px solid #f8fafc;
+            gap: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color, #f8fafc);
         }
         .config-row:last-child { border-bottom: none; padding-bottom: 0; }
         .config-row-info { flex: 1; }
@@ -54,6 +58,7 @@
             background: #fffbeb; color: #d97706;
             font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px;
         }
+        [data-theme="dark"] .not-enforced-badge { background: rgba(217,119,6,0.15) !important; color: #fbbf24 !important; }
         .config-row-control { flex-shrink: 0; min-width: 160px; display: flex; justify-content: flex-end; }
 
         /* Toggle switch */
@@ -63,6 +68,7 @@
             background: #e2e8f0; border-radius: 12px; cursor: pointer;
             transition: background 0.2s; position: relative;
         }
+        [data-theme="dark"] .toggle-switch input[type=checkbox] { background: #334155; }
         .toggle-switch input[type=checkbox]:checked { background: var(--primary); }
         .toggle-switch input[type=checkbox]::after {
             content:''; position:absolute; width:20px; height:20px;
@@ -89,12 +95,14 @@
             transition: var(--transition); user-select: none;
         }
         .file-type-chip.active { border-color: var(--primary); color: var(--primary); background: #eff6ff; }
+        [data-theme="dark"] .file-type-chip { border-color: rgba(255,255,255,0.1); }
+        [data-theme="dark"] .file-type-chip.active { background: rgba(0,87,209,0.15); }
         .file-type-chip input { display: none; }
 
         .save-bar {
             position: sticky; bottom: 0; left: 0; right: 0;
-            background: rgba(255,255,255,0.95); backdrop-filter: blur(8px);
-            border-top: 1px solid #e2e8f0;
+            background: var(--bg-card, rgba(255,255,255,0.95)); backdrop-filter: blur(8px);
+            border-top: 1px solid var(--border-color, #e2e8f0);
             padding: 16px 28px; display: flex; justify-content: flex-end; gap: 12px;
             margin-top: 8px; z-index: 10;
         }
