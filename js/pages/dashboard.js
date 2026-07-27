@@ -195,11 +195,16 @@ function updateRecentOrdersUI(orders) {
         const pharmacyName = o.pharmacy?.name || o.pharmacyName || o.pharmacy || 'Any Pharmacy';
         const orderId = o.id ? `#ORD-${o.id.toString().slice(0,6)}` : '#ORD----';
 
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        const hoverBg = isDark ? 'rgba(255,255,255,0.03)' : '#f8fafc';
+        const textMain = isDark ? '#e2e8f0' : '#0f172a';
+        const textSub  = isDark ? '#94a3b8'  : '#475569';
+        const borderClr = isDark ? 'rgba(255,255,255,0.05)' : '#f1f5f9';
         return `
-            <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
-                <td style="padding: 16px 12px; font-weight: 600; color: #0f172a;">${orderId}</td>
-                <td style="padding: 16px 12px; color: #475569;">${patientName}</td>
-                <td style="padding: 16px 12px; color: #475569;">${pharmacyName}</td>
+            <tr style="border-bottom: 1px solid ${borderClr}; transition: background 0.2s;" onmouseover="this.style.background='${hoverBg}'" onmouseout="this.style.background='transparent'">
+                <td style="padding: 16px 12px; font-weight: 600; color: ${textMain};">${orderId}</td>
+                <td style="padding: 16px 12px; color: ${textSub};">${patientName}</td>
+                <td style="padding: 16px 12px; color: ${textSub};">${pharmacyName}</td>
                 <td style="padding: 16px 12px;">
                     <span style="display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; color: ${statusColor}; background: ${statusBg};">
                         ${(o.status || 'Pending').charAt(0).toUpperCase() + (o.status || 'pending').slice(1)}
@@ -288,12 +293,13 @@ function updateTopPharmaciesUI(pharmacies) {
         return;
     }
 
+    const isDarkP = document.documentElement.getAttribute('data-theme') === 'dark';
     list.innerHTML = pharmacies.slice(0, 5).map((p, index) => `
-        <div class="pharmacy-item" style="display: flex; align-items: center; padding: 12px 16px; border-bottom: 1px solid #f1f5f9;">
-            <div style="font-size: 18px; font-weight: 700; color: #94a3b8; width: 30px;">#${index + 1}</div>
+        <div class="pharmacy-item" style="display: flex; align-items: center; padding: 12px 16px; border-bottom: 1px solid ${isDarkP ? 'rgba(255,255,255,0.05)' : '#f1f5f9'};">
+            <div style="font-size: 18px; font-weight: 700; color: var(--text-muted); width: 30px;">#${index + 1}</div>
             <div class="pharmacy-info" style="flex: 1;">
-                <h4 style="margin: 0; font-size: 14px; color: #0f172a;">${p.name || 'Unknown Pharmacy'}</h4>
-                <p style="margin: 4px 0 0; font-size: 12px; color: #64748b;">Ranked by activity</p>
+                <h4 style="margin: 0; font-size: 14px; color: var(--text-main);">${p.name || 'Unknown Pharmacy'}</h4>
+                <p style="margin: 4px 0 0; font-size: 12px; color: var(--text-muted);">Ranked by activity</p>
             </div>
             <div class="pharmacy-revenue" style="font-weight: 600; color: #10b981; font-size: 14px;">
                 ${(p.orderCount || p.logs || p.revenue || 0).toLocaleString()} Requests
@@ -311,16 +317,17 @@ function updateTopMedicinesUI(medicines) {
         return;
     }
 
+    const isDarkM = document.documentElement.getAttribute('data-theme') === 'dark';
     list.innerHTML = medicines.slice(0, 5).map(m => `
-        <div class="activity-item" style="padding: 12px 16px; border-bottom: 1px solid #f1f5f9;">
+        <div class="activity-item" style="padding: 12px 16px; border-bottom: 1px solid ${isDarkM ? 'rgba(255,255,255,0.05)' : '#f1f5f9'};">
             <div class="activity-icon warning">
                 <i class='bx bx-capsule'></i>
             </div>
             <div class="activity-content" style="flex: 1;">
-                <h4 style="margin: 0; font-size: 14px;">${m.name || 'Medicine'}</h4>
-                <p style="margin: 4px 0 0; font-size: 12px; color: #64748b;">${m.category || 'Pharmaceuticals'}</p>
+                <h4 style="margin: 0; font-size: 14px; color: var(--text-main);">${m.name || 'Medicine'}</h4>
+                <p style="margin: 4px 0 0; font-size: 12px; color: var(--text-muted);">${m.category || 'Pharmaceuticals'}</p>
             </div>
-            <span class="activity-time" style="font-weight: 600; color: #0f172a;">${(m.soldCount || m.quantity || 0)} Units</span>
+            <span class="activity-time" style="font-weight: 600; color: var(--text-main);">${(m.soldCount || m.quantity || 0)} Units</span>
         </div>
     `).join('');
 }

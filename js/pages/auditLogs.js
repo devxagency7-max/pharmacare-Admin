@@ -244,7 +244,7 @@ function renderDrawer(d) {
     if (d.description) {
         html += `<div class="drawer-section">
             <h4>Description</h4>
-            <p style="font-size:13px;color:var(--text-muted);line-height:1.6;background:#f8fafc;padding:10px 14px;border-radius:8px;border-left:3px solid #d97706;margin:0;">${escHtml(d.description)}</p>
+            <p style="font-size:13px;color:var(--text-muted);line-height:1.6;background:var(--bg-card-2, #f8fafc);padding:10px 14px;border-radius:8px;border-left:3px solid #d97706;margin:0;">${escHtml(d.description)}</p>
         </div>`;
     }
 

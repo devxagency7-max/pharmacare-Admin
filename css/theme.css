@@ -136,9 +136,41 @@
 [data-theme="dark"] .modal-footer { border-top-color: rgba(255,255,255,0.06); }
 
 /* ── Sidebar stays gradient (it already has custom gradient) ── */
-/* In dark mode, deepen the gradient slightly */
 [data-theme="dark"] .sidebar {
     background: linear-gradient(160deg, #0a1628 0%, #0d1e40 40%, #0f2555 70%, #0f1830 100%);
+}
+
+/* ── Sidebar nav item active/hover states ── */
+[data-theme="dark"] .nav-links li a {
+    color: rgba(255,255,255,0.75);
+}
+[data-theme="dark"] .nav-links li a:hover {
+    background: rgba(255,255,255,0.10) !important;
+    color: #ffffff !important;
+}
+[data-theme="dark"] .nav-links li a.active {
+    background: rgba(255,255,255,0.15) !important;
+    color: #ffffff !important;
+    box-shadow: none;
+    border-left: 3px solid rgba(255,255,255,0.8);
+}
+[data-theme="dark"] .nav-links li a:not(.active) {
+    border-left: 3px solid transparent;
+}
+
+/* Sidebar section headers */
+[data-theme="dark"] .sidebar-section-label {
+    color: rgba(255,255,255,0.35) !important;
+}
+
+/* Superadmin section items */
+[data-theme="dark"] .superadmin-section a {
+    color: rgba(251,191,36,0.8) !important;
+}
+[data-theme="dark"] .superadmin-section a:hover,
+[data-theme="dark"] .superadmin-section a.active {
+    color: #fbbf24 !important;
+    background: rgba(251,191,36,0.10) !important;
 }
 
 /* ── Scrollbar ── */
@@ -182,6 +214,119 @@
 [data-theme="dark"] .filter-tab.active { background: var(--primary); }
 [data-theme="dark"] .request-card-header { color: #e2e8f0; }
 [data-theme="dark"] .request-pharmacy-info h3 { color: #e2e8f0; }
+
+/* ── Dashboard inline elements ── */
+[data-theme="dark"] .card * { color: inherit; }
+
+/* Recent Orders table */
+[data-theme="dark"] tr[style*="border-bottom"] { border-bottom-color: rgba(255,255,255,0.05) !important; }
+[data-theme="dark"] tr[style*="border-bottom"] td[style*="color: #0f172a"],
+[data-theme="dark"] tr[style*="border-bottom"] td[style*="color:#0f172a"] { color: #e2e8f0 !important; }
+[data-theme="dark"] tr[style*="border-bottom"] td[style*="color: #475569"],
+[data-theme="dark"] tr[style*="border-bottom"] td[style*="color:#475569"] { color: #94a3b8 !important; }
+[data-theme="dark"] tr[onmouseover] { background: transparent !important; }
+[data-theme="dark"] tr[onmouseover]:hover { background: rgba(255,255,255,0.03) !important; }
+
+/* Top Pharmacies */
+[data-theme="dark"] .pharmacy-item { border-bottom-color: rgba(255,255,255,0.05) !important; }
+[data-theme="dark"] .pharmacy-item h4,
+[data-theme="dark"] [style*="color: #0f172a"],
+[data-theme="dark"] [style*="color:#0f172a"] { color: #e2e8f0 !important; }
+[data-theme="dark"] [style*="color: #64748b"],
+[data-theme="dark"] [style*="color:#64748b"] { color: #94a3b8 !important; }
+[data-theme="dark"] [style*="color: #475569"],
+[data-theme="dark"] [style*="color:#475569"] { color: #94a3b8 !important; }
+[data-theme="dark"] [style*="color: #94a3b8"],
+[data-theme="dark"] [style*="color:#94a3b8"] { color: #64748b !important; }
+
+/* Top Medicines */
+[data-theme="dark"] .activity-item h4 { color: #e2e8f0 !important; }
+[data-theme="dark"] .activity-item p   { color: #94a3b8 !important; }
+[data-theme="dark"] .activity-item .activity-time { color: #64748b !important; }
+
+/* Inline background overrides for cards/rows */
+[data-theme="dark"] [style*="background: #f8fafc"],
+[data-theme="dark"] [style*="background:#f8fafc"],
+[data-theme="dark"] [style*="background: #fff"],
+[data-theme="dark"] [style*="background:#fff"],
+[data-theme="dark"] [style*="background: white"],
+[data-theme="dark"] [style*="background:white"] { background: #1a1d27 !important; }
+
+/* Order status badges inline */
+[data-theme="dark"] span[style*="border-radius: 20px"] { filter: brightness(0.85); }
+
+/* Pharmacy ranking number */
+[data-theme="dark"] [style*="color: #94a3b8; width: 30px"] { color: #64748b !important; }
+
+/* Activity section */
+[data-theme="dark"] .activity-icon.primary { background: rgba(0,87,209,0.2) !important; }
+[data-theme="dark"] .activity-icon.warning { background: rgba(245,158,11,0.2) !important; }
+[data-theme="dark"] .activity-icon.success { background: rgba(16,185,129,0.2) !important; }
+
+/* Drawer / detail panels */
+[data-theme="dark"] .drawer,
+[data-theme="dark"] #audit-drawer { background: #1a1d27 !important; }
+[data-theme="dark"] .drawer-section h4 { color: #64748b !important; }
+[data-theme="dark"] .drawer-row { border-bottom-color: rgba(255,255,255,0.04) !important; }
+[data-theme="dark"] .drawer-row .dr-l,
+[data-theme="dark"] .drawer-row .dr-label { color: #64748b !important; }
+[data-theme="dark"] .drawer-row .dr-v,
+[data-theme="dark"] .drawer-row .dr-value { color: #e2e8f0 !important; }
+[data-theme="dark"] .json-block { background: #0f1117 !important; color: #94a3b8 !important; border-color: rgba(255,255,255,0.05) !important; }
+
+/* Insight cards (Audit Logs) */
+[data-theme="dark"] .insight-card { background: #1a1d27 !important; }
+[data-theme="dark"] .i-bar-wrap { background: rgba(255,255,255,0.06) !important; }
+[data-theme="dark"] .i-name { color: #e2e8f0 !important; }
+[data-theme="dark"] .i-count { color: #64748b !important; }
+
+/* Audit stat cards */
+[data-theme="dark"] .audit-stat { background: #1a1d27 !important; }
+[data-theme="dark"] .audit-stat .num { color: #e2e8f0; }
+[data-theme="dark"] .audit-stat .lbl { color: #64748b; }
+[data-theme="dark"] .audit-stat.warn .num { color: #fbbf24; }
+[data-theme="dark"] .audit-stat.critical .num { color: #f87171; }
+[data-theme="dark"] .audit-stat.success .num { color: #34d399; }
+[data-theme="dark"] .audit-stat.info .num { color: #60a5fa; }
+
+/* Admin stat cards */
+[data-theme="dark"] .admin-stat-card { background: #1a1d27 !important; }
+[data-theme="dark"] .admin-stat-card .stat-num { color: #e2e8f0 !important; }
+[data-theme="dark"] .admin-stat-card .stat-lbl { color: #64748b !important; }
+
+/* Audit filters */
+[data-theme="dark"] .audit-filters { background: #1a1d27 !important; }
+[data-theme="dark"] .audit-filters .filter-sep { background: rgba(255,255,255,0.08) !important; }
+
+/* Status dot in audit table */
+[data-theme="dark"] .status-dot.ok   { color: #34d399 !important; }
+[data-theme="dark"] .status-dot.fail { color: #f87171 !important; }
+
+/* Severity badges in dark */
+[data-theme="dark"] .severity-badge.Information { background: rgba(59,130,246,0.15) !important; color: #60a5fa !important; }
+[data-theme="dark"] .severity-badge.Warning     { background: rgba(245,158,11,0.15) !important; color: #fbbf24 !important; }
+[data-theme="dark"] .severity-badge.Error       { background: rgba(234,88,12,0.15)  !important; color: #fb923c !important; }
+[data-theme="dark"] .severity-badge.Critical    { background: rgba(220,38,38,0.15)  !important; color: #f87171 !important; }
+
+/* Role badges in dark */
+[data-theme="dark"] .role-badge.admin      { background: rgba(59,130,246,0.15) !important; color: #60a5fa !important; }
+[data-theme="dark"] .role-badge.superadmin { background: rgba(245,158,11,0.15) !important; color: #fbbf24 !important; border-color: rgba(245,158,11,0.3) !important; }
+[data-theme="dark"] .lock-badge { background: rgba(239,68,68,0.15) !important; color: #f87171 !important; }
+
+/* Perm chips & activity in admin drawer */
+[data-theme="dark"] .perm-chip { background: rgba(16,185,129,0.12) !important; color: #34d399 !important; }
+[data-theme="dark"] .activity-item strong { color: #e2e8f0 !important; }
+
+/* Action badges (Activity Log) */
+[data-theme="dark"] .action-badge.promote    { background: rgba(16,185,129,0.12) !important; color: #34d399 !important; }
+[data-theme="dark"] .action-badge.remove     { background: rgba(239,68,68,0.12)  !important; color: #f87171 !important; }
+[data-theme="dark"] .action-badge.lock       { background: rgba(239,68,68,0.12)  !important; color: #f87171 !important; }
+[data-theme="dark"] .action-badge.unlock     { background: rgba(16,185,129,0.12) !important; color: #34d399 !important; }
+[data-theme="dark"] .action-badge.suspend    { background: rgba(245,158,11,0.12) !important; color: #fbbf24 !important; }
+[data-theme="dark"] .action-badge.reactivate { background: rgba(16,185,129,0.12) !important; color: #34d399 !important; }
+[data-theme="dark"] .action-badge.reset      { background: rgba(59,130,246,0.12) !important; color: #60a5fa !important; }
+[data-theme="dark"] .action-badge.super      { background: rgba(139,92,246,0.12) !important; color: #a78bfa !important; }
+[data-theme="dark"] .action-badge.default    { background: rgba(255,255,255,0.06) !important; color: #94a3b8 !important; }
 
 
 /* ==========================================================================
