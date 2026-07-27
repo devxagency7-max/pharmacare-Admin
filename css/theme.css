@@ -500,3 +500,130 @@ html[data-theme="dark"] .sidebar .nav-links li a.active {
     background: var(--primary);
     color: #fff;
 }
+
+/* ==========================================================================
+   COMPREHENSIVE DARK MODE OVERRIDES
+   Covers all inline hardcoded light colors across every page
+   ========================================================================== */
+
+/* ── Global: modal-actions footer ── */
+[data-theme="dark"] .modal-actions {
+    background: #1a1d27 !important;
+    border-top-color: rgba(255,255,255,0.06) !important;
+}
+[data-theme="dark"] .modal-actions * { color: inherit; }
+
+/* ── Global: detail-item labels ── */
+[data-theme="dark"] .detail-item label { color: #64748b !important; }
+[data-theme="dark"] .detail-item div,
+[data-theme="dark"] .detail-item p    { color: #e2e8f0 !important; }
+
+/* ── Global: info/warning boxes ── */
+[data-theme="dark"] [style*="background: #f8fafc"],
+[data-theme="dark"] [style*="background:#f8fafc"],
+[data-theme="dark"] [style*="background: #F8FAFC"],
+[data-theme="dark"] [style*="background: #F8FAFD"],
+[data-theme="dark"] [style*="background:#F8FAFD"],
+[data-theme="dark"] [style*="background: #f1f5f9"],
+[data-theme="dark"] [style*="background:#f1f5f9"],
+[data-theme="dark"] [style*="background: #F1F5F9"] { background: #1e2130 !important; }
+
+[data-theme="dark"] [style*="border-top: 1px solid #e2e8f0"],
+[data-theme="dark"] [style*="border-top:1px solid #e2e8f0"],
+[data-theme="dark"] [style*="border-top: 1px solid #E2E8F0"] { border-top-color: rgba(255,255,255,0.06) !important; }
+
+[data-theme="dark"] [style*="border-bottom: 1px solid #e2e8f0"],
+[data-theme="dark"] [style*="border: 1px solid #e2e8f0"],
+[data-theme="dark"] [style*="border:1px solid #e2e8f0"]      { border-color: rgba(255,255,255,0.06) !important; }
+
+/* ── Global: hardcoded text colors ── */
+[data-theme="dark"] [style*="color: #0f172a"],
+[data-theme="dark"] [style*="color:#0f172a"],
+[data-theme="dark"] [style*="color: #1e293b"],
+[data-theme="dark"] [style*="color:#1e293b"],
+[data-theme="dark"] [style*="color: #334155"],
+[data-theme="dark"] [style*="color:#334155"]  { color: #e2e8f0 !important; }
+
+[data-theme="dark"] [style*="color: #475569"],
+[data-theme="dark"] [style*="color:#475569"],
+[data-theme="dark"] [style*="color: #64748b"],
+[data-theme="dark"] [style*="color:#64748b"],
+[data-theme="dark"] [style*="color: #94a3b8"],
+[data-theme="dark"] [style*="color:#94a3b8"]  { color: #94a3b8 !important; }
+
+/* ── Platform Config section icons ── */
+[data-theme="dark"] .section-icon.orange { background: rgba(249,115,22,0.15) !important; }
+[data-theme="dark"] .section-icon.green  { background: rgba(34,197,94,0.12)  !important; }
+[data-theme="dark"] .section-icon.purple { background: rgba(168,85,247,0.12) !important; }
+[data-theme="dark"] .section-icon.blue   { background: rgba(59,130,246,0.12) !important; }
+[data-theme="dark"] .section-icon.red    { background: rgba(239,68,68,0.12)  !important; }
+
+/* ── Platform Config / Settings rows ── */
+[data-theme="dark"] .config-row,
+[data-theme="dark"] .setting-row { border-bottom-color: rgba(255,255,255,0.05) !important; }
+[data-theme="dark"] .config-label,
+[data-theme="dark"] .setting-label { color: #e2e8f0 !important; }
+[data-theme="dark"] .config-desc,
+[data-theme="dark"] .setting-desc  { color: #64748b !important; }
+
+/* ── File review / preview containers ── */
+[data-theme="dark"] #preview-container,
+[data-theme="dark"] .preview-container { background: #1e2130 !important; border-color: rgba(255,255,255,0.08) !important; }
+
+/* ── Orders page ── */
+[data-theme="dark"] .order-card,
+[data-theme="dark"] .order-row  { border-color: rgba(255,255,255,0.05) !important; }
+[data-theme="dark"] .order-id   { color: #e2e8f0 !important; }
+[data-theme="dark"] .order-meta { color: #94a3b8 !important; }
+
+/* ── Reports page ── */
+[data-theme="dark"] .report-card { background: #1a1d27 !important; }
+[data-theme="dark"] .report-value { color: #e2e8f0 !important; }
+[data-theme="dark"] .report-label { color: #64748b !important; }
+
+/* ── Medications page ── */
+[data-theme="dark"] .med-card  { background: #1a1d27 !important; border-color: rgba(255,255,255,0.05) !important; }
+[data-theme="dark"] .med-name  { color: #e2e8f0 !important; }
+[data-theme="dark"] .med-info  { color: #94a3b8 !important; }
+[data-theme="dark"] .drug-category-badge { background: rgba(255,255,255,0.07) !important; color: #94a3b8 !important; }
+
+/* ── Patients page ── */
+[data-theme="dark"] .patient-name  { color: #e2e8f0 !important; }
+[data-theme="dark"] .patient-email { color: #94a3b8 !important; }
+
+/* ── Pharmacies info box ── */
+[data-theme="dark"] .info-note,
+[data-theme="dark"] p[style*="background: #f8fafc"],
+[data-theme="dark"] p[style*="background:#f8fafc"] {
+    background: #1e2130 !important;
+    border-color: rgba(255,255,255,0.06) !important;
+    color: #94a3b8 !important;
+}
+
+/* ── System Health / Backups / Integrations ── */
+[data-theme="dark"] .health-card,
+[data-theme="dark"] .backup-card,
+[data-theme="dark"] .integration-card { background: #1a1d27 !important; border-color: rgba(255,255,255,0.05) !important; }
+[data-theme="dark"] .health-value  { color: #e2e8f0 !important; }
+[data-theme="dark"] .health-label  { color: #64748b !important; }
+[data-theme="dark"] .status-indicator.online  { color: #34d399 !important; }
+[data-theme="dark"] .status-indicator.offline { color: #f87171 !important; }
+
+/* ── Admin Management recent lists ── */
+[data-theme="dark"] .recent-list-item { border-bottom-color: rgba(255,255,255,0.04) !important; }
+[data-theme="dark"] .recent-list-item .actor { color: #e2e8f0 !important; }
+[data-theme="dark"] .recent-list-item .time  { color: #64748b !important; }
+
+/* ── Tabs (pharmacists/interns) active color fix ── */
+[data-theme="dark"] .tab-btn { color: var(--text-muted) !important; border-bottom-color: transparent !important; }
+[data-theme="dark"] .tab-btn.active,
+[data-theme="dark"] .tab-btn[style*="color: var(--text-main)"] { color: #e2e8f0 !important; }
+
+/* ── Toggle switches ── */
+[data-theme="dark"] .toggle-track { background: #334155 !important; }
+[data-theme="dark"] input:checked + .toggle-track { background: var(--primary) !important; }
+
+/* ── Currency: hide EGP raw text, keep green color ── */
+[data-theme="dark"] [style*="color: #10b981"],
+[data-theme="dark"] [style*="color:#10b981"] { color: #34d399 !important; }
+
