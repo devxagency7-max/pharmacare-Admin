@@ -293,9 +293,8 @@ function updateTopPharmaciesUI(pharmacies) {
         return;
     }
 
-    const isDarkP = document.documentElement.getAttribute('data-theme') === 'dark';
     list.innerHTML = pharmacies.slice(0, 5).map((p, index) => `
-        <div class="pharmacy-item" style="display: flex; align-items: center; padding: 12px 16px; border-bottom: 1px solid ${isDarkP ? 'rgba(255,255,255,0.05)' : '#f1f5f9'};">
+        <div class="pharmacy-item">
             <div style="font-size: 18px; font-weight: 700; color: var(--text-muted); width: 30px;">#${index + 1}</div>
             <div class="pharmacy-info" style="flex: 1;">
                 <h4 style="margin: 0; font-size: 14px; color: var(--text-main);">${p.name || 'Unknown Pharmacy'}</h4>
@@ -317,9 +316,8 @@ function updateTopMedicinesUI(medicines) {
         return;
     }
 
-    const isDarkM = document.documentElement.getAttribute('data-theme') === 'dark';
     list.innerHTML = medicines.slice(0, 5).map(m => `
-        <div class="activity-item" style="padding: 12px 16px; border-bottom: 1px solid ${isDarkM ? 'rgba(255,255,255,0.05)' : '#f1f5f9'};">
+        <div class="activity-item">
             <div class="activity-icon warning">
                 <i class='bx bx-capsule'></i>
             </div>

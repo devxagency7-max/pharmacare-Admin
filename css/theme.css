@@ -228,7 +228,14 @@
 [data-theme="dark"] tr[onmouseover]:hover { background: rgba(255,255,255,0.03) !important; }
 
 /* Top Pharmacies */
-[data-theme="dark"] .pharmacy-item { border-bottom-color: rgba(255,255,255,0.05) !important; }
+[data-theme="dark"] .pharmacy-item {
+    background: #1e2130 !important;
+    border-color: rgba(255,255,255,0.05) !important;
+    border-bottom-color: rgba(255,255,255,0.05) !important;
+}
+[data-theme="dark"] .pharmacy-item:hover {
+    background: #252838 !important;
+}
 [data-theme="dark"] .pharmacy-item h4,
 [data-theme="dark"] [style*="color: #0f172a"],
 [data-theme="dark"] [style*="color:#0f172a"] { color: #e2e8f0 !important; }

@@ -24,8 +24,9 @@ function isSuperAdmin() {
         const token = localStorage.getItem('idToken');
         if (!token) return false;
         const payload = JSON.parse(atob(token.split('.')[1]));
-        const roles = payload.role || payload.roles || [];
-        return Array.isArray(roles) ? roles.includes('SuperAdmin') : roles === 'SuperAdmin';
+        const rawRoles = payload.role || payload.roles || payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || [];
+        const rolesArr = Array.isArray(rawRoles) ? rawRoles : String(rawRoles).split(',').map(r => r.trim());
+        return rolesArr.includes('SuperAdmin');
     } catch { return false; }
 }
 

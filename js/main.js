@@ -396,10 +396,9 @@ function showSuperAdminNav() {
     if (!token) return;
     try {
         const payload = JSON.parse(atob(token.split('.')[1]));
-        const roles = payload.role || payload.roles || [];
-        const isSuperAdmin = Array.isArray(roles)
-            ? roles.includes('SuperAdmin')
-            : roles === 'SuperAdmin';
+        const rawRoles = payload.role || payload.roles || payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || [];
+        const rolesArr = Array.isArray(rawRoles) ? rawRoles : String(rawRoles).split(',').map(r => r.trim());
+        const isSuperAdmin = rolesArr.includes('SuperAdmin');
         if (isSuperAdmin) {
             document.querySelectorAll('.superadmin-section').forEach(el => {
                 el.style.display = '';
