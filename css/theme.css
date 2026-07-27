@@ -148,14 +148,21 @@
     background: rgba(255,255,255,0.10) !important;
     color: #ffffff !important;
 }
-[data-theme="dark"] .nav-links li a.active {
+[data-theme="dark"] .nav-links li a.active,
+[data-theme="dark"] .nav-links li.active > a {
     background: rgba(255,255,255,0.15) !important;
     color: #ffffff !important;
-    box-shadow: none;
-    border-left: 3px solid rgba(255,255,255,0.8);
+    box-shadow: none !important;
+    border-left: 3px solid rgba(255,255,255,0.8) !important;
 }
 [data-theme="dark"] .nav-links li a:not(.active) {
     border-left: 3px solid transparent;
+}
+
+/* Force override the white background on active nav item */
+html[data-theme="dark"] .sidebar .nav-links li a.active {
+    background: rgba(255,255,255,0.15) !important;
+    color: #fff !important;
 }
 
 /* Sidebar section headers */
@@ -214,6 +221,13 @@
 [data-theme="dark"] .filter-tab.active { background: var(--primary); }
 [data-theme="dark"] .request-card-header { color: #e2e8f0; }
 [data-theme="dark"] .request-pharmacy-info h3 { color: #e2e8f0; }
+
+/* ── Code tags (license numbers etc) ── */
+[data-theme="dark"] code {
+    background: rgba(255,255,255,0.07) !important;
+    color: #94a3b8 !important;
+    border: 1px solid rgba(255,255,255,0.06);
+}
 
 /* ── Dashboard inline elements ── */
 [data-theme="dark"] .card * { color: inherit; }

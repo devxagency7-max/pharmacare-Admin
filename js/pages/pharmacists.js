@@ -112,9 +112,9 @@ async function loadPharmacists(page = 1) {
                             </div>
                         </div>
                     </td>
-                    <td style="color: #64748b; font-weight: 500;">${typeText}</td>
-                    <td><code style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; color: #475569;">${p.membershipNumber || p.licenseNumber || 'N/A'}</code></td>
-                    <td style="font-size: 13px; color: #64748b;">${p.createdAt ? new Date(p.createdAt).toLocaleDateString() : 'N/A'}</td>
+                    <td style="color: var(--text-muted); font-weight: 500;">${typeText}</td>
+                    <td><code style="background: var(--bg-card-2, #f1f5f9); padding: 2px 6px; border-radius: 4px; color: var(--text-muted);">${p.membershipNumber || p.licenseNumber || 'N/A'}</code></td>
+                    <td style="font-size: 13px; color: var(--text-muted);">${p.createdAt ? new Date(p.createdAt).toLocaleDateString() : 'N/A'}</td>
                     <td><span class="status-badge ${getStatusClass(status)}">${status}</span></td>
                     <td>
                         <div class="table-actions">
