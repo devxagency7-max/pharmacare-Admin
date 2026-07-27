@@ -369,6 +369,15 @@ async function loadTopbarProfile() {
 
         if (nameEl) nameEl.textContent = fullName;
         if (roleEl) roleEl.textContent = role;
+
+        // Check SuperAdmin from API response (not JWT)
+        const rawRoles = role;
+        const rolesArr = Array.isArray(rawRoles) ? rawRoles : String(rawRoles).split(',').map(r => r.trim());
+        if (rolesArr.includes('SuperAdmin')) {
+            document.querySelectorAll('.superadmin-section').forEach(el => {
+                el.style.display = '';
+            });
+        }
         if (imgEl) {
             if (user.profilePhotoUrl || user.photoUrl || user.avatarUrl) {
                 imgEl.src = user.profilePhotoUrl || user.photoUrl || user.avatarUrl;

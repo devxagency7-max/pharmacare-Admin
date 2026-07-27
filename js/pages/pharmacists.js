@@ -20,7 +20,7 @@ function switchTab(tab) {
         if (!el) return;
         const isActive = t === tab;
         el.style.fontWeight = isActive ? '600' : '500';
-        el.style.color = isActive ? '#0f172a' : '#64748b';
+        el.style.color = isActive ? 'var(--text-main)' : 'var(--text-muted)';
         el.style.borderBottomColor = isActive ? '#0057d1' : 'transparent';
     });
     loadPharmacists(1);
