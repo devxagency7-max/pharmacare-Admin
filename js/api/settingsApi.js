@@ -48,3 +48,11 @@ async function updateRegionalSettings(data) {
 async function fetchStorageSettings() {
     return apiClient.get('/super-admin/storage');
 }
+
+async function fetchServerDiskUsage() {
+    return apiClient.get('/super-admin/storage/server');
+}
+
+async function fetchExactR2Usage() {
+    return apiClient.get('/super-admin/storage/exact');
+}
