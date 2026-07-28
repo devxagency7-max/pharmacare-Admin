@@ -300,19 +300,20 @@
                             <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);margin-bottom:4px;">Email</div>
                             <div style="font-size:14px;font-weight:600;color:var(--text-main);" id="invite-done-email"></div>
                         </div>
-                        <div>
+                        <!-- shown only when generatedPassword is returned -->
+                        <div id="invite-pwd-row">
                             <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);margin-bottom:4px;">Password (Tamenny only)</div>
                             <div style="display:flex;align-items:center;gap:8px;">
                                 <code id="invite-done-password" style="font-size:15px;font-weight:700;letter-spacing:1px;color:#8b5cf6;flex:1;"></code>
-                                <button onclick="copyInvitePassword()" style="background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.3);color:#8b5cf6;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;">
+                                <button id="invite-copy-pwd-btn" onclick="copyInvitePassword()" style="background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.3);color:#8b5cf6;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;">
                                     <i class='bx bx-copy'></i> Copy
                                 </button>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Warning -->
-                    <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);border-radius:10px;padding:12px 16px;display:flex;gap:10px;align-items:flex-start;margin-bottom:20px;">
+                    <!-- Warning: shown only when password exists -->
+                    <div id="invite-pwd-warning" style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);border-radius:10px;padding:12px 16px;display:flex;gap:10px;align-items:flex-start;margin-bottom:20px;">
                         <i class='bx bx-error' style="color:var(--danger);font-size:16px;flex-shrink:0;margin-top:1px;"></i>
                         <div style="font-size:12px;line-height:1.6;">
                             <strong style="color:var(--danger);display:block;margin-bottom:2px;">Save this password now — it won't appear again.</strong>
@@ -320,8 +321,17 @@
                         </div>
                     </div>
 
+                    <!-- Shown when generatedPassword is null (existing Firebase account) -->
+                    <div id="invite-existing-msg" style="display:none;background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.25);border-radius:10px;padding:12px 16px;display:none;gap:10px;align-items:flex-start;margin-bottom:20px;">
+                        <i class='bx bx-info-circle' style="color:#3b82f6;font-size:16px;flex-shrink:0;margin-top:1px;"></i>
+                        <div style="font-size:12px;line-height:1.6;">
+                            <strong style="color:#3b82f6;display:block;margin-bottom:2px;">Existing account — no new password created.</strong>
+                            <span style="color:var(--text-muted);">This email already has an account. Ask them to sign in with their existing credentials — Admin access will apply automatically on next login.</span>
+                        </div>
+                    </div>
+
                     <div class="modal-actions" style="margin-top:0;">
-                        <button class="btn btn-outline" onclick="copyInviteAll()" style="gap:6px;">
+                        <button class="btn btn-outline" id="invite-copy-all-btn" onclick="copyInviteAll()" style="gap:6px;">
                             <i class='bx bx-copy-alt'></i> Copy All
                         </button>
                         <button class="btn btn-primary" onclick="closeInviteModal()" style="background:#8b5cf6;border-color:#8b5cf6;">

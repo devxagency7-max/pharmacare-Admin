@@ -297,15 +297,30 @@ async function doInvite() {
     try {
         const res = await inviteAdmin(email);
         const data = res?.data || res;
-        const password = data.generatedPassword || '';
+        const password = data.generatedPassword || null;
 
-        // Show step 2 with credentials
         document.getElementById('invite-step-1').style.display = 'none';
         document.getElementById('invite-done-email').textContent = email;
-        document.getElementById('invite-done-password').textContent = password;
-        document.getElementById('invite-step-2').style.display = '';
 
-        showToast('success', `Admin account created for ${email}`);
+        const pwdRow    = document.getElementById('invite-pwd-row');
+        const pwdEl     = document.getElementById('invite-done-password');
+        const pwdCopyBtn = document.getElementById('invite-copy-pwd-btn');
+        const pwdWarning = document.getElementById('invite-pwd-warning');
+        const existingMsg = document.getElementById('invite-existing-msg');
+
+        if (password) {
+            pwdEl.textContent = password;
+            if (pwdRow)     pwdRow.style.display = '';
+            if (pwdWarning) pwdWarning.style.display = '';
+            if (existingMsg) existingMsg.style.display = 'none';
+        } else {
+            if (pwdRow)     pwdRow.style.display = 'none';
+            if (pwdWarning) pwdWarning.style.display = 'none';
+            if (existingMsg) existingMsg.style.display = '';
+        }
+
+        document.getElementById('invite-step-2').style.display = '';
+        showToast('success', `Admin access granted to ${email}`);
         loadAdmins(1); loadStats();
     } catch (err) {
         const msg = err.message || '';
@@ -334,8 +349,11 @@ function copyInvitePassword() {
 function copyInviteAll() {
     const email = document.getElementById('invite-done-email').textContent;
     const pwd   = document.getElementById('invite-done-password').textContent;
-    const text  = `Tamenny Admin Login\nEmail: ${email}\nPassword: ${pwd}\nLogin at: ${window.location.origin}`;
-    navigator.clipboard.writeText(text).then(() => showToast('success', 'Credentials copied!'));
+    const hasPwd = document.getElementById('invite-pwd-row').style.display !== 'none' && pwd;
+    const text = hasPwd
+        ? `Tamenny Admin Login\nEmail: ${email}\nPassword: ${pwd}\nLogin at: ${window.location.origin}`
+        : `Tamenny Admin Access Granted\nEmail: ${email}\nSign in with your existing credentials at: ${window.location.origin}`;
+    navigator.clipboard.writeText(text).then(() => showToast('success', 'Copied!'));
 }
 
 // ─── Row Actions ──────────────────────────────────────────────────────────────
