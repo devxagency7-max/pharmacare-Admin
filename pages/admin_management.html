@@ -258,31 +258,78 @@
 
     <!-- Invite Modal -->
     <div class="modal-overlay" id="invite-modal">
-        <div class="modal-content" style="max-width:460px;">
+        <div class="modal-content" style="max-width:500px;">
             <div class="modal-header">
                 <h2><i class='bx bx-envelope'></i> Invite New Admin</h2>
                 <i class='bx bx-x close-modal' onclick="closeInviteModal()"></i>
             </div>
             <div style="padding:24px;">
-                <div style="background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.2);border-radius:10px;padding:12px 16px;margin-bottom:20px;display:flex;gap:10px;align-items:flex-start;">
-                    <i class='bx bx-info-circle' style="color:#8b5cf6;font-size:16px;flex-shrink:0;margin-top:1px;"></i>
-                    <p style="font-size:12px;color:var(--text-muted);margin:0;line-height:1.6;">
-                        No email will be sent automatically. After sending the invite, notify the person manually (WhatsApp/email) to sign up with this email address — they'll be granted Admin access on their first login.
-                    </p>
+
+                <!-- Step 1: Email input -->
+                <div id="invite-step-1">
+                    <div style="background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.2);border-radius:10px;padding:12px 16px;margin-bottom:20px;display:flex;gap:10px;align-items:flex-start;">
+                        <i class='bx bx-info-circle' style="color:#8b5cf6;font-size:16px;flex-shrink:0;margin-top:1px;"></i>
+                        <p style="font-size:12px;color:var(--text-muted);margin:0;line-height:1.6;">
+                            A Tamenny account will be created immediately with an auto-generated password. No email is sent — you must share the credentials manually (WhatsApp, etc.).
+                        </p>
+                    </div>
+                    <label style="display:block;font-size:14px;font-weight:600;margin-bottom:8px;">Email Address</label>
+                    <input type="email" id="invite-email-input" placeholder="newadmin@example.com" style="width:100%;box-sizing:border-box;">
+                    <div id="invite-error" style="display:none;margin-top:10px;padding:10px 14px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:8px;font-size:13px;color:var(--danger);"></div>
+                    <div class="modal-actions" style="margin-top:20px;">
+                        <button class="btn btn-outline" onclick="closeInviteModal()">Cancel</button>
+                        <button class="btn btn-primary" onclick="doInvite()" id="invite-btn" style="background:#8b5cf6;border-color:#8b5cf6;">
+                            <i class='bx bx-send'></i> Create Account
+                        </button>
+                    </div>
                 </div>
-                <label style="display:block;font-size:14px;font-weight:600;margin-bottom:8px;">Email Address</label>
-                <input type="email" id="invite-email-input" placeholder="newadmin@example.com" style="width:100%;box-sizing:border-box;">
-                <div id="invite-error" style="display:none;margin-top:10px;padding:10px 14px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:8px;font-size:13px;color:var(--danger);"></div>
-                <div id="invite-success" style="display:none;margin-top:10px;padding:12px 14px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);border-radius:8px;font-size:13px;color:#10b981;">
-                    <i class='bx bx-check-circle'></i> <span id="invite-success-email"></span>
-                    <button onclick="copyInviteEmail()" style="margin-left:8px;background:none;border:none;color:#10b981;cursor:pointer;font-size:12px;text-decoration:underline;">Copy Email</button>
+
+                <!-- Step 2: Success + password reveal -->
+                <div id="invite-step-2" style="display:none;">
+                    <div style="text-align:center;margin-bottom:20px;">
+                        <div style="width:56px;height:56px;background:rgba(16,185,129,0.12);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+                            <i class='bx bx-check-circle' style="font-size:28px;color:#10b981;"></i>
+                        </div>
+                        <h3 style="margin:0 0 4px;font-size:16px;">Account Created!</h3>
+                        <p style="margin:0;font-size:13px;color:var(--text-muted);">Share these credentials manually with the new admin.</p>
+                    </div>
+
+                    <!-- Credentials box -->
+                    <div style="background:var(--bg-card-2,#f8fafc);border:1px solid var(--border-color,#e2e8f0);border-radius:12px;padding:16px;margin-bottom:16px;">
+                        <div style="margin-bottom:12px;">
+                            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);margin-bottom:4px;">Email</div>
+                            <div style="font-size:14px;font-weight:600;color:var(--text-main);" id="invite-done-email"></div>
+                        </div>
+                        <div>
+                            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);margin-bottom:4px;">Password (Tamenny only)</div>
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <code id="invite-done-password" style="font-size:15px;font-weight:700;letter-spacing:1px;color:#8b5cf6;flex:1;"></code>
+                                <button onclick="copyInvitePassword()" style="background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.3);color:#8b5cf6;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;">
+                                    <i class='bx bx-copy'></i> Copy
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Warning -->
+                    <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);border-radius:10px;padding:12px 16px;display:flex;gap:10px;align-items:flex-start;margin-bottom:20px;">
+                        <i class='bx bx-error' style="color:var(--danger);font-size:16px;flex-shrink:0;margin-top:1px;"></i>
+                        <div style="font-size:12px;line-height:1.6;">
+                            <strong style="color:var(--danger);display:block;margin-bottom:2px;">Save this password now — it won't appear again.</strong>
+                            <span style="color:var(--text-muted);">This is a Tamenny dashboard password only — not the person's personal email password.</span>
+                        </div>
+                    </div>
+
+                    <div class="modal-actions" style="margin-top:0;">
+                        <button class="btn btn-outline" onclick="copyInviteAll()" style="gap:6px;">
+                            <i class='bx bx-copy-alt'></i> Copy All
+                        </button>
+                        <button class="btn btn-primary" onclick="closeInviteModal()" style="background:#8b5cf6;border-color:#8b5cf6;">
+                            Done
+                        </button>
+                    </div>
                 </div>
-                <div class="modal-actions" style="margin-top:20px;">
-                    <button class="btn btn-outline" onclick="closeInviteModal()">Cancel</button>
-                    <button class="btn btn-primary" onclick="doInvite()" id="invite-btn" style="background:#8b5cf6;border-color:#8b5cf6;">
-                        <i class='bx bx-send'></i> Send Invite
-                    </button>
-                </div>
+
             </div>
         </div>
     </div>

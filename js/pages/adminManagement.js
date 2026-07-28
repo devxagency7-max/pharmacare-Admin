@@ -266,8 +266,11 @@ async function doPromote() {
 function openInviteModal() {
     document.getElementById('invite-email-input').value = '';
     document.getElementById('invite-error').style.display = 'none';
-    document.getElementById('invite-success').style.display = 'none';
-    document.getElementById('invite-btn').style.display = '';
+    document.getElementById('invite-step-1').style.display = '';
+    document.getElementById('invite-step-2').style.display = 'none';
+    const btn = document.getElementById('invite-btn');
+    btn.innerHTML = '<i class="bx bx-send"></i> Create Account';
+    btn.disabled = false;
     document.getElementById('invite-modal').classList.add('active');
     setTimeout(() => document.getElementById('invite-email-input').focus(), 200);
 }
@@ -288,21 +291,29 @@ async function doInvite() {
     }
 
     const btn = document.getElementById('invite-btn');
-    btn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Sending...';
+    btn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Creating...';
     btn.disabled = true;
 
     try {
-        await inviteAdmin(email);
-        // Show success state
-        document.getElementById('invite-success-email').textContent = `Invite created for ${email} — notify them manually to sign up.`;
-        document.getElementById('invite-success').style.display = 'block';
-        btn.style.display = 'none';
-        showToast('success', `Invite created for ${email}`);
+        const res = await inviteAdmin(email);
+        const data = res?.data || res;
+        const password = data.generatedPassword || '';
+
+        // Show step 2 with credentials
+        document.getElementById('invite-step-1').style.display = 'none';
+        document.getElementById('invite-done-email').textContent = email;
+        document.getElementById('invite-done-password').textContent = password;
+        document.getElementById('invite-step-2').style.display = '';
+
+        showToast('success', `Admin account created for ${email}`);
+        loadAdmins(1); loadStats();
     } catch (err) {
         const msg = err.message || '';
-        if (msg.toLowerCase().includes('already exists') || err.status === 409) {
+        if (err.status === 409 || msg.toLowerCase().includes('409')) {
             if (msg.toLowerCase().includes('pending')) {
                 errEl.textContent = 'A pending invite for this email already exists.';
+            } else if (msg.toLowerCase().includes('firebase') || msg.toLowerCase().includes('existing')) {
+                errEl.innerHTML = 'This email already has a Firebase account — ask them to log in directly.';
             } else {
                 errEl.innerHTML = 'A user with this email already exists — use <strong>Promote to Admin</strong> instead.';
             }
@@ -310,17 +321,21 @@ async function doInvite() {
             errEl.textContent = msg || 'Something went wrong. Please try again.';
         }
         errEl.style.display = 'block';
-    } finally {
-        if (btn.style.display !== 'none') {
-            btn.innerHTML = '<i class="bx bx-send"></i> Send Invite';
-            btn.disabled = false;
-        }
+        btn.innerHTML = '<i class="bx bx-send"></i> Create Account';
+        btn.disabled = false;
     }
 }
 
-function copyInviteEmail() {
-    const email = document.getElementById('invite-email-input').value.trim();
-    navigator.clipboard.writeText(email).then(() => showToast('success', 'Email copied!'));
+function copyInvitePassword() {
+    const pwd = document.getElementById('invite-done-password').textContent;
+    navigator.clipboard.writeText(pwd).then(() => showToast('success', 'Password copied!'));
+}
+
+function copyInviteAll() {
+    const email = document.getElementById('invite-done-email').textContent;
+    const pwd   = document.getElementById('invite-done-password').textContent;
+    const text  = `Tamenny Admin Login\nEmail: ${email}\nPassword: ${pwd}\nLogin at: ${window.location.origin}`;
+    navigator.clipboard.writeText(text).then(() => showToast('success', 'Credentials copied!'));
 }
 
 // ─── Row Actions ──────────────────────────────────────────────────────────────
