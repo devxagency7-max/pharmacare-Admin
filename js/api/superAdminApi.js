@@ -91,6 +91,10 @@ async function fetchStorageStatus() {
     return await apiClient.get('/super-admin/storage');
 }
 
+async function fetchExactStorageUsage() {
+    return await apiClient.get('/super-admin/storage/exact');
+}
+
 // ─── Backups ──────────────────────────────────────────────────────────────────
 
 async function fetchBackups() {

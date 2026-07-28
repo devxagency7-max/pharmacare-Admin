@@ -38,10 +38,19 @@
         .section-icon.orange { background: #fff7ed; color: #f97316; }
         .section-icon.green  { background: #f0fdf4; color: #22c55e; }
         .section-icon.purple { background: #faf5ff; color: #a855f7; }
+        .section-icon.teal   { background: #f0fdfa; color: #0d9488; }
         [data-theme="dark"] .section-icon.blue   { background: rgba(59,130,246,0.15); color: #60a5fa; }
         [data-theme="dark"] .section-icon.orange { background: rgba(249,115,22,0.15); color: #fb923c; }
         [data-theme="dark"] .section-icon.green  { background: rgba(34,197,94,0.15);  color: #4ade80; }
         [data-theme="dark"] .section-icon.purple { background: rgba(168,85,247,0.15); color: #c084fc; }
+        [data-theme="dark"] .section-icon.teal   { background: rgba(13,148,136,0.15); color: #2dd4bf; }
+        .storage-stat { display:flex; gap:24px; flex-wrap:wrap; }
+        .storage-stat-item { flex:1; min-width:160px; background:var(--bg-card-2,#f8fafc); border-radius:12px; padding:16px 20px; }
+        .storage-stat-item .stat-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:var(--text-muted); margin-bottom:6px; }
+        .storage-stat-item .stat-val { font-size:22px; font-weight:800; color:var(--text-main); }
+        .storage-stat-item .stat-sub { font-size:11px; color:var(--text-muted); margin-top:2px; }
+        .storage-note { font-size:12px; color:#d97706; background:#fffbeb; border-radius:8px; padding:10px 14px; display:flex; gap:8px; align-items:flex-start; }
+        [data-theme="dark"] .storage-note { background:rgba(217,119,6,0.12); color:#fbbf24; }
         .config-section-header h3 { font-size: 16px; font-weight: 700; color: var(--text-primary); margin: 0; }
         .config-section-header p  { font-size: 13px; color: var(--text-muted); margin: 2px 0 0; }
         .config-body { padding: 24px 28px; display: flex; flex-direction: column; gap: 20px; }
@@ -294,31 +303,31 @@
                         </div>
                     </div>
                     <div class="config-body">
-                        <div class="config-row">
-                            <div class="config-row-info">
+                        <div class=”config-row”>
+                            <div class=”config-row-info”>
                                 <label>Default Pagination Size</label>
-                                <div class="row-desc">Advisory default for list pages (5â€“200). The frontend applies this value itself.</div>
+                                <div class=”row-desc”>Advisory default for list pages (5&ndash;200). The frontend applies this value itself.</div>
                             </div>
-                            <div class="config-row-control">
-                                <input type="number" class="config-input" id="cfg-defaultPaginationSize" min="5" max="200" step="5">
+                            <div class=”config-row-control”>
+                                <input type=”number” class=”config-input” id=”cfg-defaultPaginationSize” min=”5” max=”200” step=”5”>
                             </div>
                         </div>
-                        <div class="config-row">
-                            <div class="config-row-info">
+                        <div class=”config-row”>
+                            <div class=”config-row-info”>
                                 <label>Maximum Upload Size (bytes)</label>
-                                <div class="row-desc">Max file size for general uploads (1 KB â€“ 100 MB).</div>
+                                <div class=”row-desc”>Max file size for general uploads (1 KB &ndash; 100 MB).</div>
                             </div>
-                            <div class="config-row-control">
-                                <input type="number" class="config-input" id="cfg-maximumUploadSize" min="1024" max="104857600">
+                            <div class=”config-row-control”>
+                                <input type=”number” class=”config-input” id=”cfg-maximumUploadSize” min=”1024” max=”104857600”>
                             </div>
                         </div>
-                        <div class="config-row">
-                            <div class="config-row-info">
+                        <div class=”config-row”>
+                            <div class=”config-row-info”>
                                 <label>Maximum Image Size (bytes)</label>
-                                <div class="row-desc">Max file size for image uploads (1 KB â€“ 100 MB).</div>
+                                <div class=”row-desc”>Max file size for image uploads (1 KB &ndash; 100 MB).</div>
                             </div>
-                            <div class="config-row-control">
-                                <input type="number" class="config-input" id="cfg-maximumImageSize" min="1024" max="104857600">
+                            <div class=”config-row-control”>
+                                <input type=”number” class=”config-input” id=”cfg-maximumImageSize” min=”1024” max=”104857600”>
                             </div>
                         </div>
                         <div class="config-row">
@@ -336,6 +345,43 @@
                 </div>
 
             </div><!-- /#config-form -->
+
+            <!-- 5. Storage Usage -->
+            <div class="config-section" id="storage-section" style="display:none;">
+                <div class="config-section-header">
+                    <div class="section-icon teal"><i class='bx bx-hdd'></i></div>
+                    <div style="flex:1;">
+                        <h3>Storage &mdash; Cloudflare R2</h3>
+                        <p>Current usage in the <strong>pharmacare-files</strong> bucket.</p>
+                    </div>
+                    <button id="exact-storage-btn" onclick="loadExactStorage()" class="btn btn-outline" style="font-size:12px; padding:6px 14px; gap:6px;">
+                        <i class='bx bx-refresh'></i> Show Exact Usage
+                    </button>
+                </div>
+                <div class="config-body">
+                    <div class="storage-stat">
+                        <div class="storage-stat-item">
+                            <div class="stat-label">Used Storage</div>
+                            <div class="stat-val" id="storage-used">—</div>
+                            <div class="stat-sub" id="storage-used-sub">estimated</div>
+                        </div>
+                        <div class="storage-stat-item">
+                            <div class="stat-label">File Count</div>
+                            <div class="stat-val" id="storage-count">—</div>
+                            <div class="stat-sub" id="storage-count-sub">user files</div>
+                        </div>
+                        <div class="storage-stat-item">
+                            <div class="stat-label">Status</div>
+                            <div class="stat-val" id="storage-status" style="font-size:15px; margin-top:4px;">—</div>
+                            <div class="stat-sub" id="storage-bucket">—</div>
+                        </div>
+                    </div>
+                    <div class="storage-note" id="storage-note" style="display:none;">
+                        <i class='bx bx-info-circle' style="font-size:16px; flex-shrink:0; margin-top:1px;"></i>
+                        <span id="storage-note-text"></span>
+                    </div>
+                </div>
+            </div>
 
             <!-- Sticky save bar -->
             <div class="save-bar" id="save-bar" style="display:none;">

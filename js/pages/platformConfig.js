@@ -4,6 +4,7 @@ let currentConfig = {};
 document.addEventListener('DOMContentLoaded', () => {
     renderFileTypeChips();
     loadConfig();
+    loadStorageEstimate();
 });
 
 function renderFileTypeChips() {
@@ -94,6 +95,62 @@ function buildPayload() {
         maximumImageSize: parseInt(document.getElementById('cfg-maximumImageSize').value) || 5242880,
         allowedFileTypes: selectedTypes,
     };
+}
+
+function formatBytes(bytes) {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+async function loadStorageEstimate() {
+    try {
+        const res = await fetchStorageStatus();
+        const d = res?.data || res;
+        document.getElementById('storage-section').style.display = '';
+        document.getElementById('storage-used').textContent = formatBytes(d.currentUsageBytes || 0);
+        document.getElementById('storage-used-sub').textContent = 'estimated (lower bound)';
+        document.getElementById('storage-status').innerHTML = d.r2Status === 'Connected'
+            ? '<span style="color:#10b981;">&#10003; Connected</span>'
+            : `<span style="color:#ef4444;">${d.r2Status || 'Unknown'}</span>`;
+        document.getElementById('storage-bucket').textContent = d.bucket || '';
+        if (d.currentUsageNote) {
+            document.getElementById('storage-note-text').textContent = d.currentUsageNote;
+            document.getElementById('storage-note').style.display = '';
+        }
+    } catch (err) {
+        // storage section stays hidden if API fails
+    }
+}
+
+async function loadExactStorage() {
+    const btn = document.getElementById('exact-storage-btn');
+    btn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Measuring...';
+    btn.disabled = true;
+    try {
+        const res = await fetchExactStorageUsage();
+        const d = res?.data || res;
+        document.getElementById('storage-used').textContent = formatBytes(d.totalBytes || 0);
+        document.getElementById('storage-used-sub').textContent = 'exact (live R2 scan)';
+        document.getElementById('storage-count').textContent = (d.objectCount || 0).toLocaleString();
+        document.getElementById('storage-count-sub').textContent = 'objects (excl. backups)';
+        if (d.measuredAt) {
+            const t = new Date(d.measuredAt).toLocaleString();
+            document.getElementById('storage-note-text').textContent = `Measured at: ${t} — excludes backups/ folder.`;
+            document.getElementById('storage-note').style.display = '';
+        }
+        btn.innerHTML = '<i class="bx bx-check"></i> Up to Date';
+        setTimeout(() => {
+            btn.innerHTML = '<i class="bx bx-refresh"></i> Show Exact Usage';
+            btn.disabled = false;
+        }, 3000);
+    } catch (err) {
+        btn.innerHTML = '<i class="bx bx-refresh"></i> Show Exact Usage';
+        btn.disabled = false;
+        showToast('error', 'Failed to fetch exact storage: ' + (err.message || ''));
+    }
 }
 
 async function saveConfig() {
