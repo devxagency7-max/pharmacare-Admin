@@ -461,11 +461,14 @@ function getLogoUrl(ph) {
     
     // Replace old server IP with the new one if present
     if (url.includes('148.230.114.124:8080')) {
-        url = url.replace('148.230.114.124:8080', '204.168.149.185');
+        url = url.replace('148.230.114.124:8080', '187.7.30.23');
+    }
+    if (url.includes('204.168.149.185')) {
+        url = url.replace('204.168.149.185', '187.7.30.23');
     }
     
     // Convert relative URLs to absolute using new backend server base
-    const backendHost = 'http://204.168.149.185';
+    const backendHost = 'http://187.7.30.23';
     if (url.startsWith('/')) {
         url = `${backendHost}${url}`;
     } else if (!url.startsWith('http://') && !url.startsWith('https://') && !url.startsWith('data:')) {

@@ -73,7 +73,7 @@ Or via whatever admin seeding mechanism you have.
 
 2. **After the fix**, we also need you to confirm that CORS is configured to allow requests from `https://tamenny-admin.vercel.app`. We are currently proxying through Vercel to avoid Mixed Content issues (our site is HTTPS, your server is HTTP), but if you later add HTTPS to the backend, CORS headers will matter.
 
-3. **New server IP confirmed** — we have updated all our API calls to target `204.168.149.185` (the new server). The old IP `148.230.114.124:8080` is no longer referenced anywhere in our code.
+3. **New server IP confirmed** — we have updated all our API calls to target `187.7.30.23` (the new server).
 
 ---
 
@@ -83,7 +83,7 @@ Or via whatever admin seeding mechanism you have.
 |---|---|---|
 | Set `Role = Admin` for dashboard account | **Backend** | ❌ Needed NOW |
 | Confirm CORS allows `tamenny-admin.vercel.app` | **Backend** | ⚠️ Needed soon |
-| Confirm new server `204.168.149.185` is live | **Backend** | ❓ Please confirm |
+| Confirm new server `187.7.30.23` is live | **Backend** | ❓ Please confirm |
 | Frontend API calls — all endpoints correct | Frontend | ✅ Done |
 | Vercel proxy configured (Mixed Content fixed) | Frontend | ✅ Done |
 
