@@ -41,8 +41,13 @@ function initCreatePharmacyForm() {
                 // Upload logo if selected
                 const logoInput = document.getElementById('logo-file-input');
                 if (logoInput && logoInput.files[0]) {
-                    submitBtn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Uploading Logo...';
-                    data.logoUrl = await uploadLogoFile(logoInput.files[0]);
+                    try {
+                        submitBtn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Uploading Logo...';
+                        data.logoUrl = await uploadLogoFile(logoInput.files[0]);
+                    } catch (uploadErr) {
+                        console.warn('[Create Pharmacy] Logo upload skipped or failed:', uploadErr);
+                        data.logoUrl = null;
+                    }
                 }
 
                 submitBtn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Registering...';
@@ -60,8 +65,13 @@ function initCreatePharmacyForm() {
                 }
 
             } catch (error) {
-                console.error('[Create Pharmacy] Failed:', error);
-                alert('Registration Failed: ' + (error.message || 'Check connection or data format.'));
+                console.error('[Create Pharmacy] Failed:', error, 'Status:', error.status, 'Data:', error.data);
+                const is500 = error.status === 500 || (error.message && error.message.includes('unexpected error'));
+                const errMsg = is500
+                    ? 'Server Error (500): The backend server (187.7.30.23) encountered an internal error in CreatePharmacy endpoint.\n\nPlease ask the Backend team to check server logs for POST /admin/pharmacies.'
+                    : (error.message || 'Registration Failed. Please check connection or data format.');
+                
+                alert('Registration Failed:\n\n' + errMsg);
             } finally {
                 submitBtn.innerHTML = originalText;
                 submitBtn.disabled = false;
@@ -104,9 +114,12 @@ async function uploadLogoFile(file) {
         body: formData
     });
 
-    if (!response.ok) throw new Error('Logo upload failed');
+    if (!response.ok) {
+        const text = await response.text().catch(() => '');
+        throw new Error(`Logo upload failed (${response.status}): ${text}`);
+    }
     const result = await response.json();
-    return result.url || result.data?.url || result.fileUrl; // Handle different API response structures
+    return result.url || result.data?.url || result.fileUrl || result.path || (typeof result === 'string' ? result : null);
 }
 
 
