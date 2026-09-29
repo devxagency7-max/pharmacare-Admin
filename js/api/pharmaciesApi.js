@@ -11,12 +11,15 @@ async function fetchPharmacies(page = 1, pageSize = 20, search = '', status = ''
 // Returns: { pharmacyId, name, code, generatedEmail, generatedPassword }
 // The generatedPassword is shown ONCE — display it immediately to the admin
 async function createPharmacy(data) {
+    const licenseVal = data.registrationNumber || data.code || data.licenseNumber || '';
     const payload = {
-        name:       data.name        || '',
-        code:       data.registrationNumber || data.code || data.licenseNumber || '',
-        governorate: data.governorate || '',
-        address:    data.address     || '',
-        logoUrl:    data.logoUrl     || null
+        name:               data.name        || '',
+        code:               licenseVal,
+        licenseNumber:      licenseVal,
+        registrationNumber: licenseVal,
+        governorate:        data.governorate || '',
+        address:            data.address     || '',
+        logoUrl:            data.logoUrl     || null
     };
     return await apiClient.post('/admin/pharmacies', payload);
 }
