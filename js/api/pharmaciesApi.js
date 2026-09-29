@@ -19,7 +19,8 @@ async function createPharmacy(data) {
         registrationNumber: licenseVal,
         governorate:        data.governorate || '',
         address:            data.address     || '',
-        logoUrl:            data.logoUrl     || null
+        logoUrl:            typeof data.logoUrl === 'object' ? (data.logoUrl?.url || null) : (data.logoUrl || null),
+        logoUploadedFileId: typeof data.logoUrl === 'object' ? (data.logoUrl?.id || null) : (data.logoUploadedFileId || null)
     };
     return await apiClient.post('/admin/pharmacies', payload);
 }

@@ -103,7 +103,8 @@ function handleLogoSelect(input) {
 
 async function uploadLogoFile(file) {
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append('File', file);
+    formData.append('FileType', 'Other');
 
     const token = await apiClient.getAuthToken();
     const response = await fetch('/api/files/upload', {
@@ -119,7 +120,9 @@ async function uploadLogoFile(file) {
         throw new Error(`Logo upload failed (${response.status}): ${text}`);
     }
     const result = await response.json();
-    let url = result.url || result.data?.url || result.fileUrl || result.path || (typeof result === 'string' ? result : null);
+    const dataObj = result.data || result;
+    const fileId = dataObj.id || dataObj.fileId || null;
+    let url = dataObj.url || dataObj.fileUrl || dataObj.path || (typeof dataObj === 'string' ? dataObj : null);
     
     if (url && typeof url === 'string') {
         url = url.trim();
@@ -127,7 +130,7 @@ async function uploadLogoFile(file) {
             url = `http://187.7.30.23${url}`;
         }
     }
-    return url;
+    return { id: fileId, url: url };
 }
 
 
