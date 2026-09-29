@@ -119,7 +119,15 @@ async function uploadLogoFile(file) {
         throw new Error(`Logo upload failed (${response.status}): ${text}`);
     }
     const result = await response.json();
-    return result.url || result.data?.url || result.fileUrl || result.path || (typeof result === 'string' ? result : null);
+    let url = result.url || result.data?.url || result.fileUrl || result.path || (typeof result === 'string' ? result : null);
+    
+    if (url && typeof url === 'string') {
+        url = url.trim();
+        if (url.startsWith('/')) {
+            url = `http://187.7.30.23${url}`;
+        }
+    }
+    return url;
 }
 
 
