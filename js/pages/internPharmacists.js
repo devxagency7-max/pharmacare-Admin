@@ -267,11 +267,11 @@ async function viewInternDetails(id) {
                 }).join('');
 
             content.innerHTML = `
-                <div style="display:flex;align-items:center;gap:20px;margin-bottom:24px;padding:18px 20px;background:linear-gradient(to right,#f8fafc,#fff);border-radius:14px;border:1px solid #e2e8f0;">
-                    <div style="width:72px;height:72px;border-radius:14px;background:#f0fdf4;color:#16a34a;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:28px;flex-shrink:0;">${initials}</div>
+                <div style="display:flex;align-items:center;gap:20px;margin-bottom:24px;padding:18px 20px;background:var(--bg-card-2, #1a1d27);border-radius:14px;border:1px solid var(--border-color, rgba(255,255,255,0.06));">
+                    <div style="width:72px;height:72px;border-radius:14px;background:rgba(22,163,74,0.15);color:#22c55e;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:28px;flex-shrink:0;border:1px solid rgba(34,197,94,0.25);">${initials}</div>
                     <div style="flex:1;">
-                        <div style="font-size:18px;font-weight:700;color:#0f172a;">${name}</div>
-                        <div style="font-size:13px;color:#64748b;margin-top:4px;">${app.userEmail || ''}</div>
+                        <div style="font-size:18px;font-weight:700;color:var(--text-main);">${name}</div>
+                        <div style="font-size:13px;color:var(--text-muted);margin-top:4px;">${app.userEmail || ''}</div>
                     </div>
                     <span class="status-badge ${statusClass}" style="padding:5px 14px;font-size:12px;">${status}</span>
                 </div>
@@ -285,9 +285,9 @@ async function viewInternDetails(id) {
                         ['Submitted', app.submittedAt ? new Date(app.submittedAt).toLocaleString() : 'N/A'],
                         ['Reviewed By', app.reviewerName || '—'],
                     ].map(([label, val]) => `
-                        <div style="padding:12px 14px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0;">
-                            <div style="font-size:10px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">${label}</div>
-                            <div style="font-size:13px;font-weight:600;color:#0f172a;">${val || '—'}</div>
+                        <div style="padding:12px 14px;background:var(--bg-card-2, rgba(255,255,255,0.04));border-radius:10px;border:1px solid var(--border-color, rgba(255,255,255,0.06));">
+                            <div style="font-size:10px;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">${label}</div>
+                            <div style="font-size:13px;font-weight:600;color:var(--text-main);">${val || '—'}</div>
                         </div>`).join('')}
                 </div>
 

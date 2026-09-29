@@ -208,15 +208,15 @@ async function viewPatientDetails(id) {
         const initials = displayName.substring(0, 2).toUpperCase();
         
         content.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 24px; margin-bottom: 30px; padding: 20px; background: linear-gradient(to right, #F8FAFD, #FFFFFF); border-radius: 16px; border: 1px solid #E2E8F0;">
-                <div style="width: 90px; height: 90px; border-radius: 50%; background: #EAF2FE; color: #0057d1; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 32px; border: 2px solid white; box-shadow: var(--shadow-sm); overflow: hidden;">
-                    <img src="${p.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=EAF2FE&color=0057d1`}" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=EAF2FE&color=0057d1';" style="width: 100%; height: 100%; object-fit: cover;">
+            <div style="display: flex; align-items: center; gap: 24px; margin-bottom: 30px; padding: 20px; background: var(--bg-card-2, #1a1d27); border-radius: 16px; border: 1px solid var(--border-color, rgba(255,255,255,0.06));">
+                <div style="width: 80px; height: 80px; border-radius: 50%; background: rgba(59, 130, 246, 0.15); color: #3b82f6; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 28px; border: 2px solid var(--border-color, rgba(255,255,255,0.1)); box-shadow: var(--shadow-sm); overflow: hidden; flex-shrink: 0;">
+                    <img src="${p.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=1e293b&color=3b82f6`}" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=1e293b&color=3b82f6';" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
                 <div>
-                    <h3 style="margin: 0; font-size: 24px; color: var(--primary); font-weight: 700;">${displayName}</h3>
+                    <h3 style="margin: 0; font-size: 22px; color: var(--text-main); font-weight: 700;">${displayName}</h3>
                     <div style="display: flex; align-items: center; gap: 8px; margin-top: 6px;">
                         <span style="font-size: 14px; color: var(--text-muted);"><i class='bx bx-time-five'></i> Patient since ${new Date(p.createdAt || Date.now()).toLocaleDateString()}</span>
-                        <span style="width: 4px; height: 4px; border-radius: 50%; background: #CBD5E1;"></span>
+                        <span style="width: 4px; height: 4px; border-radius: 50%; background: var(--text-muted);"></span>
                         <span style="font-size: 14px; color: var(--text-muted);"><i class='bx bx-id-card'></i> ID: ${p.id.substring(0, 8)}...</span>
                     </div>
                 </div>
@@ -229,11 +229,11 @@ async function viewPatientDetails(id) {
                 </div>
                 <div class="detail-item">
                     <label style="display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">User ID</label>
-                    <div style="font-weight: 500; color: #64748b; font-size: 12px; word-break: break-all; background: #f8fafc; padding: 4px 8px; border-radius: 6px; border: 1px solid #e2e8f0;">${p.id}</div>
+                    <div style="font-weight: 500; color: var(--text-muted); font-size: 12px; word-break: break-all; background: var(--bg-card-2, rgba(255,255,255,0.04)); padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border-color, rgba(255,255,255,0.06));">${p.id}</div>
                 </div>
                 <div class="detail-item">
                     <label style="display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">User Role</label>
-                    <div style="font-weight: 600; color: #0057d1; font-size: 13px; background: #EAF2FE; padding: 4px 10px; border-radius: 6px; display: inline-block;">
+                    <div style="font-weight: 600; color: #3b82f6; font-size: 13px; background: rgba(59, 130, 246, 0.12); padding: 4px 10px; border-radius: 6px; display: inline-block; border: 1px solid rgba(59, 130, 246, 0.25);">
                         ${Array.isArray(p.roles) ? p.roles.join(', ') : (p.role || 'Patient')}
                     </div>
                 </div>
@@ -253,7 +253,7 @@ async function viewPatientDetails(id) {
                     <label style="display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">Registered On</label>
                     <div style="font-weight: 600; color: var(--text-main); font-size: 13px;">${p.createdAt ? new Date(p.createdAt).toLocaleDateString() : 'N/A'}</div>
                 </div>
-            </div>
+            </div>`;
         `;
     } catch (err) {
         content.innerHTML = `<p style="color:var(--danger); text-align:center; padding: 20px;">Error: ${err.message}</p>`;
