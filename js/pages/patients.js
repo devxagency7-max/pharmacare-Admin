@@ -254,7 +254,6 @@ async function viewPatientDetails(id) {
                     <div style="font-weight: 600; color: var(--text-main); font-size: 13px;">${p.createdAt ? new Date(p.createdAt).toLocaleDateString() : 'N/A'}</div>
                 </div>
             </div>`;
-        `;
     } catch (err) {
         content.innerHTML = `<p style="color:var(--danger); text-align:center; padding: 20px;">Error: ${err.message}</p>`;
     }
