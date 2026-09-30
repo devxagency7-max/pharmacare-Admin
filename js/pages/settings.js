@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const panel = document.getElementById('panel-' + item.dataset.panel);
             if (panel) panel.classList.add('active');
             if (item.dataset.panel === 'storage') loadStorage();
+            if (item.dataset.panel === 'platform') loadPlatformSettings();
         });
     });
 
@@ -15,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadSecurity();
     loadNotifications();
     loadRegional();
+    loadPlatformSettings();
 });
 
 const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 3500, timerProgressBar: true });
@@ -332,5 +334,121 @@ async function loadExactR2() {
         result.innerHTML = `<span style="color:var(--danger);">Failed: ${err.message}</span>`;
         btn.innerHTML = '<i class="bx bx-refresh"></i> Show Exact Usage';
         btn.disabled = false;
+    }
+}
+
+// ── Panel: Platform Settings (Admin / SuperAdmin) ──
+let platformSettingsLoaded = false;
+
+async function loadPlatformSettings() {
+    try {
+        const res = await fetchPlatformSettings();
+        const d = res?.data || res;
+        platformSettingsLoaded = true;
+
+        const maxPatients = (d.maxPatientsPerIntern !== undefined && d.maxPatientsPerIntern !== null)
+            ? d.maxPatientsPerIntern
+            : 25;
+        const capInput = document.getElementById('plt-maxPatientsPerIntern');
+        if (capInput) capInput.value = maxPatients;
+
+        const regToggle = document.getElementById('plt-allowNewRegistrations');
+        if (regToggle) regToggle.checked = !!d.allowNewRegistrations;
+
+        const maintToggle = document.getElementById('plt-maintenanceMode');
+        if (maintToggle) maintToggle.checked = !!d.maintenanceMode;
+
+        const emailInput = document.getElementById('plt-supportEmail');
+        if (emailInput) emailInput.value = d.supportEmail || '';
+
+        const updatedEl = document.getElementById('plt-updatedAt');
+        if (updatedEl) {
+            updatedEl.textContent = d.updatedAt ? new Date(d.updatedAt).toLocaleString() : 'Not updated yet';
+        }
+
+        const updatedByEl = document.getElementById('plt-updatedBy');
+        if (updatedByEl) {
+            updatedByEl.textContent = d.updatedByUserId || 'System default';
+        }
+    } catch (err) {
+        console.warn('Could not load platform settings:', err);
+    }
+}
+
+function stepPatientCap(delta) {
+    const input = document.getElementById('plt-maxPatientsPerIntern');
+    if (!input) return;
+    let current = parseInt(input.value, 10);
+    if (isNaN(current)) current = 25;
+    let next = current + delta;
+    if (next < 1) next = 1;
+    if (next > 500) next = 500;
+    input.value = next;
+}
+
+function validatePatientCapInput(input) {
+    if (!input) return;
+    let val = parseInt(input.value, 10);
+    if (isNaN(val)) return;
+    if (val < 1) input.value = 1;
+    if (val > 500) input.value = 500;
+}
+
+async function savePlatformSettings() {
+    const capInput = document.getElementById('plt-maxPatientsPerIntern');
+    let maxPatients = parseInt(capInput.value, 10);
+
+    // Client-side validation: 1 <= value <= 500
+    if (isNaN(maxPatients) || maxPatients < 1 || maxPatients > 500) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Invalid Patient Cap',
+            text: 'Maximum patients per intern must be an integer between 1 and 500.',
+            confirmButtonColor: '#0057d1'
+        });
+        return;
+    }
+
+    const emailInput = document.getElementById('plt-supportEmail');
+    const supportEmail = emailInput ? emailInput.value.trim() : null;
+
+    const payload = {
+        maintenanceMode: document.getElementById('plt-maintenanceMode').checked,
+        allowNewRegistrations: document.getElementById('plt-allowNewRegistrations').checked,
+        supportEmail: supportEmail || null,
+        maxPatientsPerIntern: maxPatients
+    };
+
+    setBtnLoading('save-platform-btn', true, 'Save Platform Settings');
+    try {
+        const res = await updatePlatformSettings(payload);
+        const d = res?.data || res;
+
+        showToast('success', res?.message || 'Platform settings updated successfully.');
+
+        // Update UI with response
+        if (d.maxPatientsPerIntern !== undefined && d.maxPatientsPerIntern !== null) {
+            capInput.value = d.maxPatientsPerIntern;
+        }
+        if (d.allowNewRegistrations !== undefined) {
+            document.getElementById('plt-allowNewRegistrations').checked = !!d.allowNewRegistrations;
+        }
+        if (d.maintenanceMode !== undefined) {
+            document.getElementById('plt-maintenanceMode').checked = !!d.maintenanceMode;
+        }
+        if (d.supportEmail !== undefined) {
+            document.getElementById('plt-supportEmail').value = d.supportEmail || '';
+        }
+        if (d.updatedAt) {
+            document.getElementById('plt-updatedAt').textContent = new Date(d.updatedAt).toLocaleString();
+        }
+        if (d.updatedByUserId) {
+            document.getElementById('plt-updatedBy').textContent = d.updatedByUserId;
+        }
+    } catch (err) {
+        const errorMsg = err.data?.message || err.message || 'Could not update platform settings.';
+        Swal.fire('Save Failed', errorMsg, 'error');
+    } finally {
+        setBtnLoading('save-platform-btn', false, 'Save Platform Settings');
     }
 }

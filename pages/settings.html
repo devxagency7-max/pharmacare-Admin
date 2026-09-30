@@ -149,6 +149,60 @@
         .storage-stat .val { font-size: 20px; font-weight: 800; color: var(--text-primary); }
         .storage-stat .sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
 
+        /* Number stepper control */
+        .number-stepper {
+            display: inline-flex;
+            align-items: center;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #fff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            transition: all .2s ease;
+        }
+        .number-stepper:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0,87,209,0.15);
+        }
+        .number-stepper input[type="number"] {
+            width: 85px;
+            padding: 10px 8px;
+            text-align: center;
+            font-size: 17px;
+            font-weight: 700;
+            border: none;
+            outline: none;
+            background: transparent;
+            -moz-appearance: textfield;
+            color: var(--text-primary);
+        }
+        .number-stepper input[type="number"]::-webkit-outer-spin-button,
+        .number-stepper input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .number-stepper .stepper-btn {
+            background: #f1f5f9;
+            border: none;
+            width: 42px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-primary);
+            font-size: 18px;
+            transition: background .15s, color .15s;
+            user-select: none;
+        }
+        .number-stepper .stepper-btn:hover {
+            background: #e2e8f0;
+            color: var(--primary);
+        }
+        .number-stepper .stepper-btn:active {
+            background: #cbd5e1;
+        }
+
         /* Save bar */
         .save-bar {
             position: sticky; bottom: 0; background: #fff; border-top: 1px solid #e2e8f0;
@@ -269,7 +323,8 @@
                     <div class="settings-nav-item" data-panel="notifications"><i class='bx bx-bell'></i> Notifications</div>
                     <div class="settings-nav-item" data-panel="regional"><i class='bx bx-globe'></i> Regional</div>
                     <div class="settings-nav-divider"></div>
-                    <div class="settings-nav-label superadmin-section" style="display:none;">Platform</div>
+                    <div class="settings-nav-label">Platform</div>
+                    <div class="settings-nav-item" data-panel="platform"><i class='bx bx-slider-alt'></i> Platform Configuration</div>
                     <div class="settings-nav-item superadmin-section" style="display:none;" data-panel="storage"><i class='bx bx-server'></i> Storage</div>
                 </nav>
 
@@ -488,7 +543,107 @@
                         </div>
                     </div>
 
-                    <!-- â”€â”€ Panel 5: Storage (SuperAdmin) â”€â”€ -->
+                                        <!-- ── Panel: Platform Configuration ── -->
+                    <div class="settings-panel" id="panel-platform">
+                        <!-- Intern Patient Cap Card -->
+                        <div class="settings-card" style="margin-bottom: 24px;">
+                            <div class="settings-card-header" style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                <div>
+                                    <h3>Intern Patient Cap</h3>
+                                    <p>Platform-wide policy governing the maximum active clinical caseload per intern.</p>
+                                </div>
+                                <span class="role-badge-pill" style="font-size:11px;">Policy Cap</span>
+                            </div>
+                            <div class="settings-card-body">
+                                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; margin-bottom:18px;">
+                                    <div>
+                                        <label style="font-size:15px; font-weight:600; color:var(--text-primary); display:block; margin-bottom:4px;">
+                                            Maximum patients per intern:
+                                        </label>
+                                        <span style="font-size:12px; color:var(--text-muted);">
+                                            Controls how many patients each PharmacyIntern can manage at once.
+                                        </span>
+                                    </div>
+                                    <div class="number-stepper">
+                                        <button type="button" class="stepper-btn" onclick="stepPatientCap(-1)" title="Decrease">
+                                            <i class='bx bx-minus'></i>
+                                        </button>
+                                        <input type="number" id="plt-maxPatientsPerIntern" min="1" max="500" step="1" value="25"
+                                               oninput="validatePatientCapInput(this)">
+                                        <button type="button" class="stepper-btn" onclick="stepPatientCap(1)" title="Increase">
+                                            <i class='bx bx-plus'></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="info-note" style="margin-bottom: 16px;">
+                                    <i class='bx bx-info-circle' style="font-size:18px;"></i>
+                                    <div style="font-size: 13px; line-height: 1.5;">
+                                        Each <strong>PharmacyIntern</strong> can work clinically on up to this many patients at once. Interns are blocked from submitting drafts for new patients once they hit the cap.
+                                    </div>
+                                </div>
+
+                                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; font-size:12px; color:var(--text-muted); background:var(--bg-card-2, #f8fafc); padding:10px 14px; border-radius:8px; border:1px solid var(--border-color, #e2e8f0);">
+                                    <span><i class='bx bx-check-shield' style="vertical-align:middle; margin-right:4px;"></i>Range: <strong>1 &ndash; 500</strong></span>
+                                    <span>Current default: <strong>25</strong></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Platform Controls Card -->
+                        <div class="settings-card">
+                            <div class="settings-card-header">
+                                <h3>Platform Controls &amp; Access</h3>
+                                <p>Platform-wide registration and availability settings.</p>
+                            </div>
+                            <div class="settings-card-body">
+                                <div class="toggle-row">
+                                    <div class="toggle-row-info">
+                                        <strong>Allow New Registrations</strong>
+                                        <span>Allow new public user accounts and registrations across the platform.</span>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" id="plt-allowNewRegistrations">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+
+                                <div class="toggle-row">
+                                    <div class="toggle-row-info">
+                                        <strong>Maintenance Mode</strong>
+                                        <span>When enabled, all non-admin users receive a 503 Service Unavailable response.</span>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" id="plt-maintenanceMode">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+
+                                <div class="form-field" style="margin-top: 16px;">
+                                    <label>Platform Support Email</label>
+                                    <input type="email" id="plt-supportEmail" placeholder="support@pharmacare.example" maxlength="255">
+                                    <div class="field-hint">Primary contact address presented for support requests and notifications.</div>
+                                </div>
+
+                                <div class="security-row" style="margin-top: 14px;">
+                                    <div class="security-row-label" style="font-size:12px; color:var(--text-muted); font-weight:normal;">
+                                        Last Updated: <span id="plt-updatedAt" style="font-weight:600; color:var(--text-primary);">&mdash;</span>
+                                    </div>
+                                    <div class="security-row-value" style="font-size:12px;">
+                                        Updated By: <span id="plt-updatedBy" style="font-family:monospace;">&mdash;</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="save-bar">
+                                <button class="btn btn-outline" onclick="loadPlatformSettings()">Reset</button>
+                                <button class="btn btn-primary" id="save-platform-btn" onclick="savePlatformSettings()">
+                                    <i class='bx bx-save'></i> Save Platform Settings
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+<!-- â”€â”€ Panel 5: Storage (SuperAdmin) â”€â”€ -->
                     <div class="settings-panel" id="panel-storage">
                         <div class="settings-card">
                             <div class="settings-card-header">

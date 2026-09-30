@@ -43,6 +43,17 @@ async function updateRegionalSettings(data) {
 }
 
 // ──────────────────────────────────────────────
+// Section 5 — Platform Settings (Admin / SuperAdmin)
+// ──────────────────────────────────────────────
+async function fetchPlatformSettings() {
+    return apiClient.get('/admin/settings');
+}
+
+async function updatePlatformSettings(data) {
+    return apiClient.put('/admin/settings', data);
+}
+
+// ──────────────────────────────────────────────
 // Section 6 — Storage (SuperAdmin, read-only)
 // ──────────────────────────────────────────────
 async function fetchStorageSettings() {
