@@ -48,3 +48,8 @@ async function suspendPharmacyApi(id) {
 async function fetchPharmacyBranches(pharmacyId) {
     return await apiClient.get(`/admin/pharmacies/${pharmacyId}`);
 }
+
+// Admin reset owner password endpoint
+async function resetPharmacyOwnerPassword(pharmacyId) {
+    return await apiClient.post(`/admin/pharmacies/${pharmacyId}/reset-owner-password`, {});
+}

@@ -199,6 +199,7 @@ async function loadPharmacyRequests(page = 1) {
                     <td>
                         <div class="table-actions">
                             <button class="action-btn" style="background: #EAF2FE; color: #0057d1;" onclick="viewPharmacyDetails('${ph.id}')" title="Details"><i class='bx bx-show'></i></button>
+                            <button class="action-btn" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b;" onclick="resetOwnerPasswordAction('${ph.id}', '${(ph.name || '').replace(/'/g, "\\'")}')" title="Reset Owner Password"><i class='bx bx-key'></i></button>
                             ${status.toLowerCase() === 'suspended' ? `
                                 <button class="action-btn" style="background: #ccfbf1; color: #0d9488;" onclick="activatePharmacyAction('${ph.id}')" title="Activate Pharmacy"><i class='bx bx-play-circle'></i></button>
                             ` : `
@@ -404,6 +405,24 @@ async function suspendPharmacyAction(id) {
             loadPharmacyRequests(currentPage);
         } catch (err) {
             alert('Suspension failed: ' + err.message);
+        }
+    }
+}
+
+async function resetOwnerPasswordAction(id, name) {
+    const confirmMsg = `Reset owner password for "${name || 'this pharmacy'}"?\n\nThis will invalidate the current owner password. The owner will need to log in again with the new password. Continue?`;
+    if (confirm(confirmMsg)) {
+        try {
+            const res = await resetPharmacyOwnerPassword(id);
+            const creds = res?.data || res;
+            if (creds && (creds.generatedEmail || creds.generatedPassword)) {
+                showPharmacyCredentials(creds);
+            } else {
+                alert('Owner password reset successfully.');
+            }
+        } catch (err) {
+            console.error('[Reset Password] Failed:', err);
+            alert('Password Reset Failed: ' + (err.message || 'Server error.'));
         }
     }
 }
