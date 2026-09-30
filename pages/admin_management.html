@@ -36,7 +36,7 @@
 
         /* Action bar */
         .filter-bar { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 20px; }
-        .filter-bar select { padding: 9px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 13px; font-family: inherit; color: var(--text-primary); background: #fff; cursor: pointer; }
+        .filter-bar select { padding: 9px 14px; border: 1.5px solid var(--border-color, #e2e8f0); border-radius: 10px; font-size: 13px; font-family: inherit; color: var(--text-main); background: var(--bg-card, #1a1d27); cursor: pointer; }
         .filter-bar select:focus { outline: none; border-color: var(--primary); }
 
         /* Detail drawer */
@@ -47,31 +47,32 @@
         .drawer-overlay.active { display: block; }
         .drawer {
             position: fixed; top: 0; right: 0; bottom: 0; width: 440px;
-            background: #fff; box-shadow: -8px 0 40px rgba(0,0,0,0.12);
+            background: var(--bg-card, #1a1d27); box-shadow: -8px 0 40px rgba(0,0,0,0.4); border-left: 1px solid var(--border-color, rgba(255,255,255,0.06)); color: var(--text-main);
             z-index: 1001; overflow-y: auto;
             transform: translateX(100%); transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .drawer.active { transform: translateX(0); }
-        .drawer-header { padding: 24px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; }
+        .drawer-header { padding: 24px; border-bottom: 1px solid var(--border-color, rgba(255,255,255,0.06)); display: flex; justify-content: space-between; align-items: center; }
         .drawer-header h3 { font-size: 18px; font-weight: 700; margin: 0; }
         .drawer-close { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-muted); padding: 4px; }
         .drawer-body { padding: 24px; }
         .drawer-section { margin-bottom: 24px; }
         .drawer-section h4 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 12px; }
-        .drawer-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid #f8fafc; font-size: 14px; }
+        .drawer-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--border-color, rgba(255,255,255,0.04)); font-size: 14px; }
         .drawer-row:last-child { border-bottom: none; }
         .drawer-row .dr-label { color: var(--text-muted); font-weight: 500; }
         .drawer-row .dr-value { font-weight: 600; color: var(--text-primary); text-align: right; max-width: 220px; word-break: break-word; }
         .perm-grid { display: flex; flex-wrap: wrap; gap: 8px; }
         .perm-chip { padding: 5px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; background: #f0fdf4; color: #15803d; display: flex; align-items: center; gap: 5px; }
-        .activity-item { padding: 10px 0; border-bottom: 1px solid #f8fafc; font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+        .activity-item { padding: 10px 0; border-bottom: 1px solid var(--border-color, rgba(255,255,255,0.04)); font-size: 13px; color: var(--text-muted); line-height: 1.5; }
         .activity-item:last-child { border-bottom: none; }
         .activity-item strong { color: var(--text-primary); }
 
         /* Promote modal */
-        #promote-email-input {
-            width: 100%; padding: 12px 16px; border: 1.5px solid #e2e8f0; border-radius: 10px;
+        #promote-email-input, #invite-email-input {
+            width: 100%; padding: 12px 16px; border: 1.5px solid var(--border-color, #e2e8f0); border-radius: 10px;
             font-size: 14px; font-family: inherit; box-sizing: border-box;
+            background: var(--bg-card-2, #1a1d27); color: var(--text-main, #e2e8f0);
             transition: border-color 0.2s; margin-bottom: 8px;
         }
         #promote-email-input:focus { outline: none; border-color: var(--primary); }
@@ -246,7 +247,7 @@
                     The user must have already signed in at least once. Enter their email address below.
                 </p>
                 <label style="display:block; font-size:14px; font-weight:600; margin-bottom:8px;">Email Address</label>
-                <input type="email" id="promote-email-input" placeholder="user@example.com">
+                <input type="email" id="promote-email-input" placeholder="user@example.com" style="width:100%;box-sizing:border-box;padding:12px 16px;border-radius:10px;border:1.5px solid var(--border-color, rgba(255,255,255,0.1));background:var(--bg-card-2, #1a1d27);color:var(--text-main, #e2e8f0);">
                 <div class="modal-actions" style="margin-top:20px;">
                     <button class="btn btn-outline" onclick="closePromoteModal()">Cancel</button>
                     <button class="btn btn-primary" onclick="doPromote()" id="promote-btn">
@@ -275,7 +276,7 @@
                         </p>
                     </div>
                     <label style="display:block;font-size:14px;font-weight:600;margin-bottom:8px;">Email Address</label>
-                    <input type="email" id="invite-email-input" placeholder="newadmin@example.com" style="width:100%;box-sizing:border-box;">
+                    <input type="email" id="invite-email-input" placeholder="newadmin@example.com" style="width:100%;box-sizing:border-box;padding:12px 16px;border-radius:10px;border:1.5px solid var(--border-color, rgba(255,255,255,0.1));background:var(--bg-card-2, #1a1d27);color:var(--text-main, #e2e8f0);">
                     <div id="invite-error" style="display:none;margin-top:10px;padding:10px 14px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:8px;font-size:13px;color:var(--danger);"></div>
                     <div class="modal-actions" style="margin-top:20px;">
                         <button class="btn btn-outline" onclick="closeInviteModal()">Cancel</button>
@@ -305,7 +306,7 @@
                         <div id="invite-pwd-row">
                             <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);margin-bottom:4px;">Password (Tamenny only)</div>
                             <div style="display:flex;align-items:center;gap:8px;">
-                                <code id="invite-done-password" style="font-size:15px;font-weight:700;letter-spacing:1px;color:#8b5cf6;flex:1;"></code>
+                                <code id="invite-done-password" style="font-size:15px;font-weight:700;letter-spacing:1px;color:#a78bfa;flex:1;background:var(--bg-card,#1a1d27);padding:8px 12px;border-radius:6px;border:1px solid var(--border-color,rgba(255,255,255,0.08));"></code>
                                 <button id="invite-copy-pwd-btn" onclick="copyInvitePassword()" style="background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.3);color:#8b5cf6;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;">
                                     <i class='bx bx-copy'></i> Copy
                                 </button>

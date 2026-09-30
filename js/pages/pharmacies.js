@@ -441,47 +441,47 @@ function showPharmacyCredentials(creds) {
     `;
 
     modal.innerHTML = `
-        <div style="background:#fff; border-radius:16px; padding:36px; max-width:480px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+        <div style="background:var(--bg-card, #1a1d27); border:1px solid var(--border-color, rgba(255,255,255,0.08)); border-radius:16px; padding:32px; max-width:480px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.5);">
             <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
-                <div style="width:44px;height:44px;border-radius:12px;background:#FEF3C7;display:flex;align-items:center;justify-content:center;">
-                    <i class='bx bx-key' style="font-size:22px;color:#D97706;"></i>
+                <div style="width:44px;height:44px;border-radius:12px;background:rgba(245,158,11,0.15);display:flex;align-items:center;justify-content:center;border:1px solid rgba(245,158,11,0.25);">
+                    <i class='bx bx-key' style="font-size:22px;color:#f59e0b;"></i>
                 </div>
                 <div>
-                    <h3 style="margin:0;font-size:18px;color:#0f172a;">Pharmacy Created Successfully</h3>
-                    <p style="margin:4px 0 0;font-size:13px;color:#64748b;">Save these credentials — they will <strong>never</strong> be shown again.</p>
+                    <h3 style="margin:0;font-size:18px;font-weight:700;color:var(--text-main, #e2e8f0);">Pharmacy Credentials</h3>
+                    <p style="margin:4px 0 0;font-size:13px;color:var(--text-muted, #64748b);">Save these credentials — they will <strong>never</strong> be shown again.</p>
                 </div>
             </div>
 
-            <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;padding:20px;margin-bottom:20px;">
+            <div style="background:var(--bg-card-2, rgba(255,255,255,0.03));border:1px solid var(--border-color, rgba(255,255,255,0.08));border-radius:12px;padding:20px;margin-bottom:20px;">
                 <div style="margin-bottom:14px;">
-                    <label style="font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.5px;font-weight:700;display:block;margin-bottom:6px;">Owner Login Email</label>
+                    <label style="font-size:11px;color:var(--text-muted, #64748b);text-transform:uppercase;letter-spacing:.5px;font-weight:700;display:block;margin-bottom:6px;">Owner Login Email</label>
                     <div style="display:flex;align-items:center;gap:8px;">
-                        <code id="cred-email" style="flex:1;background:#fff;border:1px solid #E2E8F0;border-radius:6px;padding:8px 12px;font-size:13px;color:#0f172a;word-break:break-all;">${creds.generatedEmail || 'N/A'}</code>
+                        <code id="cred-email" style="flex:1;background:var(--bg-card, #1a1d27);border:1px solid var(--border-color, rgba(255,255,255,0.1));border-radius:8px;padding:10px 14px;font-size:13px;color:var(--text-main, #e2e8f0);word-break:break-all;">${creds.generatedEmail || 'N/A'}</code>
                         <button onclick="navigator.clipboard.writeText('${creds.generatedEmail || ''}');this.innerHTML='<i class=\\'bx bx-check\\'></i>';setTimeout(()=>this.innerHTML='<i class=\\'bx bx-copy\\'></i>',1500);"
-                            style="padding:8px;border:1px solid #E2E8F0;border-radius:6px;background:#fff;cursor:pointer;color:#64748b;">
+                            style="padding:10px 14px;border:1px solid var(--border-color, rgba(255,255,255,0.1));border-radius:8px;background:var(--bg-card, #1a1d27);cursor:pointer;color:var(--text-main, #e2e8f0);">
                             <i class='bx bx-copy'></i>
                         </button>
                     </div>
                 </div>
                 <div>
-                    <label style="font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.5px;font-weight:700;display:block;margin-bottom:6px;">Owner Password</label>
+                    <label style="font-size:11px;color:var(--text-muted, #64748b);text-transform:uppercase;letter-spacing:.5px;font-weight:700;display:block;margin-bottom:6px;">Owner Password</label>
                     <div style="display:flex;align-items:center;gap:8px;">
-                        <code id="cred-pass" style="flex:1;background:#fff;border:1px solid #E2E8F0;border-radius:6px;padding:8px 12px;font-size:13px;color:#0f172a;word-break:break-all;">${creds.generatedPassword || 'N/A'}</code>
+                        <code id="cred-pass" style="flex:1;background:var(--bg-card, #1a1d27);border:1px solid var(--border-color, rgba(255,255,255,0.1));border-radius:8px;padding:10px 14px;font-size:14px;font-weight:700;letter-spacing:0.5px;color:var(--primary, #3b82f6);word-break:break-all;">${creds.generatedPassword || 'N/A'}</code>
                         <button onclick="navigator.clipboard.writeText('${creds.generatedPassword || ''}');this.innerHTML='<i class=\\'bx bx-check\\'></i>';setTimeout(()=>this.innerHTML='<i class=\\'bx bx-copy\\'></i>',1500);"
-                            style="padding:8px;border:1px solid #E2E8F0;border-radius:6px;background:#fff;cursor:pointer;color:#64748b;">
+                            style="padding:10px 14px;border:1px solid var(--border-color, rgba(255,255,255,0.1));border-radius:8px;background:var(--bg-card, #1a1d27);cursor:pointer;color:var(--text-main, #e2e8f0);">
                             <i class='bx bx-copy'></i>
                         </button>
                     </div>
                 </div>
             </div>
 
-            <div style="background:#FEF3C7;border-radius:8px;padding:12px 16px;margin-bottom:20px;display:flex;gap:8px;align-items:flex-start;">
-                <i class='bx bx-error' style="color:#D97706;font-size:18px;margin-top:1px;"></i>
-                <p style="margin:0;font-size:13px;color:#92400E;line-height:1.5;">Share these credentials with the pharmacy owner immediately. Once you close this dialog, <strong>they cannot be recovered</strong>.</p>
+            <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);border-radius:10px;padding:12px 16px;margin-bottom:20px;display:flex;gap:10px;align-items:flex-start;">
+                <i class='bx bx-error' style="color:#ef4444;font-size:18px;margin-top:1px;flex-shrink:0;"></i>
+                <p style="margin:0;font-size:13px;color:#fca5a5;line-height:1.5;">Share these credentials with the pharmacy owner immediately. Once you close this dialog, <strong>they cannot be recovered</strong>.</p>
             </div>
 
             <button onclick="document.getElementById('pharmacy-credentials-modal').remove();"
-                style="width:100%;padding:12px;background:#0057d1;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;">
+                style="width:100%;padding:12px;background:var(--primary, #0057d1);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;">
                 I have saved the credentials
             </button>
         </div>
